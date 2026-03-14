@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff"><meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+  <meta name="description" content="THRIVE Activities — Tech, Football, Inspiration and the latest news from the programme.">
+  <title>Activities — THRIVE</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="assets/tree-logo.png">
+  <style>
+    /* ── News / Stories feed ── */
+    .stories-section{background:var(--c-cream);padding:clamp(48px,7vw,80px) 0}
+    .stories-layout{display:grid;grid-template-columns:1fr 340px;gap:clamp(24px,4vw,48px);align-items:start}
+
+    /* Featured story */
+    .story-featured{background:var(--c-white);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--sh-md);border:1px solid var(--c-border)}
+    .story-featured-img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
+    .story-featured-body{padding:clamp(20px,3vw,32px)}
+    .story-cat{display:inline-flex;align-items:center;gap:5px;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 11px;border-radius:100px;margin-bottom:12px}
+    .cat-tech{background:rgba(27,123,120,.12);color:var(--c-teal)}
+    .cat-football{background:rgba(232,98,26,.12);color:var(--c-orange)}
+    .cat-event{background:rgba(46,125,79,.12);color:var(--c-green)}
+    .cat-announcement{background:rgba(124,58,237,.12);color:#7C3AED}
+    .story-date{font-size:.78rem;color:var(--c-muted);margin-bottom:8px}
+    .story-headline{font-family:var(--fd);font-size:clamp(1.15rem,2.5vw,1.55rem);font-weight:700;color:var(--c-dark);line-height:1.25;margin-bottom:12px}
+    .story-body{font-size:.9rem;color:var(--c-muted);line-height:1.72}
+
+    /* Story list sidebar */
+    .story-list{display:flex;flex-direction:column;gap:14px}
+    .story-card{background:var(--c-white);border-radius:var(--r-md);overflow:hidden;box-shadow:var(--sh-sm);border:1px solid var(--c-border);cursor:pointer;transition:transform var(--t),box-shadow var(--t);display:flex;gap:0;flex-direction:column}
+    .story-card:hover{transform:translateY(-2px);box-shadow:var(--sh-md)}
+    .story-card.active{border-color:var(--c-green);box-shadow:0 0 0 2px rgba(46,125,79,.2)}
+    .story-card-img{width:100%;aspect-ratio:16/7;object-fit:cover;display:block}
+    .story-card-body{padding:12px 14px}
+    .story-card-date{font-size:.72rem;color:var(--c-muted);margin-bottom:4px}
+    .story-card-headline{font-size:.86rem;font-weight:600;color:var(--c-dark);line-height:1.35}
+
+    /* Admin story editor */
+    .story-editor{background:var(--c-white);border:1px solid var(--c-border);border-radius:var(--r-lg);padding:clamp(18px,3vw,28px);margin-top:24px}
+    .story-editor h3{font-size:.95rem;margin-bottom:16px;color:var(--c-dark);display:flex;align-items:center;justify-content:space-between}
+    .story-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+    @media(max-width:560px){.story-form-grid{grid-template-columns:1fr}}
+    .story-form-full{margin-bottom:12px}
+    .story-form-full label,.story-form-grid label{display:block;font-size:.8rem;font-weight:600;color:var(--c-dark);margin-bottom:4px}
+    .story-form-full input,.story-form-grid input,.story-form-grid select{width:100%;padding:9px 12px;border:1.5px solid var(--c-border);border-radius:var(--r-sm);font-size:.88rem;background:var(--c-cream);font-family:inherit;transition:border-color var(--t)}
+    .story-form-full textarea{width:100%;padding:9px 12px;border:1.5px solid var(--c-border);border-radius:var(--r-sm);font-size:.88rem;background:var(--c-cream);font-family:inherit;resize:vertical;min-height:90px;transition:border-color var(--t)}
+    .story-form-full input:focus,.story-form-grid input:focus,.story-form-grid select:focus,.story-form-full textarea:focus{outline:none;border-color:var(--c-teal);background:var(--c-white)}
+    .story-list-edit{display:flex;flex-direction:column;gap:6px;margin-top:16px;max-height:260px;overflow-y:auto}
+    .story-edit-row{display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--c-cream);border-radius:var(--r-sm);font-size:.84rem}
+    .story-edit-row-title{flex:1;font-weight:500;color:var(--c-dark);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .story-edit-row-date{font-size:.75rem;color:var(--c-muted);flex-shrink:0}
+
+    /* Pillar cards on this page */
+    .pillar-sm{background:var(--c-cream);border-radius:var(--r-md);padding:14px;border-left:3px solid var(--c-teal)}
+    .pillar-name{font-size:.86rem;font-weight:600;color:var(--c-dark);margin-top:4px}
+    .pillar-desc{font-size:.76rem;color:var(--c-muted);margin-top:1px}
+
+    @media(max-width:860px){
+      .stories-layout{grid-template-columns:1fr}
+      .story-list{flex-direction:row;flex-wrap:nowrap;overflow-x:auto;padding-bottom:6px;gap:10px}
+      .story-list::-webkit-scrollbar{height:4px}.story-list::-webkit-scrollbar-thumb{background:var(--c-border);border-radius:2px}
+      .story-card{min-width:220px;flex-shrink:0}
+    }
+  </style>
+</head>
+<body>
+<header class="nav" role="banner"></header>
+<main>
+
+<section class="page-hdr">
+  <span class="eyebrow" style="color:var(--c-green-lt);display:block;margin-bottom:.4rem">Programme</span>
+  <h1>Activities &amp; News</h1>
+  <p class="lead" style="margin-top:.5rem;max-width:540px">Three pillars. One mission. Plus the latest stories from the THRIVE programme.</p>
+</section>
+
+<!-- ══════════════════════════════════
+     NEWS / STORIES FEED
+══════════════════════════════════ -->
+<section class="stories-section" aria-labelledby="stories-hd">
+  <div class="container">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:clamp(18px,3vw,28px)">
+      <div>
+        <span class="eyebrow">Latest Updates</span>
+        <h2 id="stories-hd" style="margin-top:.3rem">News &amp; Stories</h2>
+      </div>
+      <!-- Admin: add story button -->
+      <div class="admin-only" style="display:none">
+        <button class="btn btn-green btn-sm" onclick="openStoryForm(null)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Story
+        </button>
+      </div>
+    </div>
+
+    <div class="stories-layout">
+      <!-- Featured (main) story panel -->
+      <div>
+        <article id="featured-story" aria-label="Selected story" class="story-featured">
+          <!-- Rendered by JS -->
+        </article>
+      </div>
+
+      <!-- Story list / sidebar -->
+      <aside aria-label="All stories">
+        <div class="story-list" id="story-list" role="list">
+          <!-- Rendered by JS -->
+        </div>
+      </aside>
+    </div>
+
+    <!-- Admin story editor -->
+    <div class="admin-only story-editor" id="story-editor" style="display:none">
+      <h3>
+        <span id="story-form-title">Add Story</span>
+        <button onclick="document.getElementById('story-editor').style.display='none'" style="background:none;border:none;font-size:1.2rem;color:var(--c-muted);cursor:pointer" aria-label="Close editor">✕</button>
+      </h3>
+      <div class="story-form-grid">
+        <div>
+          <label for="sf-headline">Headline *</label>
+          <input id="sf-headline" type="text" placeholder="Enter story headline…" maxlength="120">
+        </div>
+        <div>
+          <label for="sf-date">Date *</label>
+          <input id="sf-date" type="text" placeholder="e.g. March 2026">
+        </div>
+        <div>
+          <label for="sf-category">Category</label>
+          <select id="sf-category">
+            <option value="Announcement">Announcement</option>
+            <option value="Tech">Tech</option>
+            <option value="Football">Football</option>
+            <option value="Event">Event</option>
+          </select>
+        </div>
+        <div>
+          <label for="sf-image">Image URL (optional)</label>
+          <input id="sf-image" type="url" placeholder="https://…">
+        </div>
+      </div>
+      <div class="story-form-full">
+        <label for="sf-imagealt">Image alt text (for screen readers)</label>
+        <input id="sf-imagealt" type="text" placeholder="Describe the image…" maxlength="200">
+      </div>
+      <div class="story-form-full">
+        <label for="sf-body">Story body *</label>
+        <textarea id="sf-body" placeholder="Write the story content…" maxlength="2000"></textarea>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <button class="btn btn-green btn-sm" onclick="saveStory()">Save Story</button>
+        <button class="btn btn-sm" style="background:var(--c-sand);color:var(--c-muted)" onclick="cancelStoryForm()">Cancel</button>
+        <span id="sf-delete-btn" style="display:none;margin-left:auto">
+          <button class="btn btn-sm" style="background:#FEF2F2;color:#DC2626" onclick="deleteStory()">Delete this story</button>
+        </span>
+      </div>
+      <div style="margin-top:20px;border-top:1px solid var(--c-border);padding-top:16px">
+        <div style="font-size:.8rem;font-weight:600;color:var(--c-dark);margin-bottom:10px">All Stories (drag to reorder via edit)</div>
+        <div class="story-list-edit" id="story-list-edit"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     TECH PILLAR
+══════════════════════════════════ -->
+<section class="section" style="background:var(--c-white)" id="tech">
+  <div class="container">
+    <div class="about-grid">
+      <div class="fade-up">
+        <span class="eyebrow" style="color:var(--c-teal)">Pillar 1</span>
+        <h2 style="margin-top:.4rem" data-cms="tech_title">Tech &amp; Digital Innovation</h2>
+        <p style="margin-top:.85rem" data-cms="tech_p1">Students receive structured training in programming, web development, and digital creation. The programme is hands-on from day one — no passive learning, only building.</p>
+        <p style="margin-top:.75rem" data-cms="tech_p2">Each participant works toward a capstone project: a real digital product they design, build, and present. Facilitators guide but the creativity belongs entirely to the student.</p>
+        <div class="grid-2" style="margin-top:1.4rem">
+          <div class="pillar-sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--c-teal)" stroke-width="2" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><div class="pillar-name">Web Development</div><div class="pillar-desc">HTML, CSS, JavaScript</div></div>
+          <div class="pillar-sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--c-teal)" stroke-width="2" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg><div class="pillar-name">Programming</div><div class="pillar-desc">Python, logic, algorithms</div></div>
+          <div class="pillar-sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--c-teal)" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg><div class="pillar-name">AI &amp; Robotics Intro</div><div class="pillar-desc">Concepts, tools, demos</div></div>
+          <div class="pillar-sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--c-teal)" stroke-width="2" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg><div class="pillar-name">App Building</div><div class="pillar-desc">Simple apps, real products</div></div>
+        </div>
+        <a href="league.html#tech" class="btn btn-teal" style="margin-top:1.4rem">View Tech Rankings →</a>
+      </div>
+      <div class="fade-up" style="transition-delay:.12s">
+        <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800&q=75&auto=format&fit=crop" alt="Young African students working on computers in a tech lab" class="mission-img" loading="lazy" data-img-editable data-cms="tech_img">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTBALL PILLAR -->
+<section class="section" style="background:var(--c-cream)" id="football">
+  <div class="container">
+    <div class="about-grid">
+      <div class="fade-up" style="order:2">
+        <span class="eyebrow" style="color:var(--c-orange)">Pillar 2</span>
+        <h2 style="margin-top:.4rem" data-cms="football_title">Football League</h2>
+        <p style="margin-top:.85rem" data-cms="football_p1">A fully structured competitive football programme running parallel boys and girls leagues. Not just a kickabout — a proper league with fixtures, standings, and a finals week.</p>
+        <p style="margin-top:.75rem" data-cms="football_p2">Football teaches what sport uniquely can: how to handle defeat, lead from the back, and win with grace.</p>
+        <div class="grid-2" style="margin-top:1.4rem">
+          <div style="background:linear-gradient(135deg,#7C2D12,var(--c-orange));border-radius:var(--r-md);padding:14px;color:#fff;text-align:center"><div style="font-size:.68rem;opacity:.75;margin-bottom:3px;text-transform:uppercase;letter-spacing:.07em">Boys Final 2025</div><div style="font-size:1.1rem;font-weight:700">SS3 <span style="color:#FBBF24">4–3</span> JSS3</div></div>
+          <div style="background:linear-gradient(135deg,#7C2D12,var(--c-orange));border-radius:var(--r-md);padding:14px;color:#fff;text-align:center"><div style="font-size:.68rem;opacity:.75;margin-bottom:3px;text-transform:uppercase;letter-spacing:.07em">Girls Final 2025</div><div style="font-size:1.1rem;font-weight:700">SS2 <span style="color:#FBBF24">3–1</span> SS1</div></div>
+        </div>
+        <a href="league.html" class="btn btn-primary" style="margin-top:1.4rem">Live League Table →</a>
+      </div>
+      <div class="fade-up" style="order:1;transition-delay:.1s">
+        <img src="https://images.unsplash.com/photo-1529686342540-1b43aec0df75?w=800&q=75&auto=format&fit=crop" alt="African children playing football outdoors" class="mission-img" loading="lazy" data-img-editable data-cms="football_img">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TALKS PILLAR -->
+<section class="section" style="background:var(--c-white)" id="tedtalk">
+  <div class="container">
+    <div class="about-grid">
+      <div class="fade-up">
+        <span class="eyebrow" style="color:#7C3AED">Pillar 3</span>
+        <h2 style="margin-top:.4rem" data-cms="talks_title">Inspiration &amp; Talks</h2>
+        <p style="margin-top:.85rem" data-cms="talks_p1">The closing session of every edition is an inspirational summit. Leaders deliver TED-style talks designed not to inform, but to ignite.</p>
+        <p style="margin-top:.75rem" data-cms="talks_p2">Every student leaves believing more is possible for them than when they walked in.</p>
+        <blockquote style="margin-top:1.4rem;padding:15px 18px;background:var(--c-cream);border-left:4px solid #7C3AED;border-radius:0 var(--r-md) var(--r-md) 0">
+          <p style="font-family:var(--fd);font-style:italic;color:var(--c-dark)" data-cms="talks_quote">"If your actions inspire others to dream more, learn more, do more, and become more, you are a leader."</p>
+          <cite style="font-size:.78rem;color:var(--c-muted);margin-top:5px;display:block;font-style:normal">— John Quincy Adams</cite>
+        </blockquote>
+        <div class="act-meta" style="margin-top:1.3rem"><span class="dot dot-done"></span><span>2025: Chisom Okoye · Odinaka Okoye · Josemaria Nriagu</span></div>
+      </div>
+      <div class="fade-up" style="transition-delay:.12s">
+        <img src="https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&q=75&auto=format&fit=crop" alt="Speaker presenting TED-style to a young audience" class="mission-img" loading="lazy" data-img-editable data-cms="talks_img">
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="background:linear-gradient(160deg,var(--c-forest),#0D3D3D);padding:clamp(48px,8vw,80px) 0">
+  <div class="container text-center fade-up">
+    <span class="eyebrow" style="color:var(--c-green-lt)">Coming in 2026</span>
+    <h2 style="color:#fff;margin-top:.4rem;max-width:500px;margin-left:auto;margin-right:auto">More pillars. More schools. More champions.</h2>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:1.5rem">
+      <a href="donate.html" class="btn btn-primary">Support 2026</a>
+      <a href="about.html" class="btn btn-secondary">Our full vision →</a>
+    </div>
+  </div>
+</section>
+
+</main>
+<div class="site-footer"></div>
+<div class="toast" role="alert" aria-live="polite"></div>
+
+<script src="js/config.js"></script>
+<script src="js/components.js"></script>
+<script src="js/main.js"></script>
+<script>
+'use strict';
+injectNav(); injectAdminUI(); injectFooter();
+CMS.load().then(()=>CMS.apply());
+
+/* ── Stories Engine ── */
+const STORIES_KEY = 'thrive_stories_v1';
+let stories = [];
+let editingStoryId = null;
+let activeStoryId  = null;
+
+const CAT_CLASSES = {
+  Tech:'cat-tech', Football:'cat-football',
+  Event:'cat-event', Announcement:'cat-announcement'
+};
+
+async function loadStories() {
+  try {
+    const r = await window.storage?.get(STORIES_KEY);
+    stories = r ? JSON.parse(r.value) : JSON.parse(JSON.stringify(window.SITE_CONFIG.STORIES || []));
+  } catch {
+    stories = JSON.parse(JSON.stringify(window.SITE_CONFIG.STORIES || []));
+  }
+  renderStories();
+}
+
+async function saveStories() {
+  try { await window.storage?.set(STORIES_KEY, JSON.stringify(stories)); } catch {}
+}
+
+function renderStories() {
+  if (!stories.length) {
+    document.getElementById('featured-story').innerHTML =
+      `<div style="padding:40px;text-align:center;color:var(--c-muted)">No stories yet. Log in as admin to add the first one.</div>`;
+    document.getElementById('story-list').innerHTML = '';
+    return;
+  }
+  // Set active to first story if none selected
+  if (!activeStoryId || !stories.find(s=>s.id===activeStoryId)) activeStoryId = stories[0].id;
+  renderFeatured();
+  renderList();
+  if (window.AdminAuth?.isLoggedIn()) renderEditList();
+}
+
+function renderFeatured() {
+  const s = stories.find(s=>s.id===activeStoryId) || stories[0];
+  if (!s) return;
+  const catClass = CAT_CLASSES[s.category] || 'cat-event';
+  document.getElementById('featured-story').innerHTML = `
+    ${s.image ? `<img src="${sanitize(s.image)}" alt="${sanitize(s.imageAlt||s.headline)}" class="story-featured-img" loading="lazy">` : ''}
+    <div class="story-featured-body">
+      <div>
+        <span class="story-cat ${catClass}">${sanitize(s.category)}</span>
+        <div class="story-date">${sanitize(s.date)}</div>
+      </div>
+      <h3 class="story-headline">${sanitize(s.headline)}</h3>
+      <p class="story-body">${sanitize(s.body)}</p>
+      ${window.AdminAuth?.isLoggedIn() ? `
+        <div style="margin-top:16px;display:flex;gap:8px">
+          <button class="btn btn-sm" style="background:var(--c-sand);color:var(--c-muted)" onclick="openStoryForm('${sanitize(s.id)}')">Edit this story</button>
+        </div>` : ''}
+    </div>`;
+}
+
+function renderList() {
+  const list = document.getElementById('story-list');
+  list.innerHTML = stories.map(s => {
+    const active = s.id === activeStoryId;
+    return `<div class="story-card${active?' active':''}" role="listitem" onclick="selectStory('${sanitize(s.id)}')" tabindex="0" aria-current="${active}" aria-label="${sanitize(s.headline)}">
+      ${s.image ? `<img src="${sanitize(s.image)}" alt="${sanitize(s.imageAlt||s.headline)}" class="story-card-img" loading="lazy">` : ''}
+      <div class="story-card-body">
+        <div class="story-card-date">${sanitize(s.date)}</div>
+        <div class="story-card-headline">${sanitize(s.headline)}</div>
+      </div>
+    </div>`;
+  }).join('');
+  // Keyboard support
+  list.querySelectorAll('.story-card').forEach(card => {
+    card.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' ') card.click(); });
+  });
+}
+
+function renderEditList() {
+  const el = document.getElementById('story-list-edit');
+  if (!el) return;
+  el.innerHTML = stories.map((s,i) => `
+    <div class="story-edit-row">
+      <span class="story-edit-row-date">${sanitize(s.date)}</span>
+      <span class="story-edit-row-title">${sanitize(s.headline)}</span>
+      <button class="btn btn-sm" style="background:var(--c-sand);color:var(--c-muted);flex-shrink:0;padding:4px 10px;font-size:.75rem" onclick="openStoryForm('${sanitize(s.id)}')">Edit</button>
+      ${i > 0 ? `<button onclick="moveStory('${sanitize(s.id)}',-1)" class="btn btn-sm" style="padding:4px 8px;background:var(--c-sand);color:var(--c-muted)" aria-label="Move up">↑</button>` : ''}
+      ${i < stories.length-1 ? `<button onclick="moveStory('${sanitize(s.id)}',1)" class="btn btn-sm" style="padding:4px 8px;background:var(--c-sand);color:var(--c-muted)" aria-label="Move down">↓</button>` : ''}
+    </div>`).join('');
+}
+
+window.selectStory = function(id) {
+  activeStoryId = id;
+  renderFeatured();
+  renderList();
+};
+
+window.moveStory = function(id, dir) {
+  const i = stories.findIndex(s=>s.id===id);
+  if (i<0) return;
+  const j = i + dir;
+  if (j<0||j>=stories.length) return;
+  [stories[i], stories[j]] = [stories[j], stories[i]];
+  saveStories(); renderStories();
+};
+
+window.openStoryForm = function(id) {
+  editingStoryId = id;
+  const editor = document.getElementById('story-editor');
+  editor.style.display = 'block';
+  editor.scrollIntoView({behavior:'smooth', block:'start'});
+  if (id) {
+    const s = stories.find(s=>s.id===id);
+    if (!s) return;
+    document.getElementById('story-form-title').textContent = 'Edit Story';
+    document.getElementById('sf-headline').value  = s.headline;
+    document.getElementById('sf-date').value      = s.date;
+    document.getElementById('sf-category').value  = s.category;
+    document.getElementById('sf-image').value     = s.image || '';
+    document.getElementById('sf-imagealt').value  = s.imageAlt || '';
+    document.getElementById('sf-body').value      = s.body;
+    document.getElementById('sf-delete-btn').style.display = 'block';
+  } else {
+    document.getElementById('story-form-title').textContent = 'Add Story';
+    ['sf-headline','sf-date','sf-image','sf-imagealt','sf-body'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('sf-category').value = 'Announcement';
+    document.getElementById('sf-delete-btn').style.display = 'none';
+  }
+};
+
+window.cancelStoryForm = function() {
+  editingStoryId = null;
+  document.getElementById('story-editor').style.display = 'none';
+};
+
+window.saveStory = function() {
+  const headline = document.getElementById('sf-headline').value.trim();
+  const date     = document.getElementById('sf-date').value.trim();
+  const body     = document.getElementById('sf-body').value.trim();
+  if (!headline) return showToast('Please enter a headline');
+  if (!date)     return showToast('Please enter a date');
+  if (!body)     return showToast('Please enter the story content');
+
+  const story = {
+    id:       editingStoryId || 'story-' + Date.now(),
+    date,
+    headline,
+    category: document.getElementById('sf-category').value,
+    body,
+    image:    document.getElementById('sf-image').value.trim() || '',
+    imageAlt: document.getElementById('sf-imagealt').value.trim() || headline,
+    featured: !editingStoryId && stories.length === 0,
+  };
+
+  if (editingStoryId) {
+    const i = stories.findIndex(s=>s.id===editingStoryId);
+    if (i>=0) stories[i] = story;
+  } else {
+    stories.unshift(story); // newest first
+  }
+  saveStories();
+  activeStoryId = story.id;
+  editingStoryId = null;
+  document.getElementById('story-editor').style.display = 'none';
+  renderStories();
+  showToast(editingStoryId ? 'Story updated' : '✓ Story added', 'ok');
+};
+
+window.deleteStory = function() {
+  if (!editingStoryId) return;
+  if (!confirm('Delete this story permanently?')) return;
+  stories = stories.filter(s=>s.id!==editingStoryId);
+  saveStories(); editingStoryId = null;
+  document.getElementById('story-editor').style.display = 'none';
+  renderStories();
+  showToast('Story deleted');
+};
+
+// Init
+loadStories();
+if (window.AdminAuth?.isLoggedIn()) {
+  document.querySelectorAll('.admin-only').forEach(el=>el.style.display='block');
+}
+</script>
+</body>
+</html>

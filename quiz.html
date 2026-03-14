@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff"><meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+  <meta name="description" content="THRIVE Quiz Arena — timed knowledge tests in Tech and Football.">
+  <title>Quiz Arena — THRIVE</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="assets/tree-logo.png">
+  <style>
+    /* ── Quiz cards ── */
+    .quiz-hero{background:linear-gradient(135deg,var(--c-forest) 0%,var(--c-mid) 100%);padding:clamp(90px,14vw,130px) var(--pad) clamp(40px,6vw,60px)}
+    .quiz-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:20px;padding:clamp(28px,4vw,44px) var(--pad)}
+    .quiz-card{background:var(--c-white);border:1px solid var(--c-border);border-radius:var(--r-lg);padding:26px 22px;display:flex;flex-direction:column;gap:11px;box-shadow:var(--sh-sm);transition:transform var(--t),box-shadow var(--t)}
+    .quiz-card:hover{transform:translateY(-3px);box-shadow:var(--sh-md)}
+    .quiz-cat{display:inline-flex;align-items:center;gap:5px;font-size:.67rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 11px;border-radius:100px}
+    .qcat-tech{background:rgba(27,123,120,.12);color:var(--c-teal)}
+    .qcat-football{background:rgba(232,98,26,.12);color:var(--c-orange)}
+    .quiz-card-title{font-family:var(--fd);font-size:1.15rem;font-weight:700;color:var(--c-dark)}
+    .quiz-card-desc{font-size:.88rem;color:var(--c-muted);line-height:1.6;flex:1}
+    .quiz-meta-row{display:flex;gap:14px;flex-wrap:wrap;font-size:.78rem;color:var(--c-muted)}
+    .quiz-meta-item{display:flex;align-items:center;gap:4px}
+
+    /* ── Quiz runner overlay ── */
+    #quiz-overlay{position:fixed;inset:0;z-index:1500;background:var(--c-cream);overflow-y:auto;display:none}
+    #quiz-overlay.open{display:block}
+    .q-header{position:sticky;top:0;background:var(--c-white);border-bottom:1px solid var(--c-border);padding:12px var(--pad);display:flex;align-items:center;justify-content:space-between;gap:10px;z-index:10;flex-wrap:wrap}
+    .q-progress-bar{position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--c-sand)}
+    .q-progress-fill{height:100%;background:var(--c-green);transition:width .35s ease}
+    .q-timer{display:flex;align-items:center;gap:6px;font-family:var(--fd);font-size:1.05rem;font-weight:700;color:var(--c-dark);padding:6px 13px;border-radius:var(--r-md);background:var(--c-sand);min-width:72px;justify-content:center}
+    .q-timer.warning{background:#FEF2F2;color:#DC2626;animation:pulse-warn .8s ease-in-out infinite}
+    @keyframes pulse-warn{0%,100%{opacity:1}50%{opacity:.65}}
+    .q-body{max-width:700px;margin:0 auto;padding:clamp(24px,5vw,48px) var(--pad)}
+    .q-number{font-size:.75rem;font-weight:600;color:var(--c-muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}
+    .q-text{font-family:var(--fd);font-size:clamp(1.05rem,2.5vw,1.3rem);font-weight:700;color:var(--c-dark);line-height:1.4;margin-bottom:26px}
+    .q-options{display:flex;flex-direction:column;gap:11px}
+    .q-option{display:flex;align-items:flex-start;gap:13px;padding:15px 18px;border:2px solid var(--c-border);border-radius:var(--r-lg);background:var(--c-white);cursor:pointer;transition:all var(--t);text-align:left;font-size:.95rem;color:var(--c-text);line-height:1.5;width:100%}
+    .q-option:hover:not(:disabled){border-color:var(--c-green);background:var(--c-green-xl)}
+    .q-option.selected{border-color:var(--c-green);background:var(--c-green-xl)}
+    .q-option.correct{border-color:#16A34A;background:#F0FDF4;color:#166534}
+    .q-option.wrong{border-color:#DC2626;background:#FEF2F2;color:#991B1B}
+    .q-option:disabled{cursor:default}
+    .q-opt-letter{min-width:28px;height:28px;border-radius:50%;background:var(--c-sand);color:var(--c-muted);font-size:.76rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+    .q-option.selected .q-opt-letter{background:var(--c-green);color:#fff}
+    .q-option.correct .q-opt-letter{background:#16A34A;color:#fff}
+    .q-option.wrong .q-opt-letter{background:#DC2626;color:#fff}
+    .q-explanation{margin-top:14px;padding:13px 16px;border-radius:var(--r-md);background:rgba(27,123,120,.08);border-left:3px solid var(--c-teal);font-size:.85rem;color:var(--c-text);line-height:1.6;display:none}
+    .q-explanation.show{display:block}
+    .q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:28px;gap:10px;flex-wrap:wrap}
+
+    /* ── Results ── */
+    .results-screen{max-width:640px;margin:0 auto;padding:clamp(28px,5vw,56px) var(--pad)}
+    .results-circle{width:110px;height:110px;border-radius:50%;border:6px solid var(--c-green);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 22px}
+    .results-circle.fail{border-color:var(--c-orange)}
+    .results-pct{font-family:var(--fd);font-size:2rem;font-weight:900;color:var(--c-dark);line-height:1}
+    .results-lbl{font-size:.68rem;color:var(--c-muted);text-transform:uppercase;letter-spacing:.08em}
+    .results-breakdown{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:24px 0}
+    .r-stat{background:var(--c-white);border:1px solid var(--c-border);border-radius:var(--r-md);padding:15px 10px;text-align:center}
+    .r-stat-n{font-family:var(--fd);font-size:1.55rem;font-weight:900;color:var(--c-dark)}
+    .r-stat-l{font-size:.7rem;color:var(--c-muted);margin-top:3px}
+    .rank-banner{background:var(--c-dark);color:#fff;border-radius:var(--r-lg);padding:18px 22px;margin:16px 0;text-align:center}
+    .rank-number{font-family:var(--fd);font-size:2.2rem;font-weight:900;color:var(--c-amber-lt)}
+    .rank-label{font-size:.82rem;color:rgba(255,255,255,.65);margin-top:3px}
+
+    /* ── Print styles ── */
+    @media print{
+      .nav,.site-footer,#quiz-admin-notice,.q-nav,#q-header,.cms-toolbar,
+      .btn-no-print,button:not(.q-option){display:none!important}
+      #quiz-overlay{position:static;overflow:visible}
+      .results-screen{max-width:100%;padding:20px}
+      .results-circle{border-color:#000!important;page-break-inside:avoid}
+      body{background:#fff;color:#000}
+      .rank-banner{background:#f0f0f0;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+      .rank-number{color:#1A3D2B}
+    }
+
+    /* ── Leaderboard ── */
+    .lb-quiz-table{width:100%;border-collapse:collapse}
+    .lb-quiz-table th{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--c-muted);padding:9px 14px;text-align:center;background:var(--c-cream);border-bottom:1px solid var(--c-border)}
+    .lb-quiz-table th:nth-child(2){text-align:left}
+    .lb-quiz-table td{padding:10px 14px;text-align:center;font-size:.87rem;color:var(--c-text);border-bottom:1px solid var(--c-border)}
+    .lb-quiz-table td:nth-child(2){text-align:left;font-weight:500}
+    .lb-quiz-table tr:last-child td{border-bottom:none}
+    .lb-quiz-table tr:hover td{background:var(--c-cream)}
+    .lb-quiz-table tr.my-score td{background:rgba(46,125,79,.06)!important;font-weight:600}
+
+    /* ── Admin editor ── */
+    .q-edit-row{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--c-border)}
+    .q-edit-row:last-child{border-bottom:none}
+    .q-edit-row-text{flex:1;font-size:.85rem;color:var(--c-dark);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .q-edit-answer{font-size:.75rem;color:var(--c-muted)}
+  </style>
+</head>
+<body>
+<header class="nav" role="banner"></header>
+
+<!-- Quiz runner (full-screen overlay) -->
+<div id="quiz-overlay" role="dialog" aria-modal="true" aria-labelledby="q-quiz-title">
+  <div class="q-header" id="q-header">
+    <div style="display:flex;align-items:center;gap:10px">
+      <button onclick="confirmQuit()" class="btn btn-sm btn-no-print" style="background:var(--c-sand);color:var(--c-muted)" aria-label="Quit quiz">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        Quit
+      </button>
+      <span id="q-quiz-title" style="font-weight:600;font-size:.88rem;color:var(--c-dark)"></span>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <span id="q-counter" style="font-size:.8rem;color:var(--c-muted)"></span>
+      <div class="q-timer" id="q-timer" aria-label="Time remaining" aria-live="polite">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <span id="q-time-display">00:00</span>
+      </div>
+    </div>
+    <div class="q-progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+      <div class="q-progress-fill" id="q-progress"></div>
+    </div>
+  </div>
+  <div id="quiz-runner-content">
+    <div class="q-body" id="q-body">
+      <div class="q-number" id="q-number"></div>
+      <p class="q-text" id="q-text"></p>
+      <div class="q-options" id="q-options" role="radiogroup" aria-labelledby="q-text"></div>
+      <div class="q-explanation" id="q-explanation" role="note"></div>
+      <div class="q-nav">
+        <button class="btn btn-sm btn-no-print" style="background:var(--c-sand);color:var(--c-muted)" id="q-prev" onclick="prevQ()">← Back</button>
+        <button class="btn btn-primary btn-sm btn-no-print" id="q-next" onclick="nextQ()">Next →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main>
+  <section class="quiz-hero" aria-labelledby="quiz-page-title">
+    <div style="padding:0 var(--pad)">
+      <span class="eyebrow" style="color:var(--c-green-lt)">Knowledge Arena</span>
+      <h1 id="quiz-page-title" style="color:#fff;margin-top:.4rem">Quiz Arena</h1>
+      <p class="lead" style="color:rgba(255,255,255,.65);margin-top:.6rem;max-width:540px">
+        Timed, structured quizzes in Technology and Football. Test your knowledge, see your ranking, and print your result.
+      </p>
+    </div>
+  </section>
+
+  <!-- Admin notice -->
+  <div id="quiz-admin-notice" class="admin-only" style="display:none;background:rgba(27,123,120,.08);border-bottom:2px solid var(--c-teal);padding:11px var(--pad)">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+      <span style="font-size:.85rem;color:var(--c-teal);font-weight:500">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Admin: manage quiz settings and questions below
+      </span>
+      <button class="btn btn-sm" style="background:var(--c-teal);color:#fff" onclick="toggleAdminEditor()">
+        <span id="editor-toggle-lbl">Show Question Editor</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Quiz cards -->
+  <section aria-label="Available quizzes" style="background:var(--c-cream)">
+    <div style="padding:clamp(24px,4vw,40px) var(--pad) 0;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:10px">
+      <h2 style="font-size:clamp(1.1rem,2vw,1.35rem)">Choose a Quiz</h2>
+    </div>
+    <div class="quiz-grid" id="quiz-cards"></div>
+  </section>
+
+  <!-- Admin question editor -->
+  <section id="admin-editor" class="admin-only" style="display:none;background:var(--c-sand);padding:clamp(20px,3vw,36px) 0" aria-label="Question editor">
+    <div style="padding:0 var(--pad);margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+      <h2 style="font-size:1.15rem">Question Editor</h2>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <select id="editor-quiz-select" class="fi" style="padding:8px 12px;font-size:.86rem;width:auto" onchange="renderEditorQuestions()"></select>
+        <button class="btn btn-sm btn-primary" onclick="openAddQuestion()">+ Add Question</button>
+      </div>
+    </div>
+    <div style="background:var(--c-white);border-radius:var(--r-lg);margin:0 var(--pad);border:1px solid var(--c-border)">
+      <div id="editor-questions-list"></div>
+    </div>
+  </section>
+
+  <!-- Leaderboard -->
+  <section style="background:var(--c-white);padding:clamp(32px,5vw,56px) 0" aria-labelledby="lb-quiz-hd">
+    <div style="padding:0 var(--pad);margin-bottom:18px">
+      <span class="eyebrow">Top Scores</span>
+      <h2 id="lb-quiz-hd" style="margin-top:.3rem">Quiz Leaderboard</h2>
+    </div>
+    <div style="padding:0 var(--pad)">
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap" id="lb-quiz-tabs"></div>
+      <div style="background:var(--c-cream);border-radius:var(--r-lg);overflow-x:auto;border:1px solid var(--c-border)" id="lb-quiz-content"></div>
+    </div>
+  </section>
+</main>
+
+<!-- Add/Edit Question Modal -->
+<div id="question-modal" style="position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.45);display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto" role="dialog" aria-modal="true" aria-labelledby="qm-heading">
+  <div style="background:var(--c-white);border-radius:var(--r-xl);padding:26px;width:100%;max-width:580px;margin:auto;box-shadow:var(--sh-lg)">
+    <h3 id="qm-heading" style="margin-bottom:18px;font-size:1rem">Add Question</h3>
+    <div class="fg" style="margin-bottom:12px">
+      <label style="font-size:.82rem;font-weight:600;color:var(--c-dark);display:block;margin-bottom:4px">Quiz</label>
+      <select id="qm-quiz" class="fi" style="padding:9px 12px"></select>
+    </div>
+    <div class="fg" style="margin-bottom:12px">
+      <label style="font-size:.82rem;font-weight:600;color:var(--c-dark);display:block;margin-bottom:4px">Question *</label>
+      <textarea id="qm-q" rows="2" class="fi" style="resize:vertical" placeholder="Enter the question…"></textarea>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+      <div><label style="font-size:.78rem;font-weight:600;color:var(--c-dark);display:block;margin-bottom:3px">Option A *</label><input id="qm-o0" type="text" class="fi" placeholder="Option A"></div>
+      <div><label style="font-size:.78rem;font-weight:600;color:var(--c-dark);display:block;margin-bottom:3px">Option B *</label><input id="qm-o1" type="text" class="fi" placeholder="Option B"></div>
+      <div><label style="font-size:.78rem;font-weight:600;color:var(--c-dark);display:block;margin-bottom:3px">Option C *</label><input id="qm-o2" type="text" class="fi" placeholder="Option C"></div>
+      <div><label style="font-size:.78rem;font-weight:600;color:var(--c-dark);display:block;margin-bottom:3px">Option D *</label><input id="qm-o3" type="text" class="fi" placeholder="Option D"></div>
+    </div>
+    <div class="fg" style="margin-bottom:12px">
+      <label style="font-size:.82rem;font-weight:600;color:var(--c-dark);display:block;margin-bottom:4px">Correct Answer *</label>
+      <select id="qm-answer" class="fi" style="padding:9px 12px">
+        <option value="0">A</option><option value="1">B</option><option value="2">C</option><option value="3">D</option>
+      </select>
+    </div>
+    <div class="fg" style="margin-bottom:18px">
+      <label style="font-size:.82rem;font-weight:600;color:var(--c-dark);display:block;margin-bottom:4px">Explanation (optional)</label>
+      <input id="qm-explanation" type="text" class="fi" placeholder="Brief explanation for the correct answer…">
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-green" onclick="saveQuestion()">Save Question</button>
+      <button class="btn" style="background:var(--c-sand);color:var(--c-muted)" onclick="closeQuestionModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="site-footer"></div>
+<div class="toast" role="alert" aria-live="polite"></div>
+
+<script src="js/config.js"></script>
+<script src="js/components.js"></script>
+<script src="js/main.js"></script>
+<script>
+'use strict';
+injectNav(); injectAdminUI(); injectFooter();
+
+const QUIZ_STORE_KEY = 'thrive_quizzes_v2';
+const QUIZ_LB_KEY    = 'thrive_quiz_lb_v2';
+let quizzes          = [];
+let editingQIdx      = null; // null=new, {quizIdx,qIdx}=edit
+let lastScoreEntry   = null; // saved for current player's rank highlight
+
+/* ── Load quizzes (config defaults + admin overrides) ── */
+async function loadQuizzes(){
+  try{
+    const r = await window.storage?.get(QUIZ_STORE_KEY);
+    quizzes = r ? JSON.parse(r.value) : JSON.parse(JSON.stringify(window.SITE_CONFIG.QUIZZES));
+  } catch {
+    quizzes = JSON.parse(JSON.stringify(window.SITE_CONFIG.QUIZZES));
+  }
+  renderQuizCards();
+  buildSelectMenus();
+  renderEditorQuestions();
+  renderLeaderboard();
+  if(window.AdminAuth?.isLoggedIn()){
+    document.querySelectorAll('.admin-only').forEach(el=>el.style.display='block');
+  }
+}
+
+async function saveQuizzes(){
+  try{ await window.storage?.set(QUIZ_STORE_KEY, JSON.stringify(quizzes)); }
+  catch{ showToast('Storage unavailable — changes will reset on reload'); }
+}
+
+/* Compute timer: questions × timePerQuestion seconds */
+function getTimerSeconds(quiz){
+  const tpq = window.SITE_CONFIG.QUIZ_SETTINGS.timePerQuestion || 14;
+  return quiz.questions.length * tpq;
+}
+
+/* ── Render quiz cards ── */
+function renderQuizCards(){
+  const cfg = window.SITE_CONFIG;
+  const el = document.getElementById('quiz-cards');
+  el.innerHTML = quizzes.map((quiz,i)=>{
+    const secs = getTimerSeconds(quiz);
+    const mins = Math.ceil(secs/60);
+    const catCls = quiz.category==='tech' ? 'qcat-tech' : 'qcat-football';
+    return `<article class="quiz-card fade-up" style="transition-delay:${i*.08}s">
+      <div>
+        <span class="quiz-cat ${catCls}">
+          ${quiz.category==='tech'
+            ? '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>'
+            : '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/></svg>'}
+          ${sanitize(quiz.category)}
+        </span>
+      </div>
+      <h3 class="quiz-card-title">${sanitize(quiz.title)}</h3>
+      <p class="quiz-card-desc">${sanitize(quiz.description)}</p>
+      <div class="quiz-meta-row">
+        <span class="quiz-meta-item">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          ~${mins} min
+        </span>
+        <span class="quiz-meta-item">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          ${quiz.questions.length} questions
+        </span>
+        <span class="quiz-meta-item">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          Pass: ${cfg.QUIZ_SETTINGS.passMark}%
+        </span>
+      </div>
+      <button class="btn btn-primary btn-sm" style="align-self:flex-start" onclick="startQuiz('${sanitize(quiz.id)}')">Start Quiz →</button>
+    </article>`;
+  }).join('');
+  // Re-trigger scroll reveals
+  requestAnimationFrame(()=>{
+    document.querySelectorAll('.quiz-card.fade-up').forEach((el,i)=>{
+      setTimeout(()=>el.classList.add('visible'),i*60);
+    });
+  });
+}
+
+/* ── Quiz Runner ── */
+let state = {};
+let timerInterval = null;
+
+function startQuiz(quizId){
+  const quiz = quizzes.find(q=>q.id===quizId);
+  if(!quiz){showToast('Quiz not found');return;}
+  const cfg = window.SITE_CONFIG.QUIZ_SETTINGS;
+  let qs = [...quiz.questions];
+  if(cfg.shuffleQuestions) qs = qs.sort(()=>Math.random()-.5);
+
+  state = {
+    quiz, questions:qs, current:0,
+    answers:  new Array(qs.length).fill(null),
+    answered: new Array(qs.length).fill(false),
+    timeLeft: getTimerSeconds(quiz),
+    finished: false,
+  };
+
+  document.getElementById('q-quiz-title').textContent = quiz.title;
+  document.getElementById('quiz-runner-content').innerHTML = '';
+  document.getElementById('quiz-runner-content').appendChild(
+    document.getElementById('q-body').parentElement ? document.getElementById('q-body') :
+    (() => { const d=document.createElement('div'); d.className='q-body'; document.getElementById('quiz-runner-content').appendChild(d); return d; })()
+  );
+
+  const overlay = document.getElementById('quiz-overlay');
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  overlay.scrollTop = 0;
+
+  renderQuestion();
+  startTimer();
+}
+
+function renderQuestion(){
+  const {questions, current, answers, answered} = state;
+  const q = questions[current];
+  const total = questions.length;
+  const pct = Math.round((current/total)*100);
+  const LETTERS = ['A','B','C','D'];
+
+  document.getElementById('q-number').textContent = `Question ${current+1} of ${total}`;
+  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('q-counter').textContent = `${current+1} / ${total}`;
+  document.getElementById('q-progress').style.width = pct+'%';
+  document.getElementById('q-progress').parentElement.setAttribute('aria-valuenow', pct);
+
+  document.getElementById('q-options').innerHTML = q.options.map((opt,i)=>{
+    let cls='';
+    if(answered[current]){
+      if(i===q.answer) cls='correct';
+      else if(i===answers[current]) cls='wrong';
+    } else if(i===answers[current]) cls='selected';
+    return `<button class="q-option ${cls}" ${answered[current]?'disabled':''} onclick="selectOption(${i})"
+      role="radio" aria-checked="${i===answers[current]}" aria-label="Option ${LETTERS[i]}: ${sanitize(opt)}">
+      <span class="q-opt-letter" aria-hidden="true">${LETTERS[i]}</span>
+      <span>${sanitize(opt)}</span>
+    </button>`;
+  }).join('');
+
+  const expEl = document.getElementById('q-explanation');
+  if(answered[current] && q.explanation && window.SITE_CONFIG.QUIZ_SETTINGS.showExplanations){
+    expEl.textContent = q.explanation;
+    expEl.classList.add('show');
+  } else {
+    expEl.classList.remove('show');
+  }
+
+  const prevBtn = document.getElementById('q-prev');
+  const nextBtn = document.getElementById('q-next');
+  if(prevBtn) prevBtn.style.visibility = current===0 ? 'hidden':'visible';
+  const isLast = current===total-1;
+  if(nextBtn){
+    nextBtn.textContent = isLast && answered[current] ? 'Finish Quiz' : answered[current] ? 'Next →' : 'Skip →';
+  }
+}
+
+function selectOption(i){
+  if(state.answered[state.current]) return;
+  state.answers[state.current] = i;
+  state.answered[state.current] = true;
+  renderQuestion();
+}
+function nextQ(){
+  if(state.current===state.questions.length-1){ finishQuiz(); return; }
+  state.current++;
+  renderQuestion();
+}
+function prevQ(){
+  if(state.current>0){ state.current--; renderQuestion(); }
+}
+function startTimer(){
+  clearInterval(timerInterval);
+  timerInterval = setInterval(()=>{
+    state.timeLeft--;
+    const m=Math.floor(state.timeLeft/60);
+    const s=state.timeLeft%60;
+    document.getElementById('q-time-display').textContent = `${m}:${s.toString().padStart(2,'0')}`;
+    document.getElementById('q-timer').classList.toggle('warning', state.timeLeft<=60);
+    if(state.timeLeft<=0){ clearInterval(timerInterval); finishQuiz(true); }
+  },1000);
+}
+
+async function finishQuiz(timeout=false){
+  clearInterval(timerInterval);
+  state.finished = true;
+  const {questions, answers, answered, quiz} = state;
+  const correct = questions.filter((q,i)=>answered[i]&&answers[i]===q.answer).length;
+  const total   = questions.length;
+  const pct     = Math.round((correct/total)*100);
+  const passed  = pct >= window.SITE_CONFIG.QUIZ_SETTINGS.passMark;
+  const totalSecs = getTimerSeconds(quiz);
+  const timeTaken = totalSecs - state.timeLeft;
+
+  // Ask for name
+  const name = (prompt('Enter your name for the leaderboard (optional — press Cancel to skip):')||'').trim();
+
+  // Save score and get rank
+  let rank = null;
+  if(name){
+    rank = await saveScore(quiz.id, name, pct, correct, total, timeTaken);
+    lastScoreEntry = { quizId: quiz.id, name, pct };
+  }
+
+  // Show results
+  const overlay = document.getElementById('quiz-overlay');
+  overlay.scrollTop = 0;
+  document.getElementById('quiz-runner-content').innerHTML = `
+    <div class="results-screen" id="results-print-area">
+      <div style="text-align:center;margin-bottom:4px">
+        <div style="font-size:.78rem;color:var(--c-muted);font-style:italic;margin-bottom:16px">${sanitize(quiz.title)} · ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}</div>
+      </div>
+      <div class="results-circle ${passed?'':'fail'}" aria-label="${pct}% — ${passed?'Pass':'Fail'}">
+        <span class="results-pct">${pct}%</span>
+        <span class="results-lbl">${passed?'Pass':'Try again'}</span>
+      </div>
+      <h2 style="font-size:clamp(1.3rem,3vw,1.9rem);text-align:center;margin-bottom:.5rem">${passed?'Well done!':'Keep practising!'}</h2>
+      <p style="color:var(--c-muted);text-align:center">${timeout?'Time ran out. ':''}You answered <strong>${correct} of ${total}</strong> questions correctly.</p>
+      ${!passed?`<p style="color:var(--c-muted);font-size:.86rem;text-align:center;margin-top:.4rem">You need ${window.SITE_CONFIG.QUIZ_SETTINGS.passMark}% to pass. Give it another go!</p>`:''}
+
+      <div class="results-breakdown">
+        <div class="r-stat"><div class="r-stat-n" style="color:var(--c-green)">${correct}</div><div class="r-stat-l">Correct</div></div>
+        <div class="r-stat"><div class="r-stat-n" style="color:var(--c-orange)">${total-correct}</div><div class="r-stat-l">Wrong / Skipped</div></div>
+        <div class="r-stat"><div class="r-stat-n">${Math.floor(timeTaken/60)}m ${timeTaken%60}s</div><div class="r-stat-l">Time taken</div></div>
+      </div>
+
+      ${rank ? `
+      <div class="rank-banner">
+        <div class="rank-number">#${rank} <span style="font-size:1.1rem;font-weight:400;color:rgba(255,255,255,.6)">of all players</span></div>
+        <div class="rank-label">Your current ranking on the ${sanitize(quiz.title)} leaderboard</div>
+      </div>` : ''}
+
+      ${name ? `
+      <div style="background:var(--c-cream);border-radius:var(--r-md);padding:14px 18px;font-size:.86rem;color:var(--c-muted);text-align:center;margin-bottom:4px">
+        Registered as: <strong style="color:var(--c-dark)">${sanitize(name)}</strong>
+      </div>` : ''}
+
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px" class="btn-no-print">
+        <button class="btn btn-primary btn-sm" onclick="startQuiz('${sanitize(quiz.id)}')">Try Again</button>
+        <button class="btn btn-sm" style="background:var(--c-sand);color:var(--c-muted)" onclick="closeQuiz()">← Back to Quizzes</button>
+        <button class="btn btn-sm btn-teal" onclick="printResult()" aria-label="Print result certificate">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Print Result
+        </button>
+      </div>
+    </div>`;
+
+  // Refresh leaderboard in background
+  renderLeaderboard();
+}
+
+function printResult(){ window.print(); }
+
+function closeQuiz(){
+  clearInterval(timerInterval);
+  document.getElementById('quiz-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+  renderLeaderboard();
+}
+function confirmQuit(){
+  if(confirm('Quit this quiz? Your progress will not be saved.')) closeQuiz();
+}
+
+/* ── Leaderboard ── */
+async function loadScores(){
+  try{ const r=await window.storage?.get(QUIZ_LB_KEY); return r?JSON.parse(r.value):{}; }
+  catch{ return {}; }
+}
+async function saveScore(quizId, name, pct, correct, total, timeTaken){
+  const scores = await loadScores();
+  if(!scores[quizId]) scores[quizId]=[];
+  const entry = {name, pct, correct, total, timeTaken,
+    date: new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})};
+  scores[quizId].push(entry);
+  // Sort: higher pct first, then faster time
+  scores[quizId].sort((a,b)=>b.pct-a.pct||a.timeTaken-b.timeTaken);
+  scores[quizId] = scores[quizId].slice(0,50); // keep top 50
+  try{ await window.storage?.set(QUIZ_LB_KEY, JSON.stringify(scores)); }catch{}
+  // Return rank (1-based)
+  return scores[quizId].findIndex(e=>e.name===name&&e.pct===pct) + 1;
+}
+
+let activeLbTab = 0;
+async function renderLeaderboard(){
+  const scores = await loadScores();
+  const tabsEl = document.getElementById('lb-quiz-tabs');
+  const contentEl = document.getElementById('lb-quiz-content');
+  if(!tabsEl||!contentEl) return;
+
+  tabsEl.innerHTML = quizzes.map((q,i)=>
+    `<button class="btn btn-sm ${i===activeLbTab?'btn-teal':''}" style="${i!==activeLbTab?'background:var(--c-sand);color:var(--c-muted)':''}"
+      onclick="switchLbTab(${i})">${sanitize(q.title)}</button>`).join('');
+
+  const quiz    = quizzes[activeLbTab];
+  const entries = scores[quiz?.id]||[];
+  const MC      = ['m-gold','m-silver','m-bronze'];
+
+  contentEl.innerHTML = !entries.length
+    ? `<p style="padding:28px;text-align:center;color:var(--c-muted);font-size:.9rem">No scores yet — be the first to complete this quiz!</p>`
+    : `<table class="lb-quiz-table" aria-label="${sanitize(quiz.title)} leaderboard">
+        <thead><tr>
+          <th>#</th><th>Name</th><th>Score</th><th>Correct</th><th>Time</th><th>Date</th>
+        </tr></thead>
+        <tbody>${entries.map((e,i)=>{
+          const isMe = lastScoreEntry&&lastScoreEntry.quizId===quiz.id&&lastScoreEntry.name===e.name&&lastScoreEntry.pct===e.pct;
+          const m = Math.floor(e.timeTaken/60); const s = e.timeTaken%60;
+          return `<tr class="${isMe?'my-score':''}">
+            <td>${i<3?`<span class="medal ${MC[i]}">${i+1}</span>`:`<span style="color:var(--c-muted);font-size:.8rem">${i+1}</span>`}</td>
+            <td>${sanitize(e.name)}${isMe?' <span style="font-size:.72rem;color:var(--c-teal)">(you)</span>':''}</td>
+            <td style="font-weight:700;color:var(--c-green)">${e.pct}%</td>
+            <td style="color:var(--c-muted)">${e.correct}/${e.total}</td>
+            <td style="color:var(--c-muted)">${m}m ${s}s</td>
+            <td style="font-size:.8rem;color:var(--c-muted)">${sanitize(e.date)}</td>
+          </tr>`;
+        }).join('')}
+        </tbody>
+      </table>`;
+}
+window.switchLbTab = function(i){ activeLbTab=i; renderLeaderboard(); };
+
+/* ── Admin editor ── */
+let editorOpen = false;
+window.toggleAdminEditor = function(){
+  editorOpen = !editorOpen;
+  document.getElementById('admin-editor').style.display = editorOpen?'block':'none';
+  document.getElementById('editor-toggle-lbl').textContent = editorOpen?'Hide Editor':'Show Question Editor';
+  if(editorOpen) renderEditorQuestions();
+};
+
+function buildSelectMenus(){
+  ['editor-quiz-select','qm-quiz'].forEach(id=>{
+    const sel = document.getElementById(id); if(!sel) return;
+    sel.innerHTML = quizzes.map((q,i)=>`<option value="${i}">${sanitize(q.title)}</option>`).join('');
+  });
+}
+
+function renderEditorQuestions(){
+  const sel = document.getElementById('editor-quiz-select'); if(!sel) return;
+  const idx  = +sel.value;
+  const quiz = quizzes[idx];
+  const list = document.getElementById('editor-questions-list'); if(!list) return;
+  if(!quiz?.questions?.length){
+    list.innerHTML = `<p style="padding:18px;color:var(--c-muted);font-size:.88rem">No questions yet. Click "+ Add Question" to start.</p>`;
+    return;
+  }
+  list.innerHTML = quiz.questions.map((q,i)=>`
+    <div class="q-edit-row">
+      <span class="q-edit-row-text">${i+1}. ${sanitize(q.q)}</span>
+      <span class="q-edit-answer">Ans: ${['A','B','C','D'][q.answer]}</span>
+      <button class="btn btn-sm" style="background:var(--c-sand);color:var(--c-muted);flex-shrink:0" onclick="openEditQuestion(${idx},${i})">Edit</button>
+      <button class="btn btn-sm" style="background:#FEF2F2;color:#DC2626;flex-shrink:0" onclick="deleteQuestion(${idx},${i})">Delete</button>
+    </div>`).join('');
+}
+
+window.openAddQuestion = function(){
+  editingQIdx = null;
+  document.getElementById('qm-heading').textContent = 'Add Question';
+  ['qm-q','qm-o0','qm-o1','qm-o2','qm-o3','qm-explanation'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('qm-answer').value = '0';
+  const edSel = document.getElementById('editor-quiz-select');
+  document.getElementById('qm-quiz').value = edSel?.value||'0';
+  document.getElementById('question-modal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+};
+window.openEditQuestion = function(quizIdx, qIdx){
+  editingQIdx = {quizIdx, qIdx};
+  const q = quizzes[quizIdx].questions[qIdx];
+  document.getElementById('qm-heading').textContent = 'Edit Question';
+  document.getElementById('qm-quiz').value = quizIdx;
+  document.getElementById('qm-q').value   = q.q;
+  q.options.forEach((o,i)=>document.getElementById('qm-o'+i).value=o);
+  document.getElementById('qm-answer').value      = q.answer;
+  document.getElementById('qm-explanation').value = q.explanation||'';
+  document.getElementById('question-modal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+};
+window.closeQuestionModal = function(){
+  document.getElementById('question-modal').style.display = 'none';
+  document.body.style.overflow = '';
+};
+window.saveQuestion = function(){
+  const quizIdx = +document.getElementById('qm-quiz').value;
+  const qText   = document.getElementById('qm-q').value.trim();
+  const opts    = [0,1,2,3].map(i=>document.getElementById('qm-o'+i).value.trim());
+  const answer  = +document.getElementById('qm-answer').value;
+  const exp     = document.getElementById('qm-explanation').value.trim();
+  if(!qText)          return showToast('Please enter a question');
+  if(opts.some(o=>!o)) return showToast('Please fill in all four options');
+  const newQ = {q:qText, options:opts, answer, explanation:exp||undefined};
+  if(editingQIdx){
+    quizzes[editingQIdx.quizIdx].questions[editingQIdx.qIdx] = newQ;
+  } else {
+    quizzes[quizIdx].questions.push(newQ);
+  }
+  saveQuizzes();
+  closeQuestionModal();
+  renderEditorQuestions();
+  renderQuizCards();
+  showToast(editingQIdx ? 'Question updated' : '✓ Question added');
+};
+window.deleteQuestion = function(quizIdx, qIdx){
+  if(!confirm('Delete this question?')) return;
+  quizzes[quizIdx].questions.splice(qIdx,1);
+  saveQuizzes(); renderEditorQuestions(); renderQuizCards();
+  showToast('Question deleted');
+};
+
+/* Close modal on backdrop click or Escape */
+document.getElementById('question-modal').addEventListener('click',e=>{
+  if(e.target===document.getElementById('question-modal')) closeQuestionModal();
+});
+
+loadQuizzes();
+</script>
+</body>
+</html>

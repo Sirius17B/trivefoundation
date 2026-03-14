@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 96" role="img" aria-label="THRIVE">
+  <!-- Trunk -->
+  <path d="M38 88 Q37 72 36 58 Q35 48 34 38" stroke="#6B4226" stroke-width="5.5" fill="none" stroke-linecap="round"/>
+  <!-- Main left branch -->
+  <path d="M36 58 Q28 50 18 44" stroke="#6B4226" stroke-width="3.8" fill="none" stroke-linecap="round"/>
+  <!-- Main right branch -->
+  <path d="M35 52 Q44 44 52 40" stroke="#6B4226" stroke-width="3.8" fill="none" stroke-linecap="round"/>
+  <!-- Upper left branch -->
+  <path d="M35 44 Q27 36 20 28" stroke="#6B4226" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+  <!-- Upper right branch -->
+  <path d="M34 40 Q40 30 46 22" stroke="#6B4226" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+  <!-- Sub-branch left -->
+  <path d="M26 34 Q19 28 14 22" stroke="#7A5230" stroke-width="1.9" fill="none" stroke-linecap="round"/>
+  <!-- Sub-branch center-left -->
+  <path d="M22 30 Q24 22 22 14" stroke="#7A5230" stroke-width="1.9" fill="none" stroke-linecap="round"/>
+  <!-- Top center branch -->
+  <path d="M34 38 Q34 28 33 18 Q33 10 32 4" stroke="#7A5230" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+  <!-- Sub-branch right of center -->
+  <path d="M33 20 Q38 14 44 10" stroke="#7A5230" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+  <!-- Sub-branch upper-right -->
+  <path d="M43 24 Q50 18 54 12" stroke="#7A5230" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+  <!-- Roots -->
+  <path d="M38 88 Q32 90 26 92" stroke="#6B4226" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.6"/>
+  <path d="M38 88 Q44 90 50 93" stroke="#6B4226" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.6"/>
+  <!-- Canopy clusters -->
+  <ellipse cx="16" cy="46" rx="10" ry="7.5" fill="#1A6B3C" opacity="0.92" transform="rotate(-15 16 46)"/>
+  <ellipse cx="12" cy="42" rx="8" ry="6" fill="#228B4A" opacity="0.88" transform="rotate(-25 12 42)"/>
+  <ellipse cx="53" cy="42" rx="10" ry="7" fill="#1A6B3C" opacity="0.9" transform="rotate(12 53 42)"/>
+  <ellipse cx="57" cy="38" rx="7" ry="5.5" fill="#228B4A" opacity="0.85"/>
+  <ellipse cx="18" cy="26" rx="10" ry="7.5" fill="#1F7A43" opacity="0.92" transform="rotate(-20 18 26)"/>
+  <ellipse cx="13" cy="22" rx="7.5" ry="6" fill="#2A9454" opacity="0.88"/>
+  <ellipse cx="46" cy="22" rx="10" ry="7" fill="#1F7A43" opacity="0.9" transform="rotate(18 46 22)"/>
+  <ellipse cx="52" cy="14" rx="8" ry="6" fill="#2A9454" opacity="0.85"/>
+  <ellipse cx="32" cy="10" rx="11" ry="8" fill="#228B4A" opacity="0.92"/>
+  <ellipse cx="29" cy="6" rx="8.5" ry="6.5" fill="#2A9454" opacity="0.9"/>
+  <ellipse cx="35" cy="4" rx="7" ry="5.5" fill="#34A860" opacity="0.85"/>
+  <ellipse cx="30" cy="30" rx="9" ry="7" fill="#1A6B3C" opacity="0.88"/>
+  <ellipse cx="32" cy="7" rx="5" ry="4" fill="#3CBF6A" opacity="0.7"/>
+  <!-- Autumn accents -->
+  <ellipse cx="10" cy="44" rx="4.5" ry="3.5" fill="#D97706" opacity="0.82" transform="rotate(-30 10 44)"/>
+  <ellipse cx="57" cy="36" rx="4" ry="3" fill="#B45309" opacity="0.78" transform="rotate(20 57 36)"/>
+  <ellipse cx="46" cy="12" rx="4" ry="3" fill="#D97706" opacity="0.75" transform="rotate(15 46 12)"/>
+  <ellipse cx="14" cy="20" rx="3.5" ry="2.8" fill="#92400E" opacity="0.7" transform="rotate(-10 14 20)"/>
+  <ellipse cx="22" cy="12" rx="3.5" ry="2.8" fill="#D97706" opacity="0.72"/>
+  <ellipse cx="56" cy="10" rx="3" ry="2.5" fill="#B45309" opacity="0.68"/>
+  <ellipse cx="28" cy="3" rx="3" ry="2.2" fill="#D97706" opacity="0.65"/>
+  <!-- THRIVE wordmark -->
+  <text x="76" y="58" font-family="Georgia, 'Times New Roman', serif" font-size="30" font-weight="700" letter-spacing="2.5" fill="#0A2540">THRIVE</text>
+  <text x="77" y="72" font-family="Georgia, serif" font-size="8.5" letter-spacing="2" fill="#0D7B7B" font-style="italic">RAISING CHAMPIONS</text>
+</svg>

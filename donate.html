@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+  <title>Donate &amp; Support — THRIVE</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+</head>
+<body>
+<header class="nav" role="banner"></header>
+<main>
+
+<section class="page-hdr" style="text-align:center">
+  <span class="eyebrow" style="color:var(--c-green-lt);display:block;margin-bottom:.5rem">Support the Mission</span>
+  <h1 data-cms="donate_title">Donate &amp; Partner</h1>
+  <p class="lead" style="margin-top:.6rem;max-width:520px;margin-left:auto;margin-right:auto" data-cms="donate_sub">Every contribution directly funds youth development. Choose a tier and make an impact today.</p>
+</section>
+
+<section class="section" style="background:var(--c-cream)">
+  <div class="container">
+    <div class="fade-up" style="margin-bottom:clamp(22px,4vw,40px)">
+      <span class="eyebrow">Choose Your Level</span>
+      <h2 style="margin-top:.4rem" data-cms="tiers_heading">Support Tiers</h2>
+      <p style="max-width:500px;margin-top:.6rem" data-cms="tiers_sub">All contributions go directly to delivering the programme.</p>
+    </div>
+    <div class="tier-grid fade-up" id="tier-grid"></div>
+    <div class="text-center fade-up" style="margin-top:clamp(14px,3vw,28px)">
+      <p style="font-size:.88rem;color:var(--c-muted)" data-cms="donate_custom_note">Want to contribute a custom amount or arrange in-kind support? <a href="contact.html" style="color:var(--c-teal)">Get in touch →</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- ACCOUNT DETAILS -->
+<section class="section-sm" style="background:var(--c-white)" id="account">
+  <div class="container">
+    <div class="text-center fade-up" style="margin-bottom:clamp(22px,4vw,36px)">
+      <span class="eyebrow">Bank Transfer</span>
+      <h2 style="margin-top:.4rem" data-cms="bank_heading">Account Details</h2>
+      <p style="margin-top:.6rem;max-width:480px;margin-left:auto;margin-right:auto" data-cms="bank_sub">Transfer directly to our account. Please use your full name as the payment reference.</p>
+    </div>
+    <div class="account-box fade-up" id="account-box" style="max-width:560px;margin:0 auto"></div>
+    <div class="text-center fade-up" style="margin-top:clamp(18px,3vw,28px)">
+      <p style="font-size:.86rem;color:var(--c-muted)" data-cms="bank_confirm_note">After transferring, please <a href="contact.html" style="color:var(--c-teal)">send us a message</a> with your name and amount so we can acknowledge your support.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ADMIN: edit bank details -->
+<section class="section-sm admin-only" id="admin-bank-edit" style="background:var(--c-sand)">
+  <div class="container">
+    <div class="res-panel">
+      <h3 style="margin-bottom:14px">Edit Bank Details</h3>
+      <div class="grid-2">
+        <div class="fg"><label>Account Name</label><input id="bank-name" type="text" placeholder="Account holder"></div>
+        <div class="fg"><label>Bank</label><input id="bank-bank" type="text" placeholder="Bank name"></div>
+        <div class="fg"><label>Account Number</label><input id="bank-acct" type="text" placeholder="00000000"></div>
+        <div class="fg"><label>Sort Code</label><input id="bank-sort" type="text" placeholder="000000000"></div>
+      </div>
+      <div class="fg"><label>Transfer Note to Donors</label><input id="bank-note" type="text" placeholder="e.g. Use your full name as reference"></div>
+      <button class="btn btn-green" onclick="saveBankDetails()">Save Bank Details</button>
+    </div>
+  </div>
+</section>
+
+</main>
+<div class="site-footer"></div>
+<div class="toast" role="alert" aria-live="polite"></div>
+<script src="js/config.js"></script>
+<script src="js/components.js"></script>
+<script src="js/main.js"></script>
+<script>
+'use strict';
+injectNav();
+injectAdminUI();injectFooter();
+
+function renderTiers(){
+  const tiers=(window.SITE_CONFIG||{}).DONATION_TIERS||[];
+  const grid=document.getElementById('tier-grid');if(!grid)return;
+  grid.innerHTML=tiers.map(t=>`<a href="#account" class="tier-card${t.featured?' featured':''}">
+    <div class="tier-amount">${sanitize(t.amount)}</div>
+    <div class="tier-name">${sanitize(t.label)}</div>
+    <div class="tier-desc">${sanitize(t.desc)}</div>
+    <div style="margin-top:14px;font-size:.78rem;color:var(--c-teal);font-weight:600">See account details →</div>
+  </a>`).join('');
+}
+
+function renderBank(bank){
+  const b=bank||(window.SITE_CONFIG||{}).BANK||{};
+  const box=document.getElementById('account-box');if(!box)return;
+  box.innerHTML=`
+    <div class="acct-row"><div><div class="acct-key">Account Name</div><div class="acct-val">${sanitize(b.account_name||b.name||'—')}</div></div><button class="copy-btn" onclick="copyText('${sanitize(b.account_name||b.name||'')}',this)">Copy</button></div>
+    <div class="acct-row"><div><div class="acct-key">Bank</div><div class="acct-val">${sanitize(b.bank||'—')}</div></div></div>
+    <div class="acct-row"><div><div class="acct-key">Account Number</div><div class="acct-val">${sanitize(b.account_no||b.account||'—')}</div></div><button class="copy-btn" onclick="copyText('${sanitize(b.account_no||b.account||'')}',this)">Copy</button></div>
+    <div class="acct-row"><div><div class="acct-key">Sort Code</div><div class="acct-val">${sanitize(b.sort_code||b.sort||'—')}</div></div></div>
+    <div class="acct-row"><div><div class="acct-key">Payment Reference</div><div class="acct-val" style="color:#3DD68C">${sanitize(b.note||'Your full name')}</div></div></div>
+  `;
+  // Prefill admin fields
+  ['name','bank','acct','sort','note'].forEach(k=>{
+    const el=document.getElementById('bank-'+k);if(!el)return;
+    el.value=b[{name:'account_name',bank:'bank',acct:'account_no',sort:'sort_code',note:'note'}[k]]||'';
+  });
+}
+
+function copyText(txt,btn){
+  navigator.clipboard?.writeText(txt).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000);});
+  showToast('Copied to clipboard','ok');
+}
+window.copyText=copyText;
+
+async function saveBankDetails(){
+  const b={account_name:document.getElementById('bank-name').value,bank:document.getElementById('bank-bank').value,account_no:document.getElementById('bank-acct').value,sort_code:document.getElementById('bank-sort').value,note:document.getElementById('bank-note').value};
+  CMS.set('bank_override',JSON.stringify(b));
+  renderBank(b);showToast('Bank details saved','ok');
+}
+window.saveBankDetails=saveBankDetails;
+
+async function init(){
+  await CMS.load();CMS.apply();
+  renderTiers();
+  const bankOverride=CMS.get('bank_override');
+  renderBank(bankOverride?JSON.parse(bankOverride):null);
+  if(AdminAuth.isLoggedIn())document.querySelectorAll('.admin-only').forEach(e=>e.style.display='block');
+}
+init();
+</script>
+</body>
+</html>

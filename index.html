@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="A Time To Build — Youth development through technology, sport, and inspiration.">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+  <meta property="og:title" content="A Time To Build">
+  <meta property="og:type" content="website">
+  <title>THRIVE — A Time To Build</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <style>
+    /* Hero mobile donate section (hidden on desktop) */
+    .hero-mobile-donate{display:none;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:var(--r-xl);padding:22px;margin-top:24px}
+    /* Leaderboard tab strip top padding */
+    .lb-strip-hdr{display:flex;align-items:center;justify-content:space-between;padding:clamp(32px,5vw,48px) 0 0}
+  </style>
+</head>
+<body>
+<header class="nav" role="banner"></header>
+<main id="main">
+
+<!-- ════════════════════ HERO ════════════════════ -->
+<section class="hero" aria-labelledby="hero-h1">
+  <div class="hero-bg" style="background-image:url('https://images.unsplash.com/photo-1529686342540-1b43aec0df75?w=1800&q=75&auto=format&fit=crop')"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-inner container">
+
+    <!-- LEFT -->
+    <div>
+      <div class="hero-eyebrow">
+        <span class="hero-pulse"></span>
+        <span data-cms="hero_eyebrow" data-org-name>Now Active · 2026 Season</span>
+      </div>
+      <h1 id="hero-h1" class="hero-title">
+        <span data-cms="hero_line1">A Time</span><br>
+        <em data-cms="hero_line2">To Build</em>
+      </h1>
+      <p class="hero-body" data-cms="hero_body">Technology. Sport. Inspiration. Three pillars. One mission — equipping young Nigerians with the skills and character to change their world.</p>
+      <a href="activities.html" class="btn btn-primary">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Explore the Programme
+      </a>
+      <div class="hero-chips">
+        <a href="activities.html#tech" class="chip">
+          <span class="chip-ico" style="background:rgba(13,123,123,.25)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3DD68C" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>
+          <span><span class="chip-label">Tech &amp; Digital Innovation</span><span class="chip-sub">Programming · Web Dev · App Building</span></span>
+          <svg class="chip-arr" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+        <a href="league.html" class="chip">
+          <span class="chip-ico" style="background:rgba(249,115,22,.25)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><line x1="2" y1="12" x2="22" y2="12"/></svg></span>
+          <span><span class="chip-label">Football League</span><span class="chip-sub">Boys &amp; Girls · Live standings</span></span>
+          <svg class="chip-arr" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+        <a href="activities.html#tedtalk" class="chip">
+          <span class="chip-ico" style="background:rgba(124,58,237,.25)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C4B5FD" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+          <span><span class="chip-label">Inspiration Talks</span><span class="chip-sub">TED-style · Closing ceremony</span></span>
+          <svg class="chip-arr" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+      </div>
+
+      <!-- Mobile-only donate block -->
+      <div class="hero-mobile-donate">
+        <div class="cta-lbl">Support the Mission</div>
+        <div class="cta-title" style="color:#fff;font-family:var(--fd);font-size:1.1rem;margin-bottom:.8rem" data-cms="cta_title">Help raise the next generation of champions</div>
+        <div class="donate-tiers" id="mobile-tiers"></div>
+        <a href="donate.html" class="btn btn-primary btn-full">See all options →</a>
+      </div>
+    </div>
+
+    <!-- RIGHT (desktop only) -->
+    <div class="hero-cta" aria-label="Support us">
+      <div class="cta-lbl">Support the Mission</div>
+      <div class="cta-title" data-cms="cta_title">Help raise the next generation of champions</div>
+      <div class="cta-body" data-cms="cta_body">Expanding across Nigeria. Your partnership builds more champions.</div>
+      <div class="cta-stats">
+        <div class="cta-stat"><div class="cta-num">2025</div><div class="cta-lbl2">Maiden edition</div></div>
+        <div class="cta-stat"><div class="cta-num">100%</div><div class="cta-lbl2">Objectives met</div></div>
+        <div class="cta-stat"><div class="cta-num">3–5</div><div class="cta-lbl2">Schools 2026</div></div>
+      </div>
+      <div class="cta-divider"></div>
+      <div class="cta-lbl" style="margin-bottom:8px">Choose a tier to support</div>
+      <div class="donate-tiers" id="desktop-tiers"></div>
+      <a href="donate.html" class="btn btn-primary btn-full" style="margin-bottom:9px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        Donate / Sponsor
+      </a>
+      <a href="contact.html#volunteer" class="btn btn-secondary btn-full">Volunteer with us →</a>
+    </div>
+
+  </div>
+  <div class="hero-scroll" aria-hidden="true">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg>
+    Scroll
+  </div>
+</section>
+
+<!-- ════════════════════ STATS BAR ════════════════════ -->
+<section class="stats-bar" aria-labelledby="stats-hd">
+  <div class="container">
+    <div class="text-center fade-up" style="margin-bottom:clamp(18px,3vw,28px)">
+      <span class="eyebrow" style="color:rgba(255,255,255,.45)" id="stats-hd">Our Impact So Far</span>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-item fade-up">
+        <div class="stat-num"><span class="count-anim" data-count="120" data-suffix="+">120+</span></div>
+        <div class="stat-lbl" data-cms="stat_youth_label">Youth Trained</div>
+      </div>
+      <div class="stat-item fade-up" style="transition-delay:.1s">
+        <div class="stat-num"><span class="count-anim" data-count="48" data-suffix="">48</span></div>
+        <div class="stat-lbl" data-cms="stat_hours_label">Event Hours</div>
+      </div>
+      <div class="stat-item fade-up" style="transition-delay:.2s">
+        <div class="stat-num"><span class="count-anim" data-count="6" data-suffix="">6</span></div>
+        <div class="stat-lbl" data-cms="stat_partners_label">Partners &amp; Donors</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════ HIGHLIGHTS CAROUSEL ════════════════════ -->
+<section class="carousel-section" aria-labelledby="carousel-hd">
+  <div class="container">
+    <div class="carousel-head">
+      <h2 class="carousel-title" id="carousel-hd" data-cms="carousel_title">Programme Highlights</h2>
+      <a href="gallery.html" class="btn btn-outline btn-sm" style="color:#3DD68C;border-color:rgba(61,214,140,.35)">Gallery →</a>
+    </div>
+    <div class="carousel-outer" id="main-carousel">
+      <button class="carousel-btn carousel-prev" aria-label="Previous slide" disabled>‹</button>
+      <div class="carousel-viewport">
+        <div class="carousel-track" id="carousel-track" role="list"></div>
+      </div>
+      <button class="carousel-btn carousel-next" aria-label="Next slide">›</button>
+      <div class="carousel-dots" role="tablist" aria-label="Slide navigation"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════ LEADERBOARD STRIP ════════════════════ -->
+<section class="lb-strip" aria-labelledby="lb-hd">
+  <div class="container">
+    <div class="lb-strip-hdr">
+      <div>
+        <span class="eyebrow" style="color:rgba(255,255,255,.45)">Live Standings</span>
+        <h2 id="lb-hd" style="color:#fff;margin-top:.25rem;font-size:clamp(1.3rem,2.5vw,1.9rem)" data-cms="lb_title">Top 5 Leaderboards</h2>
+      </div>
+      <a href="league.html" class="btn btn-teal btn-sm">Full tables →</a>
+    </div>
+    <div class="lb-tabs" role="tablist">
+      <button class="lb-tab active" role="tab" aria-selected="true" onclick="lbGo(0,this)">⚽ Boys League</button>
+      <button class="lb-tab" role="tab" aria-selected="false" onclick="lbGo(1,this)">⚽ Girls League</button>
+      <button class="lb-tab" role="tab" aria-selected="false" onclick="lbGo(2,this)">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>Tech Rankings
+      </button>
+    </div>
+    <div class="lb-viewport"><div class="lb-track" id="lb-track">
+      <div class="lb-slide"><div class="lb-card"><div class="lb-head"><span class="lb-head-title">Boys League — Top 5</span><a href="league.html" style="font-size:.75rem;color:var(--c-green-lt)">Full →</a></div><div id="lb-boys"></div></div></div>
+      <div class="lb-slide"><div class="lb-card"><div class="lb-head"><span class="lb-head-title">Girls League — Top 5</span><a href="league.html#girls" style="font-size:.75rem;color:var(--c-green-lt)">Full →</a></div><div id="lb-girls"></div></div></div>
+      <div class="lb-slide"><div class="lb-card"><div class="lb-head"><span class="lb-head-title">Tech Rankings — Top 5</span><a href="league.html#tech" style="font-size:.75rem;color:var(--c-green-lt)">Full →</a></div><div id="lb-tech"></div></div></div>
+    </div></div>
+  </div>
+</section>
+
+<!-- ════════════════════ PARALLAX 1 — quote ════════════════════ -->
+<div class="pband" style="height:clamp(220px,35vw,360px)" aria-hidden="true">
+  <div class="pband-bg" style="background-image:url('https://images.unsplash.com/photo-1509062522246-3755977927d7?w=1600&q=75&auto=format&fit=crop')"></div>
+  <div class="pband-overlay" style="background:linear-gradient(135deg,rgba(10,61,46,.76),rgba(10,37,64,.6))"></div>
+  <div class="pband-content" style="display:flex;align-items:center;height:100%;padding:0 var(--pad)">
+    <blockquote style="max-width:580px">
+      <p style="font-family:var(--fd);font-size:clamp(1.25rem,3vw,2.1rem);color:#fff;font-style:italic;line-height:1.3" data-cms="hero_quote">"Every living being is designed to grow and THRIVE."</p>
+      <cite style="color:rgba(255,255,255,.5);font-size:.86rem;margin-top:10px;display:block;font-style:normal" data-cms="hero_quote_cite">— Van Moody</cite>
+    </blockquote>
+  </div>
+</div>
+
+<!-- ════════════════════ ACTIVITIES ════════════════════ -->
+<section class="section" style="background:var(--c-cream)" aria-labelledby="act-hd">
+  <div class="container">
+    <div class="fade-up">
+      <span class="eyebrow">What We Do</span>
+      <h2 id="act-hd" style="margin-top:.4rem" data-cms="act_heading">Current Activities</h2>
+      <p class="lead" style="max-width:500px;margin-top:.65rem" data-cms="act_sub">Three pillars that develop the whole person — mind, body, and character.</p>
+    </div>
+    <div class="act-grid">
+      <article class="act-card fade-up">
+        <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?w=600&q=70&auto=format&fit=crop" alt="Young African students working on computers" class="act-card-img" loading="lazy">
+        <div class="act-bar" style="background:linear-gradient(90deg,var(--c-teal),var(--c-teal-lt))"></div>
+        <div class="act-body">
+          <div class="act-icon" style="background:rgba(13,123,123,.1)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--c-teal)" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+          <h3 class="act-title" data-cms="act1_title">Tech &amp; Digital Innovation</h3>
+          <p data-cms="act1_body">Hands-on training in programming and web development. Every student builds a real product.</p>
+          <div class="act-meta"><span class="dot dot-active"></span><span data-cms="act1_status">Active · 2026</span></div>
+          <a href="activities.html#tech" class="btn btn-outline btn-sm" style="margin-top:13px">Learn more →</a>
+        </div>
+      </article>
+      <article class="act-card fade-up" style="transition-delay:.1s">
+        <img src="https://images.unsplash.com/photo-1529686342540-1b43aec0df75?w=600&q=70&auto=format&fit=crop" alt="African children playing football outdoors" class="act-card-img" loading="lazy">
+        <div class="act-bar" style="background:linear-gradient(90deg,var(--c-orange),var(--c-amber))"></div>
+        <div class="act-body">
+          <div class="act-icon" style="background:rgba(249,115,22,.1)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--c-orange)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><line x1="2" y1="12" x2="22" y2="12"/></svg></div>
+          <h3 class="act-title" data-cms="act2_title">Football League</h3>
+          <p data-cms="act2_body">Fully structured boys and girls leagues with live standings updated on this site.</p>
+          <div class="act-meta"><span class="dot dot-upcoming"></span><span data-cms="act2_status">2026 Season — Coming</span></div>
+          <a href="league.html" class="btn btn-outline btn-sm" style="margin-top:13px">View standings →</a>
+        </div>
+      </article>
+      <article class="act-card fade-up" style="transition-delay:.2s">
+        <img src="https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&q=70&auto=format&fit=crop" alt="Speaker presenting on stage to audience" class="act-card-img" loading="lazy">
+        <div class="act-bar" style="background:linear-gradient(90deg,#7C3AED,#A78BFA)"></div>
+        <div class="act-body">
+          <div class="act-icon" style="background:rgba(124,58,237,.1)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+          <h3 class="act-title" data-cms="act3_title">Inspiration &amp; Talks</h3>
+          <p data-cms="act3_body">TED-style talks from leaders designed to ignite ambition and show students what's possible.</p>
+          <div class="act-meta"><span class="dot dot-done"></span><span data-cms="act3_status">2025 Complete · 2026 Planned</span></div>
+          <a href="activities.html#tedtalk" class="btn btn-outline btn-sm" style="margin-top:13px">Learn more →</a>
+        </div>
+      </article>
+    </div>
+    <div class="text-center fade-up" style="margin-top:clamp(22px,4vw,40px)">
+      <a href="activities.html" class="btn btn-green">Full programme details →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════ PARALLAX 2 — community ════════════════════ -->
+<div class="pband" style="height:clamp(260px,40vw,420px)">
+  <div class="pband-bg" style="background-image:url('https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=1600&q=75&auto=format&fit=crop')"></div>
+  <div class="pband-overlay" style="background:linear-gradient(160deg,rgba(10,61,46,.78),rgba(10,37,64,.58))"></div>
+  <div class="pband-content" style="display:flex;align-items:center">
+    <div class="container">
+      <div style="max-width:600px">
+        <span class="eyebrow" style="color:rgba(255,255,255,.6);margin-bottom:.6rem;display:block" data-cms="pband2_eyebrow">Why We Exist</span>
+        <h2 style="color:#fff;font-size:clamp(1.5rem,3.5vw,2.5rem)" data-cms="pband2_title">More than a classroom can teach</h2>
+        <p style="color:rgba(255,255,255,.66);margin-top:.65rem;max-width:490px" data-cms="pband2_body">We nurture future-ready youth outside conventional learning — building innovation, teamwork, and character simultaneously.</p>
+        <a href="about.html" class="btn btn-primary" style="margin-top:1.4rem">Our full story →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════ CTA ════════════════════ -->
+<section style="background:var(--c-forest);padding:clamp(48px,8vw,80px) 0" aria-labelledby="cta-hd">
+  <div class="container text-center fade-up">
+    <span class="eyebrow" style="color:var(--c-green-lt)">Join the Movement</span>
+    <h2 id="cta-hd" style="color:#fff;margin-top:.4rem;max-width:540px;margin-left:auto;margin-right:auto" data-cms="cta2_title">Help us build the next generation of champions in 2026</h2>
+    <p style="color:rgba(255,255,255,.6);margin-top:.65rem;max-width:450px;margin-left:auto;margin-right:auto" data-cms="cta2_body">Sponsor, volunteer, or partner with us to expand across the FCT and beyond.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:clamp(18px,3vw,28px)">
+      <a href="donate.html" class="btn btn-primary">Donate / Sponsor</a>
+      <a href="about.html" class="btn btn-secondary">Learn about us →</a>
+    </div>
+  </div>
+</section>
+
+</main>
+<div class="site-footer"></div>
+<div class="toast" role="alert" aria-live="polite"></div>
+
+<script src="js/config.js"></script>
+<script src="js/components.js"></script>
+<script src="js/main.js"></script>
+<script>
+'use strict';
+injectNav();
+injectAdminUI(); injectFooter();
+
+/* ── Build donate tier pills from config ── */
+function buildTiers(containerId){
+  const c=document.getElementById(containerId);if(!c)return;
+  const tiers=(window.SITE_CONFIG||{}).DONATION_TIERS||[];
+  c.innerHTML=tiers.map(t=>`<a href="donate.html" class="d-tier${t.featured?' active':''}" title="${sanitize(t.desc)}">
+    <span class="d-tier-amt">${sanitize(t.amount)}</span>
+    <span class="d-tier-name">${sanitize(t.label)}</span>
+  </a>`).join('');
+}
+buildTiers('desktop-tiers');buildTiers('mobile-tiers');
+
+/* ── Build carousel from config ── */
+(function(){
+  const cfg=(window.SITE_CONFIG||{}).HIGHLIGHTS||[];
+  const track=document.getElementById('carousel-track');
+  if(!track)return;
+  const TC={football:'tag-football',tech:'tag-tech',community:'tag-community'};
+  track.innerHTML=cfg.map(h=>`<article class="c-card" role="listitem">
+    <img src="${sanitize(h.img)}" alt="${sanitize(h.alt||h.title)}" class="c-card-img" loading="lazy">
+    <div class="c-card-body">
+      <span class="c-tag ${TC[h.tag]||'tag-community'}">${sanitize(h.tagLabel)}</span>
+      <div class="c-card-title">${sanitize(h.title||h['title'])}</div>
+      <div class="c-card-date">${sanitize(h.date)}</div>
+    </div>
+  </article>`).join('');
+  initCarousel('#main-carousel');
+})();
+
+/* ── Leaderboard tabs ── */
+let _lbCur=0;
+function lbGo(idx,btn){
+  _lbCur=idx;
+  document.querySelectorAll('.lb-tab').forEach((b,i)=>{b.classList.toggle('active',i===idx);b.setAttribute('aria-selected',i===idx);});
+  document.getElementById('lb-track').style.transform=`translateX(-${idx*100}%)`;
+}
+window.lbGo=lbGo;
+
+/* ── Render leaderboard rows ── */
+const _MC=['m-gold','m-silver','m-bronze'];
+function renderLB(rows,elId,scoreKey,scoreSuffix,extraFn){
+  const el=document.getElementById(elId);if(!el)return;
+  if(!rows.length){el.innerHTML=`<div style="padding:18px;color:rgba(255,255,255,.35);font-size:.83rem;text-align:center">No data yet</div>`;return;}
+  el.innerHTML=rows.map((r,i)=>`<div class="lb-row">
+    <span class="lb-pos">${i<3?`<span class="medal ${_MC[i]}">${i+1}</span>`:(i+1)}</span>
+    <span class="lb-name">${sanitize(r.name)}</span>
+    ${extraFn?extraFn(r):''}
+    <span class="lb-score">${r[scoreKey]}<span class="lb-detail">${scoreSuffix}</span></span>
+  </div>`).join('');
+}
+
+/* ── Stats counter ── */
+initCounters();
+
+/* ── Load data ── */
+async function init(){
+  await LeagueEngine.load('boys');
+  await LeagueEngine.load('girls');
+  await TechEngine.load();
+  await CMS.load();
+  CMS.apply();
+  renderLB(LeagueEngine.buildTable('boys').slice(0,5),'lb-boys','pts',' pts',r=>`<span class="lb-detail">${r.p}P</span>`);
+  renderLB(LeagueEngine.buildTable('girls').slice(0,5),'lb-girls','pts',' pts',r=>`<span class="lb-detail">${r.p}P</span>`);
+  renderLB(TechEngine.getTop(5),'lb-tech','score','/100',r=>`<span class="lb-detail" style="font-size:.72rem">${sanitize(r.class)}</span>`);
+}
+init();
+</script>
+</body>
+</html>

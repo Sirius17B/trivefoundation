@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+  <title>Leaderboards — THRIVE</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <style>
+    .sub-tabs{display:flex;gap:7px;flex-wrap:wrap}
+    .sub-tab{padding:7px 16px;border-radius:var(--r-md);font-size:.82rem;font-weight:600;background:var(--c-cream);color:var(--c-muted);border:1.5px solid transparent;transition:all var(--t);cursor:pointer}
+    .sub-tab.active{background:var(--c-forest);color:#fff}
+    .panel{display:none}.panel.active{display:block}
+    .score-num{font-weight:700;color:var(--c-teal);font-size:.92rem}
+  </style>
+</head>
+<body>
+<header class="nav" role="banner"></header>
+
+<!-- ADMIN LOGIN MODAL -->
+<div class="modal-bg" id="login-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal-box">
+    <h2 id="modal-title" style="margin-bottom:.4rem">Admin Access</h2>
+    <p style="font-size:.88rem;color:var(--c-muted);margin-bottom:1.1rem">Enter the admin PIN to manage results and content.</p>
+    <div id="login-err" style="display:none;background:#FEF2F2;border:1px solid #FECACA;border-radius:var(--r-sm);padding:8px 12px;font-size:.82rem;color:#DC2626;margin-bottom:10px" role="alert"></div>
+    <div class="fg"><label for="pin-input">Admin PIN</label><input type="password" id="pin-input" maxlength="20" placeholder="Enter PIN" autocomplete="current-password"></div>
+    <div style="display:flex;gap:9px;margin-top:4px">
+      <button class="btn btn-green" onclick="doLogin()">Sign In</button>
+      <button class="btn btn-outline" onclick="closeLogin()">Cancel</button>
+    </div>
+    <p style="font-size:.74rem;color:var(--c-muted);margin-top:12px">Default PIN: <strong>2025</strong> · Change in js/main.js before going live.</p>
+  </div>
+</div>
+
+<!-- CMS MODAL -->
+<div class="modal-bg" id="cms-modal" role="dialog" aria-modal="true" aria-labelledby="cms-title">
+  <div class="modal-box cms-box">
+    <div class="cms-hdr">
+      <h2 id="cms-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--c-teal)" stroke-width="2" style="vertical-align:middle;margin-right:6px"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Site Content Editor
+      </h2>
+      <button class="cms-close-btn" onclick="closeCMS()" aria-label="Close CMS">✕</button>
+    </div>
+    <div class="cms-tab-bar" role="tablist">
+      <button class="cms-t active" onclick="cmsTab(0,this)">Identity</button>
+      <button class="cms-t" onclick="cmsTab(1,this)">Homepage</button>
+      <button class="cms-t" onclick="cmsTab(2,this)">Donate</button>
+      <button class="cms-t" onclick="cmsTab(3,this)">Stats</button>
+      <button class="cms-t" onclick="cmsTab(4,this)">Gallery</button>
+      <button class="cms-t" onclick="cmsTab(5,this)">Footer</button>
+    </div>
+    <div class="cms-panels">
+
+      <!-- Identity -->
+      <div class="cms-panel active">
+        <div class="cms-note">Changing the organisation name here will update it everywhere on the site. Refresh any other open pages to see changes.</div>
+        <div class="cms-field-row">
+          <div class="cms-field-group"><label>Organisation Name</label><input id="cms-org-name" type="text" placeholder="THRIVE"></div>
+          <div class="cms-field-group"><label>Tagline</label><input id="cms-org-tagline" type="text" placeholder="Raising Champions"></div>
+        </div>
+        <div class="cms-field-group"><label>Mission Statement</label><input id="cms-org-mission" type="text"></div>
+        <div class="cms-field-group"><label>Contact Email</label><input id="cms-org-email" type="email"></div>
+        <button class="btn btn-green btn-sm" onclick="saveCMS('identity')">Save Identity</button>
+      </div>
+
+      <!-- Homepage -->
+      <div class="cms-panel">
+        <div class="cms-field-row">
+          <div class="cms-field-group"><label>Hero Line 1</label><input id="cms-hero1" type="text" placeholder="A Time"></div>
+          <div class="cms-field-group"><label>Hero Line 2 (italic)</label><input id="cms-hero2" type="text" placeholder="To Build"></div>
+        </div>
+        <div class="cms-field-group"><label>Hero Body Text</label><textarea id="cms-hero-body" rows="2"></textarea></div>
+        <div class="cms-field-group"><label>Parallax Quote</label><textarea id="cms-hero-quote" rows="2"></textarea></div>
+        <div class="cms-field-group"><label>Quote Attribution</label><input id="cms-quote-cite" type="text"></div>
+        <div class="cms-field-row">
+          <div class="cms-field-group"><label>Activities Heading</label><input id="cms-act-heading" type="text"></div>
+          <div class="cms-field-group"><label>Activities Subtext</label><input id="cms-act-sub" type="text"></div>
+        </div>
+        <button class="btn btn-green btn-sm" onclick="saveCMS('homepage')">Save Homepage</button>
+      </div>
+
+      <!-- Donate -->
+      <div class="cms-panel">
+        <div class="cms-note">Donation tiers — edit in js/config.js for full control. Bank details can also be edited on the Donate page when logged in as admin.</div>
+        <div class="cms-field-group"><label>Donate Page Title</label><input id="cms-donate-title" type="text"></div>
+        <div class="cms-field-group"><label>Donate Page Subtitle</label><textarea id="cms-donate-sub" rows="2"></textarea></div>
+        <div class="cms-field-group"><label>Bank Section Heading</label><input id="cms-bank-heading" type="text"></div>
+        <div class="cms-field-group"><label>Confirmation Note</label><textarea id="cms-bank-confirm" rows="2"></textarea></div>
+        <button class="btn btn-green btn-sm" onclick="saveCMS('donate')">Save Donate</button>
+      </div>
+
+      <!-- Stats -->
+      <div class="cms-panel">
+        <div class="cms-note">These numbers appear in the stats bar on the homepage.</div>
+        <div class="cms-field-row">
+          <div class="cms-field-group"><label>Youth Trained (number)</label><input id="cms-stat-youth" type="number" min="0"></div>
+          <div class="cms-field-group"><label>Youth Stat Label</label><input id="cms-stat-youth-lbl" type="text"></div>
+        </div>
+        <div class="cms-field-row">
+          <div class="cms-field-group"><label>Event Hours (number)</label><input id="cms-stat-hours" type="number" min="0"></div>
+          <div class="cms-field-group"><label>Hours Stat Label</label><input id="cms-stat-hours-lbl" type="text"></div>
+        </div>
+        <div class="cms-field-row">
+          <div class="cms-field-group"><label>Partners (number)</label><input id="cms-stat-partners" type="number" min="0"></div>
+          <div class="cms-field-group"><label>Partners Stat Label</label><input id="cms-stat-partners-lbl" type="text"></div>
+        </div>
+        <button class="btn btn-green btn-sm" onclick="saveCMS('stats')">Save Stats</button>
+      </div>
+
+      <!-- Gallery -->
+      <div class="cms-panel">
+        <div class="cms-note">Go to the Gallery page while logged in as admin to add/remove images directly.</div>
+        <div class="cms-field-group"><label>Gallery Page Title</label><input id="cms-gallery-title" type="text"></div>
+        <div class="cms-field-group"><label>Gallery Page Subtitle</label><input id="cms-gallery-sub" type="text"></div>
+        <button class="btn btn-green btn-sm" onclick="saveCMS('gallery')">Save</button>
+      </div>
+
+      <!-- Footer -->
+      <div class="cms-panel">
+        <div class="cms-field-group"><label>Footer Tagline</label><textarea id="cms-footer-tag" rows="2"></textarea></div>
+        <div class="cms-field-group"><label>Footer Quote</label><input id="cms-footer-quote" type="text"></div>
+        <button class="btn btn-green btn-sm" onclick="saveCMS('footer')">Save Footer</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<main>
+<section class="page-hdr">
+  <span class="eyebrow" style="color:var(--c-green-lt);display:block;margin-bottom:.4rem">Live Standings</span>
+  <h1>Leaderboards</h1>
+  <p class="lead" style="margin-top:.5rem">Football leagues and Tech rankings — updated in real time</p>
+</section>
+
+<section class="league-page-wrap">
+  <div class="container">
+
+    <div class="league-controls">
+      <div class="league-tabs">
+        <button class="l-tab active" id="tab-football" onclick="mainTab('football',this)">⚽ Football</button>
+        <button class="l-tab" id="tab-tech" onclick="mainTab('tech',this)">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:3px"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>Tech Rankings
+        </button>
+      </div>
+      <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap">
+        <span id="admin-badge" style="font-size:.78rem;color:var(--c-teal);font-weight:600;display:none;align-items:center;gap:4px">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Admin
+        </span>
+        <button class="btn btn-teal btn-sm admin-only" id="cms-btn" onclick="openCMS()">Edit Site Content</button>
+        <button class="btn btn-outline btn-sm" id="admin-toggle-btn" onclick="toggleAdmin()">Admin Login</button>
+      </div>
+    </div>
+
+    <!-- FOOTBALL -->
+    <div id="panel-football" class="panel active">
+      <div style="background:var(--c-white);border-radius:var(--r-md);padding:12px 16px;margin-bottom:16px;border:1px solid var(--c-border)">
+        <div class="sub-tabs">
+          <button class="sub-tab active" id="sub-boys-btn" onclick="subTab('boys',this)">Boys League</button>
+          <button class="sub-tab" id="sub-girls-btn" onclick="subTab('girls',this)">Girls League</button>
+        </div>
+      </div>
+      <!-- Boys -->
+      <div id="sub-boys">
+        <div class="table-wrap overflow-x-auto" id="sect-boys">
+          <div class="table-head"><h3 style="font-size:.93rem">Boys League Table</h3><span style="font-size:.78rem;color:var(--c-muted)">W=3 · D=1 · L=0</span></div>
+          <table class="bt" aria-label="Boys league standings"><thead><tr><th>Pos</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Form</th><th>Pts</th></tr></thead><tbody id="tbody-boys"></tbody></table>
+        </div>
+        <div class="admin-only" id="admin-boys">
+          <div class="res-panel" style="margin:16px 0 12px"><h3 style="font-size:.93rem;margin-bottom:12px">Manage Teams</h3>
+            <div class="team-chips" id="chips-boys"></div>
+            <div class="team-add-row"><input type="text" id="new-boys" placeholder="New team name…" maxlength="40"><button class="btn btn-green btn-sm" onclick="addTeam('boys')">Add</button></div>
+          </div>
+          <div class="res-panel">
+            <h3 style="font-size:.93rem;margin-bottom:12px">Add Match Result</h3>
+            <div class="match-row" style="font-size:.75rem;color:var(--c-muted);margin-bottom:5px"><span>Home</span><span style="text-align:center">HG</span><span style="text-align:center">AG</span><span>Away</span><span></span></div>
+            <div class="match-row">
+              <input type="text" id="boys-home" placeholder="Home" list="dl-boys" maxlength="40" aria-label="Home team">
+              <input type="number" id="boys-hg" placeholder="0" min="0" max="99" aria-label="Home goals">
+              <span class="match-vs">vs</span>
+              <input type="text" id="boys-away" placeholder="Away" list="dl-boys" maxlength="40" aria-label="Away team">
+              <button class="btn-add-res" onclick="submitResult('boys')">Add</button>
+            </div>
+            <datalist id="dl-boys"></datalist>
+            <div id="match-list-boys" class="match-list" style="margin-top:14px"><div style="font-size:.78rem;font-weight:600;color:var(--c-muted);margin-bottom:8px">Results</div></div>
+          </div>
+        </div>
+      </div>
+      <!-- Girls -->
+      <div id="sub-girls" style="display:none">
+        <div class="table-wrap overflow-x-auto" id="sect-girls">
+          <div class="table-head"><h3 style="font-size:.93rem">Girls League Table</h3><span style="font-size:.78rem;color:var(--c-muted)">W=3 · D=1 · L=0</span></div>
+          <table class="bt" aria-label="Girls league standings"><thead><tr><th>Pos</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Form</th><th>Pts</th></tr></thead><tbody id="tbody-girls"></tbody></table>
+        </div>
+        <div class="admin-only" id="admin-girls">
+          <div class="res-panel" style="margin:16px 0 12px"><h3 style="font-size:.93rem;margin-bottom:12px">Manage Teams</h3>
+            <div class="team-chips" id="chips-girls"></div>
+            <div class="team-add-row"><input type="text" id="new-girls" placeholder="New team name…" maxlength="40"><button class="btn btn-green btn-sm" onclick="addTeam('girls')">Add</button></div>
+          </div>
+          <div class="res-panel">
+            <h3 style="font-size:.93rem;margin-bottom:12px">Add Match Result</h3>
+            <div class="match-row" style="font-size:.75rem;color:var(--c-muted);margin-bottom:5px"><span>Home</span><span style="text-align:center">HG</span><span style="text-align:center">AG</span><span>Away</span><span></span></div>
+            <div class="match-row">
+              <input type="text" id="girls-home" placeholder="Home" list="dl-girls" maxlength="40" aria-label="Home team">
+              <input type="number" id="girls-hg" placeholder="0" min="0" max="99" aria-label="Home goals">
+              <span class="match-vs">vs</span>
+              <input type="text" id="girls-away" placeholder="Away" list="dl-girls" maxlength="40" aria-label="Away team">
+              <button class="btn-add-res" onclick="submitResult('girls')">Add</button>
+            </div>
+            <datalist id="dl-girls"></datalist>
+            <div id="match-list-girls" class="match-list" style="margin-top:14px"><div style="font-size:.78rem;font-weight:600;color:var(--c-muted);margin-bottom:8px">Results</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TECH -->
+    <div id="panel-tech" class="panel" id="tech">
+      <div class="table-wrap overflow-x-auto">
+        <div class="table-head"><h3 style="font-size:.93rem">Tech Innovation Rankings</h3><span style="font-size:.78rem;color:var(--c-muted)">Scored out of 100</span></div>
+        <table class="bt" aria-label="Tech rankings"><thead><tr><th>Pos</th><th>Name</th><th>Class</th><th>Project</th><th>Score</th></tr></thead><tbody id="tbody-tech"></tbody></table>
+      </div>
+      <div class="admin-only" id="admin-tech" style="margin-top:16px">
+        <div class="res-panel">
+          <h3 style="font-size:.93rem;margin-bottom:12px">Add Participant</h3>
+          <div style="display:grid;grid-template-columns:1fr 70px 1fr 60px auto;gap:8px;align-items:center;margin-bottom:8px;font-size:.74rem;color:var(--c-muted)"><span>Name</span><span>Class</span><span>Project</span><span>Score</span><span></span></div>
+          <div style="display:grid;grid-template-columns:1fr 70px 1fr 60px auto;gap:8px;align-items:center">
+            <input type="text" id="tech-name" placeholder="Full name" maxlength="60" style="padding:9px 11px;border:1.5px solid var(--c-border);border-radius:var(--r-sm);font-size:.86rem;background:var(--c-cream)">
+            <input type="text" id="tech-class" placeholder="SS2" maxlength="10" style="padding:9px 8px;border:1.5px solid var(--c-border);border-radius:var(--r-sm);font-size:.86rem;background:var(--c-cream);text-align:center">
+            <input type="text" id="tech-project" placeholder="Project name" maxlength="60" style="padding:9px 11px;border:1.5px solid var(--c-border);border-radius:var(--r-sm);font-size:.86rem;background:var(--c-cream)">
+            <input type="number" id="tech-score" placeholder="0-100" min="0" max="100" style="padding:9px 6px;border:1.5px solid var(--c-border);border-radius:var(--r-sm);font-size:.86rem;background:var(--c-cream);text-align:center">
+            <button class="btn-add-res" onclick="submitTech()">Add</button>
+          </div>
+          <div id="tech-list" style="margin-top:14px"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+</main>
+<div class="site-footer"></div>
+<div class="toast" role="alert" aria-live="polite"></div>
+<script src="js/config.js"></script>
+<script src="js/components.js"></script>
+<script src="js/main.js"></script>
+<script>
+'use strict';
+injectNav();injectFooter();
+injectAdminUI();
+
+let _main='football', _sub='boys';
+const MC=['lt-gold','lt-silver','lt-bronze'];
+const FBC={W:'fb-w',D:'fb-d',L:'fb-l'};
+const MEDAL=['m-gold','m-silver','m-bronze'];
+
+/* ── Panel switches ── */
+function mainTab(name,btn){
+  _main=name;
+  document.querySelectorAll('.l-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('panel-football').classList.toggle('active',name==='football');
+  document.getElementById('panel-tech').classList.toggle('active',name==='tech');
+  if(name==='tech'){renderTechTable();if(AdminAuth.isLoggedIn())showAdminFor('tech');}
+}
+window.mainTab=mainTab;
+
+function subTab(which,btn){
+  _sub=which;
+  document.querySelectorAll('.sub-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  ['boys','girls'].forEach(l=>{document.getElementById('sub-'+l).style.display=l===which?'block':'none';});
+  renderTable(which);
+  if(AdminAuth.isLoggedIn())showAdminFor(which);
+}
+window.subTab=subTab;
+
+/* ── Render tables ── */
+function renderTable(lg){
+  const rows=LeagueEngine.buildTable(lg);
+  const tbody=document.getElementById('tbody-'+lg);if(!tbody)return;
+  if(!rows.length){tbody.innerHTML=`<tr><td colspan="11" style="text-align:center;padding:24px;color:var(--c-muted);font-size:.88rem">No data yet — login as admin to add results.</td></tr>`;return;}
+  tbody.innerHTML=rows.map((r,i)=>{
+    const fb=r.form.map(f=>`<span class="fb ${FBC[f]||''}">${f}</span>`).join('');
+    return`<tr>
+      <td><span class="lt-pos-cell ${MC[i]||''}">${i+1}</span></td>
+      <td>${sanitize(r.name)}</td><td>${r.p}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td>
+      <td>${r.gf}</td><td>${r.ga}</td>
+      <td class="${r.gd>0?'gd-pos':r.gd<0?'gd-neg':''}">${r.gd>0?'+':''}${r.gd}</td>
+      <td>${fb||'<span style="color:var(--c-muted);font-size:.7rem">–</span>'}</td>
+      <td class="pts-cell">${r.pts}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderTechTable(){
+  const all=[...TechEngine.get().participants].sort((a,b)=>b.score-a.score);
+  const tbody=document.getElementById('tbody-tech');if(!tbody)return;
+  if(!all.length){tbody.innerHTML=`<tr><td colspan="5" style="text-align:center;padding:22px;color:var(--c-muted)">No participants yet.</td></tr>`;return;}
+  tbody.innerHTML=all.map((p,i)=>`<tr>
+    <td><span class="lt-pos-cell ${MC[i]||''}">${i+1}</span></td>
+    <td>${sanitize(p.name)}</td><td>${sanitize(p.class)}</td>
+    <td><span class="project-badge">${sanitize(p.project)}</span></td>
+    <td><div class="score-bar-wrap"><span class="score-num">${p.score}</span><div class="score-bar-bg"><div class="score-bar" style="width:${p.score}%"></div></div></div></td>
+  </tr>`).join('');
+}
+
+function renderChips(lg){
+  const d=LeagueEngine.get(lg);
+  const wrap=document.getElementById('chips-'+lg);if(!wrap)return;
+  wrap.innerHTML=d.teams.map(t=>`<span class="team-chip">${sanitize(t)}<span class="chip-del" role="button" tabindex="0" onclick="remTeam('${lg}','${sanitize(t).replace(/'/g,"\\'")}')">×</span></span>`).join('');
+  const dl=document.getElementById('dl-'+lg);
+  if(dl)dl.innerHTML=d.teams.map(t=>`<option value="${sanitize(t)}">`).join('');
+}
+
+function renderMatchList(lg){
+  const wrap=document.getElementById('match-list-'+lg);if(!wrap)return;
+  const el=wrap.querySelector('[data-ml]');if(el)el.remove();
+  const div=document.createElement('div');div.setAttribute('data-ml','');
+  const results=LeagueEngine.get(lg).results;
+  if(!results.length){div.innerHTML=`<p style="font-size:.83rem;color:var(--c-muted)">No results entered yet.</p>`;}
+  else{div.innerHTML=[...results].reverse().map((r,ri)=>{
+    const realIdx=results.length-1-ri;
+    return`<div class="match-item"><span style="flex:1;font-size:.83rem">${sanitize(r.home)}</span><span class="match-score"><span>${r.hg}</span><span style="font-size:.68rem;color:var(--c-muted);margin:0 5px">–</span><span>${r.ag}</span></span><span style="flex:1;text-align:right;font-size:.83rem">${sanitize(r.away)}</span><button class="btn-del-item" onclick="delResult('${lg}',${realIdx})" style="margin-left:7px">×</button></div>`;
+  }).join('');}
+  wrap.appendChild(div);
+}
+
+function renderTechList(){
+  const wrap=document.getElementById('tech-list');if(!wrap)return;
+  const all=TechEngine.get().participants;
+  if(!all.length){wrap.innerHTML=`<p style="font-size:.83rem;color:var(--c-muted)">No participants yet.</p>`;return;}
+  wrap.innerHTML=all.map((p,i)=>`<div class="match-item"><span style="flex:1;font-size:.85rem;font-weight:500">${sanitize(p.name)}</span><span style="font-size:.78rem;color:var(--c-muted);margin:0 9px">${sanitize(p.class)}</span><span style="flex:1;font-size:.8rem;color:var(--c-muted)">${sanitize(p.project)}</span><span style="font-weight:700;color:var(--c-teal);margin:0 9px">${p.score}</span><button class="btn-del-item" onclick="delTech(${i})">×</button></div>`).join('');
+}
+
+/* ── Admin visibility ── */
+function showAdminFor(which){
+  ['boys','girls','tech'].forEach(id=>{const el=document.getElementById('admin-'+id);if(el)el.style.display='none';});
+  const el=document.getElementById('admin-'+which);if(el)el.style.display='block';
+  if(which==='boys'||which==='girls'){renderChips(which);renderMatchList(which);}
+  if(which==='tech')renderTechList();
+}
+
+/* ── Admin login ── */
+function toggleAdmin(){
+  if(AdminAuth.isLoggedIn()){
+    AdminAuth.logout();
+    document.getElementById('admin-badge').style.display='none';
+    document.getElementById('admin-toggle-btn').textContent='Admin Login';
+    document.querySelectorAll('.admin-only').forEach(el=>el.style.display='none');
+    showToast('Logged out');
+  } else {
+    document.getElementById('login-modal').classList.add('open');
+    setTimeout(()=>document.getElementById('pin-input').focus(),100);
+  }
+}
+window.toggleAdmin=toggleAdmin;
+
+function doLogin(){
+  const pin=document.getElementById('pin-input').value;
+  const err=document.getElementById('login-err');
+  if(window._locked()){err.style.display='block';err.textContent='Too many attempts. Wait 60 seconds.';return;}
+  const res=AdminAuth.login(pin);
+  if(res===true){
+    document.getElementById('login-modal').classList.remove('open');
+    err.style.display='none';document.getElementById('pin-input').value='';
+    document.getElementById('admin-badge').style.display='inline-flex';
+    document.getElementById('admin-toggle-btn').textContent='Log Out';
+    document.querySelectorAll('.admin-only').forEach(el=>el.style.display='block');
+    showAdminFor(_main==='tech'?'tech':_sub);
+    showToast('Welcome, Admin','ok');
+  } else {
+    err.style.display='block';
+    err.textContent=window._locked()?'Locked — wait 60s.':'Incorrect PIN.';
+    document.getElementById('pin-input').value='';document.getElementById('pin-input').focus();
+  }
+}
+window.doLogin=doLogin;
+
+function closeLogin(){document.getElementById('login-modal').classList.remove('open');document.getElementById('login-err').style.display='none';document.getElementById('pin-input').value='';}
+window.closeLogin=closeLogin;
+document.getElementById('pin-input').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+document.getElementById('login-modal').addEventListener('click',e=>{if(e.target===document.getElementById('login-modal'))closeLogin();});
+
+/* ── Results / teams ── */
+function submitResult(lg){
+  const home=(document.getElementById(lg+'-home').value||'').trim();
+  const away=(document.getElementById(lg+'-away').value||'').trim();
+  const hg=Number(document.getElementById(lg+'-hg').value);
+  /* away goals input is always the second number input in that match-row */
+  const allNum=document.querySelectorAll(`#sub-${lg} .match-row input[type=number]`);
+  const agEl=allNum[1];
+  const ag=agEl?Number(agEl.value):NaN;
+  if(!home)return showToast('Enter home team','err');
+  if(!away)return showToast('Enter away team','err');
+  if(home===away)return showToast('Teams must differ','err');
+  if(isNaN(hg)||document.getElementById(lg+'-hg').value==='')return showToast('Enter home goals','err');
+  if(isNaN(ag)||!agEl||agEl.value==='')return showToast('Enter away goals','err');
+  if(hg<0||ag<0||hg>99||ag>99)return showToast('Scores 0–99','err');
+  LeagueEngine.addResult(lg,home,away,hg,ag);
+  renderTable(lg);renderChips(lg);renderMatchList(lg);
+  document.getElementById(lg+'-home').value='';
+  document.getElementById(lg+'-hg').value='';
+  if(agEl)agEl.value='';
+  document.getElementById(lg+'-away').value='';
+  showToast(`✓ ${home} ${hg}–${ag} ${away}`,'ok');
+}
+window.submitResult=submitResult;
+
+function addTeam(lg){
+  const inp=document.getElementById('new-'+lg);
+  const name=(inp?.value||'').trim();
+  if(!name)return showToast('Enter team name','err');
+  if(LeagueEngine.addTeam(lg,name)){renderTable(lg);renderChips(lg);inp.value='';showToast('"'+name+'" added','ok');}
+  else showToast('Team already exists','err');
+}
+window.addTeam=addTeam;
+
+function remTeam(lg,name){
+  if(!confirm('Remove "'+name+'" and all their results?'))return;
+  LeagueEngine.removeTeam(lg,name);renderTable(lg);renderChips(lg);renderMatchList(lg);showToast(name+' removed');
+}
+window.remTeam=remTeam;
+
+function delResult(lg,idx){LeagueEngine.removeResult(lg,idx);renderTable(lg);renderMatchList(lg);showToast('Result removed');}
+window.delResult=delResult;
+
+function submitTech(){
+  const name=(document.getElementById('tech-name').value||'').trim();
+  const cls=(document.getElementById('tech-class').value||'').trim();
+  const project=(document.getElementById('tech-project').value||'').trim();
+  const score=Number(document.getElementById('tech-score').value);
+  if(!name)return showToast('Enter name','err');
+  if(!cls)return showToast('Enter class','err');
+  if(!project)return showToast('Enter project','err');
+  if(isNaN(score)||score<0||score>100)return showToast('Score 0–100','err');
+  TechEngine.add(name,cls,score,project);
+  renderTechTable();renderTechList();
+  ['tech-name','tech-class','tech-project','tech-score'].forEach(id=>document.getElementById(id).value='');
+  showToast('✓ '+name+' added','ok');
+}
+window.submitTech=submitTech;
+
+function delTech(idx){TechEngine.remove(idx);renderTechTable();renderTechList();showToast('Removed');}
+window.delTech=delTech;
+
+/* ── CMS ── */
+function openCMS(){
+  populateCMSFields();
+  document.getElementById('cms-modal').classList.add('open');
+}
+window.openCMS=openCMS;
+function closeCMS(){document.getElementById('cms-modal').classList.remove('open');}
+window.closeCMS=closeCMS;
+document.getElementById('cms-modal').addEventListener('click',e=>{if(e.target===document.getElementById('cms-modal'))closeCMS();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeLogin();closeCMS();}});
+
+function cmsTab(idx,btn){
+  document.querySelectorAll('.cms-t').forEach((b,i)=>b.classList.toggle('active',i===idx));
+  document.querySelectorAll('.cms-panel').forEach((p,i)=>p.classList.toggle('active',i===idx));
+}
+window.cmsTab=cmsTab;
+
+function populateCMSFields(){
+  const cfg=window.SITE_CONFIG||{};
+  const s=window.SITE_CONFIG?.STATS||{};
+  const setVal=(id,val)=>{const el=document.getElementById(id);if(el)el.value=val||'';};
+  setVal('cms-org-name',CMS.get('org_name',cfg.ORG_NAME));
+  setVal('cms-org-tagline',CMS.get('org_tagline',cfg.ORG_TAGLINE));
+  setVal('cms-org-mission',CMS.get('org_mission',cfg.ORG_MISSION));
+  setVal('cms-org-email',CMS.get('org_email',cfg.ORG_EMAIL));
+  setVal('cms-hero1',CMS.get('hero_line1',cfg.HERO_LINE1));
+  setVal('cms-hero2',CMS.get('hero_line2',cfg.HERO_LINE2));
+  setVal('cms-hero-body',CMS.get('hero_body',cfg.HERO_BODY));
+  setVal('cms-hero-quote',CMS.get('hero_quote'));
+  setVal('cms-quote-cite',CMS.get('hero_quote_cite'));
+  setVal('cms-act-heading',CMS.get('act_heading'));
+  setVal('cms-act-sub',CMS.get('act_sub'));
+  setVal('cms-donate-title',CMS.get('donate_title'));
+  setVal('cms-donate-sub',CMS.get('donate_sub'));
+  setVal('cms-bank-heading',CMS.get('bank_heading'));
+  setVal('cms-bank-confirm',CMS.get('bank_confirm_note'));
+  setVal('cms-stat-youth',CMS.get('stat_youth',s.youth?.value||120));
+  setVal('cms-stat-youth-lbl',CMS.get('stat_youth_label',s.youth?.label||'Youth Trained'));
+  setVal('cms-stat-hours',CMS.get('stat_hours',s.hours?.value||48));
+  setVal('cms-stat-hours-lbl',CMS.get('stat_hours_label',s.hours?.label||'Event Hours'));
+  setVal('cms-stat-partners',CMS.get('stat_partners',s.partners?.value||6));
+  setVal('cms-stat-partners-lbl',CMS.get('stat_partners_label',s.partners?.label||'Partners & Donors'));
+  setVal('cms-gallery-title',CMS.get('gallery_title'));
+  setVal('cms-gallery-sub',CMS.get('gallery_sub'));
+  setVal('cms-footer-tag',CMS.get('footer_tagline'));
+  setVal('cms-footer-quote',CMS.get('footer_quote'));
+}
+
+const G=(id)=>document.getElementById(id)?.value||'';
+function saveCMS(section){
+  if(section==='identity'){
+    CMS.set('org_name',G('cms-org-name'));
+    CMS.set('org_tagline',G('cms-org-tagline'));
+    CMS.set('org_mission',G('cms-org-mission'));
+    CMS.set('org_email',G('cms-org-email'));
+  } else if(section==='homepage'){
+    CMS.set('hero_line1',G('cms-hero1'));
+    CMS.set('hero_line2',G('cms-hero2'));
+    CMS.set('hero_body',G('cms-hero-body'));
+    CMS.set('hero_quote',G('cms-hero-quote'));
+    CMS.set('hero_quote_cite',G('cms-quote-cite'));
+    CMS.set('act_heading',G('cms-act-heading'));
+    CMS.set('act_sub',G('cms-act-sub'));
+  } else if(section==='donate'){
+    CMS.set('donate_title',G('cms-donate-title'));
+    CMS.set('donate_sub',G('cms-donate-sub'));
+    CMS.set('bank_heading',G('cms-bank-heading'));
+    CMS.set('bank_confirm_note',G('cms-bank-confirm'));
+  } else if(section==='stats'){
+    CMS.set('stat_youth',G('cms-stat-youth'));
+    CMS.set('stat_youth_label',G('cms-stat-youth-lbl'));
+    CMS.set('stat_hours',G('cms-stat-hours'));
+    CMS.set('stat_hours_label',G('cms-stat-hours-lbl'));
+    CMS.set('stat_partners',G('cms-stat-partners'));
+    CMS.set('stat_partners_label',G('cms-stat-partners-lbl'));
+  } else if(section==='gallery'){
+    CMS.set('gallery_title',G('cms-gallery-title'));
+    CMS.set('gallery_sub',G('cms-gallery-sub'));
+  } else if(section==='footer'){
+    CMS.set('footer_tagline',G('cms-footer-tag'));
+    CMS.set('footer_quote',G('cms-footer-quote'));
+  }
+  showToast('Saved! Reload pages to see all changes.','ok');
+}
+window.saveCMS=saveCMS;
+
+/* ── INIT ── */
+async function init(){
+  await LeagueEngine.load('boys');
+  await LeagueEngine.load('girls');
+  await TechEngine.load();
+  await CMS.load();CMS.apply();
+  renderTable('boys');renderTable('girls');renderTechTable();
+  // Hash routing
+  const hash=location.hash.slice(1);
+  if(hash==='girls')subTab('girls',document.getElementById('sub-girls-btn'));
+  else if(hash==='tech')mainTab('tech',document.getElementById('tab-tech'));
+  if(AdminAuth.isLoggedIn()){
+    document.getElementById('admin-badge').style.display='inline-flex';
+    document.getElementById('admin-toggle-btn').textContent='Log Out';
+    document.querySelectorAll('.admin-only').forEach(el=>el.style.display='block');
+    showAdminFor(_main==='tech'?'tech':_sub);
+  }
+}
+init();
+</script>
+</body>
+</html>

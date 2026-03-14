@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+  <title>Gallery — THRIVE</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+</head>
+<body>
+<header class="nav" role="banner"></header>
+<main>
+<section class="page-hdr">
+  <span class="eyebrow" style="color:var(--c-green-lt);display:block;margin-bottom:.4rem">Visual Story</span>
+  <h1 data-cms="gallery_title">THRIVE Gallery</h1>
+  <p class="lead" style="margin-top:.5rem;max-width:500px" data-cms="gallery_sub">Moments that capture the energy, joy, and growth of every event.</p>
+</section>
+<section class="section" style="background:var(--c-cream)">
+  <div class="container">
+    <div class="filter-bar" role="group" aria-label="Filter gallery">
+      <button class="filter-btn active" onclick="filterGallery('all',this)">All</button>
+      <button class="filter-btn" onclick="filterGallery('football',this)">Football</button>
+      <button class="filter-btn" onclick="filterGallery('tech',this)">Tech</button>
+      <button class="filter-btn" onclick="filterGallery('community',this)">Community</button>
+    </div>
+    <!-- Admin: add image -->
+    <div class="admin-only" id="gallery-add" style="background:var(--c-sand);border-radius:var(--r-lg);padding:18px;margin-bottom:18px;border:1px solid var(--c-border)">
+      <h3 style="font-size:.95rem;margin-bottom:12px">Add Gallery Image</h3>
+      <div class="grid-2" style="margin-bottom:10px">
+        <div class="fg"><label>Image URL</label><input id="gi-url" type="url" placeholder="https://…"></div>
+        <div class="fg"><label>Caption</label><input id="gi-label" type="text" placeholder="Caption…" maxlength="80"></div>
+        <div class="fg"><label>Alt text</label><input id="gi-alt" type="text" placeholder="Describe image for screen readers"></div>
+        <div class="fg"><label>Category</label><select id="gi-tag"><option value="football">Football</option><option value="tech">Tech</option><option value="community">Community</option></select></div>
+      </div>
+      <button class="btn btn-green btn-sm" onclick="addGalleryItem()">Add Image</button>
+    </div>
+    <div class="gallery-grid" id="gallery-grid" role="list"></div>
+  </div>
+</section>
+</main>
+<div class="site-footer"></div>
+<div class="toast" role="alert" aria-live="polite"></div>
+<script src="js/config.js"></script>
+<script src="js/components.js"></script>
+<script src="js/main.js"></script>
+<script>
+'use strict';
+injectNav();
+injectAdminUI();injectFooter();
+const TAG_CLS={football:'tag-football',tech:'tag-tech',community:'tag-community'};
+const TAG_LBL={football:'Football',tech:'Tech',community:'Community'};
+let _cur='all',_items=[];
+
+function getItems(){
+  const saved=CMS.get('gallery_items');
+  return saved?JSON.parse(saved):(window.SITE_CONFIG||{}).GALLERY||[];
+}
+
+function filterGallery(tag,btn){
+  _cur=tag;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGallery();
+}
+window.filterGallery=filterGallery;
+
+function renderGallery(){
+  _items=getItems();
+  const show=_cur==='all'?_items:_items.filter(d=>d.tag===_cur);
+  const grid=document.getElementById('gallery-grid');if(!grid)return;
+  grid.innerHTML=show.map((d,i)=>`<div class="gallery-item fade-up" role="listitem" style="transition-delay:${(i%6)*.05}s">
+    <img src="${sanitize(d.src)}" alt="${sanitize(d.alt||d.label)}" loading="lazy">
+    <div class="gallery-overlay"></div>
+    <span class="gallery-tag-pos c-tag ${TAG_CLS[d.tag]||''}">${TAG_LBL[d.tag]||d.tag}</span>
+    <div class="gallery-label">${sanitize(d.label)}</div>
+    ${AdminAuth.isLoggedIn()?`<button onclick="delGalleryItem(${_items.indexOf(d)})" style="position:absolute;top:8px;right:8px;background:rgba(220,38,38,.8);color:#fff;border:none;border-radius:50%;width:24px;height:24px;font-size:.8rem;cursor:pointer;line-height:24px;text-align:center" aria-label="Remove">×</button>`:''}
+  </div>`).join('');
+  requestAnimationFrame(()=>{
+    document.querySelectorAll('.gallery-item').forEach((el,i)=>{
+      setTimeout(()=>{el.style.opacity='0';el.style.transform='translateY(14px)';setTimeout(()=>{el.style.transition='opacity .38s ease,transform .38s ease';el.style.opacity='1';el.style.transform='none';},10);},i*45);
+    });
+  });
+}
+
+function addGalleryItem(){
+  const url=document.getElementById('gi-url').value.trim();
+  const label=document.getElementById('gi-label').value.trim();
+  const alt=document.getElementById('gi-alt').value.trim();
+  const tag=document.getElementById('gi-tag').value;
+  if(!url||!label){showToast('Image URL and caption required','err');return;}
+  const items=getItems();
+  items.push({src:url,alt:alt||label,label,tag});
+  CMS.set('gallery_items',JSON.stringify(items));
+  ['gi-url','gi-label','gi-alt'].forEach(id=>document.getElementById(id).value='');
+  renderGallery();showToast('Image added','ok');
+}
+window.addGalleryItem=addGalleryItem;
+
+function delGalleryItem(idx){
+  const items=getItems();items.splice(idx,1);
+  CMS.set('gallery_items',JSON.stringify(items));
+  renderGallery();showToast('Image removed');
+}
+window.delGalleryItem=delGalleryItem;
+
+async function init(){
+  await CMS.load();CMS.apply();
+  renderGallery();
+  if(AdminAuth.isLoggedIn())document.querySelectorAll('.admin-only').forEach(el=>el.style.display='block');
+}
+init();
+</script>
+</body>
+</html>
