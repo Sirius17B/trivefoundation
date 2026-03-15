@@ -4,7 +4,7 @@
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
-  <title>Donate &amp; Support — THRIVE</title>
+  <title>Donate &amp; Support — TriveFoundation</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
 </head>
@@ -27,7 +27,9 @@
     </div>
     <div class="tier-grid fade-up" id="tier-grid"></div>
     <div class="text-center fade-up" style="margin-top:clamp(14px,3vw,28px)">
-      <p style="font-size:.88rem;color:var(--c-muted)" data-cms="donate_custom_note">Want to contribute a custom amount or arrange in-kind support? <a href="contact.html" style="color:var(--c-teal)">Get in touch →</a></p>
+      <label for="custom-amount" style="font-size:.82rem;color:var(--c-muted);display:block;margin-bottom:8px">Enter another amount (₦)</label>
+      <input id="custom-amount" type="number" min="1" placeholder="e.g. 22000" style="max-width:260px;margin:0 auto;padding:10px 12px;border:1px solid var(--c-border);border-radius:var(--r-sm);display:block">
+      <p style="font-size:.88rem;color:var(--c-muted);margin-top:10px" data-cms="donate_custom_note">Want to arrange in-kind support? <a href="contact.html" style="color:var(--c-teal)">Get in touch →</a></p>
     </div>
   </div>
 </section>
@@ -78,7 +80,7 @@ injectAdminUI();injectFooter();
 function renderTiers(){
   const tiers=(window.SITE_CONFIG||{}).DONATION_TIERS||[];
   const grid=document.getElementById('tier-grid');if(!grid)return;
-  grid.innerHTML=tiers.map(t=>`<a href="#account" class="tier-card${t.featured?' featured':''}">
+  grid.innerHTML=tiers.map(t=>`<a href="#account" class="tier-card">
     <div class="tier-amount">${sanitize(t.amount)}</div>
     <div class="tier-name">${sanitize(t.label)}</div>
     <div class="tier-desc">${sanitize(t.desc)}</div>

@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
   <meta http-equiv="X-Content-Type-Options" content="nosniff"><meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
-  <meta name="description" content="THRIVE Quiz Arena — timed knowledge tests in Tech and Football.">
-  <title>Quiz Arena — THRIVE</title>
+  <meta name="description" content="TriveFoundation Quiz Arena — timed knowledge tests in Tech and Football.">
+  <title>Quiz Arena — TriveFoundation</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" href="assets/tree-logo.png">
   <style>
@@ -50,6 +50,8 @@
 
     /* ── Results ── */
     .results-screen{max-width:640px;margin:0 auto;padding:clamp(28px,5vw,56px) var(--pad)}
+    .result-head{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px}
+    .result-head img{height:44px;width:auto}
     .results-circle{width:110px;height:110px;border-radius:50%;border:6px solid var(--c-green);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 22px}
     .results-circle.fail{border-color:var(--c-orange)}
     .results-pct{font-family:var(--fd);font-size:2rem;font-weight:900;color:var(--c-dark);line-height:1}
@@ -235,6 +237,7 @@ injectNav(); injectAdminUI(); injectFooter();
 
 const QUIZ_STORE_KEY = 'thrive_quizzes_v2';
 const QUIZ_LB_KEY    = 'thrive_quiz_lb_v2';
+const QUIZ_ATTEMPT_KEY='trive_quiz_attempts_v1';
 let quizzes          = [];
 let editingQIdx      = null; // null=new, {quizIdx,qIdx}=edit
 let lastScoreEntry   = null; // saved for current player's rank highlight
@@ -246,6 +249,14 @@ async function loadQuizzes(){
     quizzes = r ? JSON.parse(r.value) : JSON.parse(JSON.stringify(window.SITE_CONFIG.QUIZZES));
   } catch {
     quizzes = JSON.parse(JSON.stringify(window.SITE_CONFIG.QUIZZES));
+  }
+  const valid=Array.isArray(quizzes)
+    && quizzes.length===2
+    && quizzes.some(q=>q.id==='technology-mastery'&&Array.isArray(q.questions)&&q.questions.length>=1000)
+    && quizzes.some(q=>q.id==='football-mastery'&&Array.isArray(q.questions)&&q.questions.length>=1000);
+  if(!valid){
+    quizzes = JSON.parse(JSON.stringify(window.SITE_CONFIG.QUIZZES));
+    saveQuizzes();
   }
   renderQuizCards();
   buildSelectMenus();
@@ -293,7 +304,7 @@ function renderQuizCards(){
         </span>
         <span class="quiz-meta-item">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          ${quiz.questions.length} questions
+          50 questions per attempt
         </span>
         <span class="quiz-meta-item">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
@@ -318,16 +329,21 @@ let timerInterval = null;
 function startQuiz(quizId){
   const quiz = quizzes.find(q=>q.id===quizId);
   if(!quiz){showToast('Quiz not found');return;}
+  const fullName = (prompt('Enter your full registered name to begin:')||'').trim();
+  if(!fullName){showToast('Full name is required to start.');return;}
+  const candidateCode = (prompt('Enter your unique candidate code:')||'').trim();
+  if(!candidateCode){showToast('Candidate code is required to start.');return;}
+
   const cfg = window.SITE_CONFIG.QUIZ_SETTINGS;
-  let qs = [...quiz.questions];
-  if(cfg.shuffleQuestions) qs = qs.sort(()=>Math.random()-.5);
+  const selected = buildBalancedQuestionSet(quiz.questions, 50);
 
   state = {
-    quiz, questions:qs, current:0,
-    answers:  new Array(qs.length).fill(null),
-    answered: new Array(qs.length).fill(false),
-    timeLeft: getTimerSeconds(quiz),
-    finished: false,
+    quiz, questions:selected, current:0,
+    answers:new Array(selected.length).fill(null),
+    answered:new Array(selected.length).fill(false),
+    timeLeft:getTimerSeconds({questions:selected}),
+    finished:false,
+    candidate:{fullName,candidateCode,attemptCode:buildAttemptCode()}
   };
 
   document.getElementById('q-quiz-title').textContent = quiz.title;
@@ -351,6 +367,47 @@ function startQuiz(quizId){
   renderQuestion();
   startTimer();
 }
+
+function buildAttemptCode(){
+  const t = Date.now().toString(36).toUpperCase();
+  const r = Math.floor(Math.random()*1e6).toString(36).padStart(4,'0').toUpperCase();
+  return `TF-${t.slice(-5)}-${r.slice(-4)}`;
+}
+
+function shuffle(arr){
+  const copy=[...arr];
+  for(let i=copy.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [copy[i],copy[j]]=[copy[j],copy[i]];
+  }
+  return copy;
+}
+
+function normalizeQuestion(q,idx){
+  const letters=['A','B','C','D'];
+  const offset=idx%4;
+  const mapped=q.options.map((opt,i)=>({opt,isAnswer:i===q.answer,slot:(i+offset)%4})).sort((a,b)=>a.slot-b.slot);
+  return {
+    q:q.q,
+    explanation:q.explanation,
+    difficulty:q.difficulty||'medium',
+    options:mapped.map(m=>m.opt),
+    answer:mapped.findIndex(m=>m.isAnswer)
+  };
+}
+
+function buildBalancedQuestionSet(allQuestions,target=50){
+  const by={easy:[],medium:[],hard:[]};
+  allQuestions.forEach((q,i)=>by[q.difficulty||'medium'].push(normalizeQuestion(q,i)));
+  const take=(arr,n)=>shuffle(arr).slice(0,Math.min(n,arr.length));
+  let selected=[...take(by.easy,Math.round(target*0.25)),...take(by.medium,Math.round(target*0.5)),...take(by.hard,target-Math.round(target*0.25)-Math.round(target*0.5))];
+  if(selected.length<target){
+    const filler=shuffle([...by.easy,...by.medium,...by.hard]);
+    for(const q of filler){ if(selected.length>=target) break; if(!selected.includes(q)) selected.push(q); }
+  }
+  return shuffle(selected);
+}
+
 
 function renderQuestion(){
   const {questions, current, answers, answered} = state;
@@ -432,24 +489,21 @@ async function finishQuiz(timeout=false){
   const totalSecs = getTimerSeconds(quiz);
   const timeTaken = totalSecs - state.timeLeft;
 
-  // Ask for name
-  const name = (prompt('Enter your name for the leaderboard (optional — press Cancel to skip):')||'').trim();
+  const name = state.candidate?.fullName || 'Candidate';
 
-  // Save score and get rank
+  const skipped = answered.filter(a=>!a).length;
+  const wrong = total - correct - skipped;
+
   let rank = null;
-  if(name){
-    rank = await saveScore(quiz.id, name, pct, correct, total, timeTaken);
-    lastScoreEntry = { quizId: quiz.id, name, pct };
-  }
+  rank = await saveScore(quiz.id, name, pct, correct, total, timeTaken, skipped, wrong, state.candidate);
+  lastScoreEntry = { quizId: quiz.id, name, pct };
 
   // Show results
   const overlay = document.getElementById('quiz-overlay');
   overlay.scrollTop = 0;
   document.getElementById('quiz-runner-content').innerHTML = `
     <div class="results-screen" id="results-print-area">
-      <div style="text-align:center;margin-bottom:4px">
-        <div style="font-size:.78rem;color:var(--c-muted);font-style:italic;margin-bottom:16px">${sanitize(quiz.title)} · ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}</div>
-      </div>
+      <div class="result-head"><img src="assets/tree-logo.png" alt="TriveFoundation logo"><div><div style="font-weight:700;color:var(--c-dark)">TriveFoundation</div><div style="font-size:.78rem;color:var(--c-muted);font-style:italic">${sanitize(quiz.title)} · ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}</div></div></div>
       <div class="results-circle ${passed?'':'fail'}" aria-label="${pct}% — ${passed?'Pass':'Fail'}">
         <span class="results-pct">${pct}%</span>
         <span class="results-lbl">${passed?'Pass':'Try again'}</span>
@@ -460,9 +514,10 @@ async function finishQuiz(timeout=false){
 
       <div class="results-breakdown">
         <div class="r-stat"><div class="r-stat-n" style="color:var(--c-green)">${correct}</div><div class="r-stat-l">Correct</div></div>
-        <div class="r-stat"><div class="r-stat-n" style="color:var(--c-orange)">${total-correct}</div><div class="r-stat-l">Wrong / Skipped</div></div>
-        <div class="r-stat"><div class="r-stat-n">${Math.floor(timeTaken/60)}m ${timeTaken%60}s</div><div class="r-stat-l">Time taken</div></div>
+        <div class="r-stat"><div class="r-stat-n" style="color:#DC2626">${wrong}</div><div class="r-stat-l">Wrong</div></div>
+        <div class="r-stat"><div class="r-stat-n" style="color:var(--c-orange)">${skipped}</div><div class="r-stat-l">Skipped</div></div>
       </div>
+      <div class="r-stat" style="max-width:220px;margin:0 auto"><div class="r-stat-n">${Math.floor(timeTaken/60)}m ${timeTaken%60}s</div><div class="r-stat-l">Time taken</div></div>
 
       ${rank ? `
       <div class="rank-banner">
@@ -472,7 +527,7 @@ async function finishQuiz(timeout=false){
 
       ${name ? `
       <div style="background:var(--c-cream);border-radius:var(--r-md);padding:14px 18px;font-size:.86rem;color:var(--c-muted);text-align:center;margin-bottom:4px">
-        Registered as: <strong style="color:var(--c-dark)">${sanitize(name)}</strong>
+        Registered as: <strong style="color:var(--c-dark)">${sanitize(name)}</strong><br>Candidate code: <strong style="color:var(--c-dark)">${sanitize(state.candidate?.candidateCode||'N/A')}</strong><br>Attempt code: <strong style="color:var(--c-dark)">${sanitize(state.candidate?.attemptCode||'N/A')}</strong>
       </div>` : ''}
 
       <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px" class="btn-no-print">
@@ -506,16 +561,21 @@ async function loadScores(){
   try{ const r=await window.storage?.get(QUIZ_LB_KEY); return r?JSON.parse(r.value):{}; }
   catch{ return {}; }
 }
-async function saveScore(quizId, name, pct, correct, total, timeTaken){
+async function saveScore(quizId, name, pct, correct, total, timeTaken, skipped=0, wrong=0, candidate={}){
   const scores = await loadScores();
   if(!scores[quizId]) scores[quizId]=[];
-  const entry = {name, pct, correct, total, timeTaken,
-    date: new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})};
+  const entry = {name, pct, correct, total, timeTaken, skipped, wrong, candidateCode:candidate?.candidateCode||'', attemptCode:candidate?.attemptCode||'', date: new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})};
   scores[quizId].push(entry);
   // Sort: higher pct first, then faster time
   scores[quizId].sort((a,b)=>b.pct-a.pct||a.timeTaken-b.timeTaken);
   scores[quizId] = scores[quizId].slice(0,50); // keep top 50
   try{ await window.storage?.set(QUIZ_LB_KEY, JSON.stringify(scores)); }catch{}
+  try{
+    const r=await window.storage?.get(QUIZ_ATTEMPT_KEY);
+    const attempts=r?JSON.parse(r.value):[];
+    attempts.push({quizId,...entry});
+    await window.storage?.set(QUIZ_ATTEMPT_KEY, JSON.stringify(attempts.slice(-500)));
+  }catch{}
   // Return rank (1-based)
   return scores[quizId].findIndex(e=>e.name===name&&e.pct===pct) + 1;
 }
