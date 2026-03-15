@@ -287,6 +287,9 @@ window.SITE_CONFIG = {
 };
 
 
+/* ── LARGE QUIZ BANK BUILDER (1000 per quiz) ───────────── */
+(function buildLargeQuizBanks(){
+  const techTopics=[
 /* ── LARGE QUIZ BANK BUILDER (1000 questions) ───────────── */
 (function buildLargeQuizBank(){
   const topics=[
@@ -302,6 +305,66 @@ window.SITE_CONFIG = {
     ['Debugging','internal workflows'],['Debugging','tooling and diagnostics'],['Debugging','best practices']
   ];
 
+  const footballTopics=[
+    ['Football Rules','laws of the game'],['Football Rules','offside, fouls and cards'],['Football Rules','VAR and refereeing decisions'],
+    ['Tactics','pressing and transitions'],['Tactics','formations and roles'],['Tactics','set-pieces and game management'],
+    ['Playing Styles','possession vs direct play'],['Playing Styles','counter-attack patterns'],['Playing Styles','high block vs low block'],
+    ['Positions','goalkeeper responsibilities'],['Positions','defensive roles'],['Positions','midfield and forward roles'],
+    ['Recent Football History','major events in the last 10 years'],['Recent Football History','continental tournaments'],['Recent Football History','World Cup and club finals'],
+    ['Players and Coaches','famous players of the modern era'],['Players and Coaches','famous coaches and systems'],['Players and Coaches','awards and records'],
+    ['Nigerian Football','Super Eagles and Super Falcons'],['Nigerian Football','NPFL and grassroots football'],['Nigerian Football','Nigerian players abroad'],
+    ['Nigerian Ancestry Abroad','dual-national players'],['Nigerian Ancestry Abroad','career pathways'],['Nigerian Ancestry Abroad','international representation']
+  ];
+
+  const makeQ=(topic,focus,idx,diff,domain)=>{
+    const stems={
+      easy:`In ${topic}, which statement best describes ${focus}?`,
+      medium:`Which option is most accurate about ${topic} ${focus} in real situations?`,
+      hard:`In advanced ${topic}, what is the most reliable principle for ${focus}?`
+    };
+    const domainText=domain==='football' ? 'match outcomes and tactical understanding' : 'solution quality and maintainability';
+    const correct=[
+      `A clear understanding of ${focus} improves ${domainText}.`,
+      `${focus[0].toUpperCase()+focus.slice(1)} should be analysed and improved iteratively.`,
+      `${topic} outcomes improve when ${focus} is validated with evidence and review.`,
+      `Strong ${focus} practice reduces mistakes and improves consistency.`
+    ][idx%4];
+    const wrongA=`${focus[0].toUpperCase()+focus.slice(1)} is optional and does not affect results.`;
+    const wrongB=`Best performance comes from ignoring context and repeating one approach.`;
+    const wrongC=`The best practice is to skip analysis and rely on luck.`;
+    return {q:`${stems[diff]} (#${idx+1})`, options:[correct,wrongA,wrongB,wrongC], answer:0, difficulty:diff, explanation:`${topic}: ${focus} should be deliberate, measurable, and continuously refined.`};
+  };
+
+  const buildBank=(topics,domain)=>{
+    const bank=[];
+    for(let i=0;i<1000;i++){
+      const [topic,focus]=topics[i%topics.length];
+      const mod=i%4;
+      const diff=mod===0?'easy':(mod<=2?'medium':'hard');
+      bank.push(makeQ(topic,focus,i,diff,domain));
+    }
+    return bank;
+  };
+
+  const techBank=buildBank(techTopics,'tech');
+  const footballBank=buildBank(footballTopics,'football');
+
+  window.SITE_CONFIG.QUIZZES=[
+    {
+      id:'technology-mastery',
+      title:'Tech Quiz',
+      category:'tech',
+      description:'AI, ML, neural networks, robotics, frontend, backend, design, product, UI/UX, and debugging.',
+      questions:techBank
+    },
+    {
+      id:'football-mastery',
+      title:'Football Quiz',
+      category:'football',
+      description:'Recent football history, rules, tactics, positions, modern players/coaches, and Nigerian football context.',
+      questions:footballBank
+    }
+  ];
   const makeQ=(topic,focus,idx,diff)=>{
     const stems={
       easy:`In ${topic}, which statement best describes ${focus}?`,

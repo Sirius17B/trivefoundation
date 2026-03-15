@@ -250,6 +250,10 @@ async function loadQuizzes(){
   } catch {
     quizzes = JSON.parse(JSON.stringify(window.SITE_CONFIG.QUIZZES));
   }
+  if(!Array.isArray(quizzes)||quizzes.length<2){
+    quizzes = JSON.parse(JSON.stringify(window.SITE_CONFIG.QUIZZES));
+    saveQuizzes();
+  }
   renderQuizCards();
   buildSelectMenus();
   renderEditorQuestions();
@@ -296,7 +300,7 @@ function renderQuizCards(){
         </span>
         <span class="quiz-meta-item">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          ${quiz.questions.length} questions
+          50 questions per attempt
         </span>
         <span class="quiz-meta-item">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
