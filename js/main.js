@@ -226,8 +226,8 @@ window.VideoEngine={
 };
 
 /* ── ADMIN AUTH ── */
-/* Default PIN: 2025 — change btoa('thrive-'+PIN+'-admin') below */
-const _AH=btoa('thrive-2025-admin');
+/* Admin PIN hash */
+const _AH='dGhyaXZlLTIwMjUtYWRtaW4=';
 window.AdminAuth={
   _k:'thrive_admin_v3',
   isLoggedIn(){return sessionStorage.getItem(this._k)==='1';},

@@ -1,4 +1,4 @@
-# THRIVE Website — Developer Documentation
+# TriveFoundation Website — Developer Documentation
 
 **Version:** 4.0  
 **Last updated:** March 2026  
@@ -37,7 +37,7 @@
 
 ## 1. Project Overview
 
-THRIVE is an independent youth development initiative that runs technology training, football leagues, and inspirational talks for young Nigerians. This website is its public face and operational hub.
+TriveFoundation is an independent youth development initiative that runs technology training, football leagues, and inspirational talks for young Nigerians. This website is its public face and operational hub.
 
 ### What the website does
 
@@ -134,12 +134,12 @@ python3 -m http.server 8080
 window.SITE_CONFIG = {
 
   // ── IDENTITY ────────────────────────────────────────────
-  ORG_NAME:      'THRIVE',           // Used everywhere — nav, footer, titles
+  ORG_NAME:      'TriveFoundation',           // Used everywhere — nav, footer, titles
   ORG_TAGLINE:   'Raising Champions',
   ORG_YEAR:      '2026',
   ORG_SEASON:    'A Time To Build',  // Hero sub-heading
   ORG_MISSION:   'Empowering youth through technology, sport, and inspiration.',
-  ORG_EMAIL:     'hello@thriveng.org',
+  ORG_EMAIL:     'hello@trivefoundation.org',
   ORG_PHONE:     '+234 800 000 0000',
   ORG_VENUE_2025:'FGC NISE, Anambra State, Nigeria', // Venue only — not owner
 
@@ -168,7 +168,7 @@ window.SITE_CONFIG = {
 
   // ── BANK DETAILS ─────────────────────────────────────────
   BANK: {
-    account_name: 'THRIVE Foundation',
+    account_name: 'TriveFoundation Foundation',
     bank:         'First Bank of Nigeria',
     account_no:   '3012345678',
     sort_code:    '011152003',
@@ -234,7 +234,7 @@ window.SITE_CONFIG = {
       tag:      'football',      // 'football' | 'tech' | 'community'
       tagLabel: 'Football',      // Display text for the tag badge
       title:    'Card headline',
-      date:     'THRIVE 2025',
+      date:     'TriveFoundation 2025',
     },
     // ... up to ~8 items recommended
   ],
@@ -245,16 +245,16 @@ window.SITE_CONFIG = {
 
 ## 5. Renaming the Organisation
 
-To rename from "THRIVE" to anything else:
+To rename from "TriveFoundation" to anything else:
 
 **Step 1** — Open `js/config.js` and change:
 ```js
-ORG_NAME: 'THRIVE',  →  ORG_NAME: 'YOUR NEW NAME',
+ORG_NAME: 'TriveFoundation',  →  ORG_NAME: 'YOUR NEW NAME',
 ```
 
 **Step 2** — That's it. Every `[data-org-name]` element across the site reads from this value at runtime. The nav logo wordmark, footer copyright, page titles, and all references update automatically.
 
-**Step 3 (optional)** — If you want to update the `<title>` tags in the HTML files too, do a find-and-replace for `THRIVE` across all `.html` files. This only affects the browser tab label before JavaScript runs.
+**Step 3 (optional)** — If you want to update the `<title>` tags in the HTML files too, do a find-and-replace for `TriveFoundation` across all `.html` files. This only affects the browser tab label before JavaScript runs.
 
 > **Logo image:** The logo image itself (`assets/tree-logo.png`) is separate. Replace that file with a new one if you need a different icon. Keep the filename the same, or update the reference in `js/components.js` in the `LOGO_SVG()` function.
 
@@ -785,7 +785,7 @@ STORIES: [
   {
     id:       'story-2026-04',     // Unique — no spaces
     date:     'April 2026',
-    headline: 'THRIVE Expands to Lagos',
+    headline: 'TriveFoundation Expands to Lagos',
     category: 'Announcement',      // Announcement | Tech | Football | Event
     body:     'Full story text…',
     image:    'https://…',         // Optional image URL
@@ -954,4 +954,4 @@ docs: update README contributing section
 
 ---
 
-*This documentation was written for THRIVE v4.0. If you make significant structural changes, please update the relevant sections.*
+*This documentation was written for TriveFoundation v4.0. If you make significant structural changes, please update the relevant sections.*
