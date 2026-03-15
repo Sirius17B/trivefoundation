@@ -4,7 +4,7 @@
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
-  <title>Gallery — THRIVE</title>
+  <title>Gallery — TriveFoundation</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
 </head>
@@ -13,7 +13,7 @@
 <main>
 <section class="page-hdr">
   <span class="eyebrow" style="color:var(--c-green-lt);display:block;margin-bottom:.4rem">Visual Story</span>
-  <h1 data-cms="gallery_title">THRIVE Gallery</h1>
+  <h1 data-cms="gallery_title">TriveFoundation Gallery</h1>
   <p class="lead" style="margin-top:.5rem;max-width:500px" data-cms="gallery_sub">Moments that capture the energy, joy, and growth of every event.</p>
 </section>
 <section class="section" style="background:var(--c-cream)">
@@ -38,6 +38,17 @@
     <div class="gallery-grid" id="gallery-grid" role="list"></div>
   </div>
 </section>
+
+<section class="section" style="background:var(--c-white)">
+  <div class="container">
+    <div class="text-center fade-up" style="margin-bottom:clamp(18px,3vw,28px)">
+      <span class="eyebrow">Gallery Videos</span>
+      <h2 style="margin-top:.3rem">Programme Recordings</h2>
+    </div>
+    <div class="video-grid" id="video-grid"></div>
+  </div>
+</section>
+
 </main>
 <div class="site-footer"></div>
 <div class="toast" role="alert" aria-live="polite"></div>
@@ -104,9 +115,21 @@ function delGalleryItem(idx){
 }
 window.delGalleryItem=delGalleryItem;
 
+function renderVideosInline(){
+  const vids=VideoEngine.get();
+  const grid=document.getElementById('video-grid');if(!grid)return;
+  if(!vids.length){
+    grid.innerHTML='<p style="grid-column:1/-1;text-align:center;color:var(--c-muted)">No videos yet.</p>';
+    return;
+  }
+  grid.innerHTML=vids.map(v=>`<div class="act-card"><video src="${v.dataUrl}" controls preload="metadata" aria-label="${sanitize(v.title)}"></video><div class="video-card-body"><div class="video-title">${sanitize(v.title)}</div><div class="video-date">${sanitize(v.date)}</div></div></div>`).join('');
+}
+
 async function init(){
   await CMS.load();CMS.apply();
+  await VideoEngine.load();
   renderGallery();
+  renderVideosInline();
   if(AdminAuth.isLoggedIn())document.querySelectorAll('.admin-only').forEach(el=>el.style.display='block');
 }
 init();

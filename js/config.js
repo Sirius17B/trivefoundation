@@ -12,12 +12,12 @@ window.SITE_CONFIG = {
   /* ── IDENTITY ─────────────────────────────────────────
      Change ORG_NAME here to rename across the whole site.
   ──────────────────────────────────────────────────────*/
-  ORG_NAME:      'THRIVE',
+  ORG_NAME:      'TriveFoundation',
   ORG_TAGLINE:   'Raising Champions',
   ORG_YEAR:      '2026',
   ORG_SEASON:    'A Time To Build',
   ORG_MISSION:   'Empowering youth through technology, sport, and inspiration.',
-  ORG_EMAIL:     'hello@thriveng.org',
+  ORG_EMAIL:     'hello@trivefoundation.org',
   ORG_PHONE:     '+234 800 000 0000',
   /* NOTE: THRIVE is an independent organisation. Events held at partner venues. */
   ORG_VENUE_2025:'FGC NISE, Anambra State, Nigeria',
@@ -37,15 +37,15 @@ window.SITE_CONFIG = {
 
   /* ── DONATION TIERS (shown inline on CTA click) ───── */
   DONATION_TIERS: [
-    { label: 'Seed',     amount: '₦10,000',  desc: 'Materials for one student' },
-    { label: 'Sapling',  amount: '₦50,000',  desc: 'Sponsor a full tech session' },
-    { label: 'Tree',     amount: '₦150,000', desc: 'Fund one event day', featured: true },
-    { label: 'Forest',   amount: '₦400,000', desc: 'Sponsor a school edition' },
+    { label: 'Starter', amount: '₦1,000', desc: 'Support one learner resource' },
+    { label: 'Builder', amount: '₦5,000', desc: 'Contribute to guided training sessions' },
+    { label: 'Impact', amount: '₦12,500', desc: 'Support project build materials' },
+    { label: 'Growth', amount: '₦27,000', desc: 'Help fund coaching and mentorship' },
   ],
 
   /* ── BANK DETAILS (/donate.html) ───────────────────── */
   BANK: {
-    account_name: 'THRIVE Foundation',
+    account_name: 'TriveFoundation',
     bank:         'First Bank of Nigeria',
     account_no:   '3012345678',
     sort_code:    '011152003',
@@ -285,3 +285,54 @@ window.SITE_CONFIG = {
     { img:'https://images.unsplash.com/photo-1573496358961-3c82861ab8f4?w=600&q=70&auto=format&fit=crop', alt:'Young African student focused on a laptop screen', tag:'tech',     tagLabel:'Tech',     title:'Capstone projects showcased and evaluated',             date:'Tech Showcase Day' },
   ],
 };
+
+
+/* ── LARGE QUIZ BANK BUILDER (1000 questions) ───────────── */
+(function buildLargeQuizBank(){
+  const topics=[
+    ['AI','internal workings'],['AI','applications'],['AI','ethics and safety'],
+    ['Machine Learning','internal workings'],['Machine Learning','applications'],['Machine Learning','model evaluation'],
+    ['Neural Networks','internal workings'],['Neural Networks','training and optimisation'],['Neural Networks','applications'],
+    ['Robotics','internal workings'],['Robotics','applications'],['Robotics','safety and controls'],
+    ['Frontend Development','internal workings'],['Frontend Development','applications'],['Frontend Development','performance and accessibility'],
+    ['Backend Development','internal workings'],['Backend Development','applications'],['Backend Development','security and scalability'],
+    ['Web Design','internal workings'],['Web Design','applications'],['Web Design','visual hierarchy and usability'],
+    ['Product Development and Design','internal workings'],['Product Development and Design','applications'],['Product Development and Design','roadmapping and validation'],
+    ['UI/UX','internal workings'],['UI/UX','applications'],['UI/UX','research and testing'],
+    ['Debugging','internal workflows'],['Debugging','tooling and diagnostics'],['Debugging','best practices']
+  ];
+
+  const makeQ=(topic,focus,idx,diff)=>{
+    const stems={
+      easy:`In ${topic}, which statement best describes ${focus}?`,
+      medium:`Which option is most accurate about ${topic} ${focus} in real projects?`,
+      hard:`In advanced ${topic} practice, what is the most reliable principle for ${focus}?`
+    };
+    const correct=[
+      `A clear understanding of ${focus} helps teams build reliable solutions.`,
+      `${focus[0].toUpperCase()+focus.slice(1)} should be measured and improved iteratively.`,
+      `${topic} outcomes improve when ${focus} is validated with data and testing.`,
+      `Strong ${focus} practices reduce defects and improve maintainability in ${topic}.`
+    ][idx%4];
+    const wrongA=`${focus[0].toUpperCase()+focus.slice(1)} is optional and does not affect quality.`;
+    const wrongB=`${topic} success depends only on writing more code quickly.`;
+    const wrongC=`Best practice is to skip review and deploy changes without validation.`;
+    return {q:`${stems[diff]} (#${idx+1})`, options:[correct,wrongA,wrongB,wrongC], answer:0, difficulty:diff, explanation:`${topic}: ${focus} should be intentional, measurable, and continuously improved.`};
+  };
+
+  const bank=[];
+  for(let i=0;i<1000;i++){
+    const [topic,focus]=topics[i%topics.length];
+    const mod=i%4;
+    const diff=mod===0?'easy':(mod<=2?'medium':'hard');
+    bank.push(makeQ(topic,focus,i,diff));
+  }
+
+  window.SITE_CONFIG.QUIZZES=[{
+    id:'technology-mastery',
+    title:'Technology Mastery Assessment',
+    category:'tech',
+    description:'AI, ML, neural networks, robotics, frontend, backend, design, product, UI/UX, and debugging.',
+    questions:bank
+  }];
+})();

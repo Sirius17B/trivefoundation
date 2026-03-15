@@ -329,8 +329,7 @@ p{font-size:clamp(.93rem,1.5vw,1rem);color:var(--c-muted);line-height:1.75}
 /* ── DONATE PAGE ── */
 .tier-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(230px,100%),1fr));gap:clamp(12px,2vw,20px)}
 .tier-card{background:var(--c-white);border-radius:var(--r-xl);padding:clamp(20px,3vw,30px);border:2px solid var(--c-border);cursor:pointer;transition:all var(--t);text-decoration:none;display:block}
-.tier-card:hover,.tier-card.featured{border-color:var(--c-teal);box-shadow:var(--sh-md);transform:translateY(-3px)}
-.tier-card.featured{border-color:var(--c-orange)}
+.tier-card:hover{border-color:var(--c-teal);box-shadow:var(--sh-md);transform:translateY(-3px)}
 .tier-amount{font-family:var(--fd);font-size:clamp(1.8rem,3.5vw,2.6rem);font-weight:900;color:var(--c-teal);margin-bottom:4px}
 .tier-name{font-weight:700;font-size:1rem;color:var(--c-dark);margin-bottom:7px}
 .tier-desc{font-size:.86rem;color:var(--c-muted);line-height:1.5}
@@ -488,4 +487,14 @@ p{font-size:clamp(.93rem,1.5vw,1rem);color:var(--c-muted);line-height:1.75}
 @media(max-width:560px){
   .carousel-outer{padding:0 36px}
   .carousel-btn{width:32px;height:32px;font-size:1rem}
+}
+
+
+@media (min-width: 1024px){
+  .lb-tabs{display:none}
+  .lb-track{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;transform:none!important}
+  .lb-slide{flex:initial}
+}
+@media (max-width: 1023px){
+  .lb-track{display:flex}
 }
