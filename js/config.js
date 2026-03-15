@@ -1,5 +1,5 @@
 /**
- * THRIVE SITE CONFIG  ·  config.js
+ * TriveFoundation SITE CONFIG  ·  config.js
  * ════════════════════════════════
  * RENAME the organisation → change ORG_NAME (and optionally ORG_TAGLINE).
  * Every page reads from window.SITE_CONFIG so one edit changes everything.
@@ -82,9 +82,9 @@ window.SITE_CONFIG = {
     {
       id: 'story-2026-03',
       date: 'March 2026',
-      headline: 'THRIVE 2026 Officially Announced — Expanding to Three Schools',
+      headline: 'TriveFoundation 2026 Officially Announced — Expanding to Three Schools',
       category: 'Announcement',
-      body: 'We are thrilled to announce that THRIVE 2026 will be expanding its reach to three schools across the FCT. Building on the success of our maiden edition, we are set to bring technology training, competitive football, and inspirational talks to even more young Nigerians this year. Registration for partner schools opens in April.',
+      body: 'We are thrilled to announce that TriveFoundation 2026 will be expanding its reach to three schools across the FCT. Building on the success of our maiden edition, we are set to bring technology training, competitive football, and inspirational talks to even more young Nigerians this year. Registration for partner schools opens in April.',
       image: 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&q=75&auto=format&fit=crop',
       imageAlt: 'Group of young African students excited and celebrating',
       featured: true,
@@ -94,7 +94,7 @@ window.SITE_CONFIG = {
       date: 'February 2026',
       headline: 'New Quiz Arena Launched — Tech and Football Challenges Available Now',
       category: 'Tech',
-      body: 'THRIVE participants can now test their knowledge through our brand-new online Quiz Arena. Two categories are live: Tech Challenge (50 questions on programming, computers and digital skills) and Football Arena (50 questions on football rules, history and tactics). Top scores appear on the leaderboard. More quiz categories coming soon.',
+      body: 'TriveFoundation participants can now test their knowledge through our brand-new online Quiz Arena. Two categories are live: Tech Challenge (50 questions on programming, computers and digital skills) and Football Arena (50 questions on football rules, history and tactics). Top scores appear on the leaderboard. More quiz categories coming soon.',
       image: 'https://images.unsplash.com/photo-1573496358961-3c82861ab8f4?w=800&q=75&auto=format&fit=crop',
       imageAlt: 'African student focused on a laptop completing an online quiz',
       featured: false,
@@ -102,9 +102,9 @@ window.SITE_CONFIG = {
     {
       id: 'story-2025-11',
       date: 'November 2025',
-      headline: 'THRIVE 2025 Closes with Record Participation at FGC NISE',
+      headline: 'TriveFoundation 2025 Closes with Record Participation at FGC NISE',
       category: 'Event',
-      body: 'The maiden edition of THRIVE concluded at FGC NISE, Anambra State, with every programmatic objective met. Students competed in the football league, presented tech capstone projects, and attended TED-style inspiration talks at the closing ceremony. SS3 Boys clinched the football final 4–3 against JSS3, while SS2 Girls won the girls competition 3–1.',
+      body: 'The maiden edition of TriveFoundation concluded at FGC NISE, Anambra State, with every programmatic objective met. Students competed in the football league, presented tech capstone projects, and attended TED-style inspiration talks at the closing ceremony. SS3 Boys clinched the football final 4–3 against JSS3, while SS2 Girls won the girls competition 3–1.',
       image: 'https://images.unsplash.com/photo-1544717297-fa95b6ee9643?w=800&q=75&auto=format&fit=crop',
       imageAlt: 'Young African students celebrating at an award ceremony',
       featured: false,
@@ -114,7 +114,7 @@ window.SITE_CONFIG = {
       date: 'October 2025',
       headline: 'Tech Capstone Week: Students Build Real Apps and Websites',
       category: 'Tech',
-      body: 'Over five days of intensive learning, THRIVE participants at FGC NISE designed, built, and presented their own digital products. Projects ranged from weather apps and school portals to recipe finders and budget trackers. Facilitator Yahnazo Basil described the energy as "electric — these students exceeded every expectation."',
+      body: 'Over five days of intensive learning, TriveFoundation participants at FGC NISE designed, built, and presented their own digital products. Projects ranged from weather apps and school portals to recipe finders and budget trackers. Facilitator Yahnazo Basil described the energy as "electric — these students exceeded every expectation."',
       image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800&q=75&auto=format&fit=crop',
       imageAlt: 'African students working on computers during a tech training session',
       featured: false,
@@ -124,7 +124,7 @@ window.SITE_CONFIG = {
       date: 'September 2025',
       headline: 'Football League Kicks Off — 14 Teams Compete Across Boys and Girls Divisions',
       category: 'Football',
-      body: 'The THRIVE 2025 football season opened with 14 teams — 8 in the boys division and 6 in the girls division. Every match was fiercely contested. Football Coordinator Odinaka Okoye noted the remarkable level of organisation and sportsmanship from all participants. The league ran for four weeks, with results tracked live on this website.',
+      body: 'The TriveFoundation 2025 football season opened with 14 teams — 8 in the boys division and 6 in the girls division. Every match was fiercely contested. Football Coordinator Odinaka Okoye noted the remarkable level of organisation and sportsmanship from all participants. The league ran for four weeks, with results tracked live on this website.',
       image: 'https://images.unsplash.com/photo-1547347298-4074fc3086f0?w=800&q=75&auto=format&fit=crop&crop=center',
       imageAlt: 'Young African children competing in a football league match',
       featured: false,
@@ -277,11 +277,11 @@ window.SITE_CONFIG = {
 
   /* ── HIGHLIGHTS CAROUSEL ────────────────────────────── */
   HIGHLIGHTS: [
-    { img:'https://images.unsplash.com/photo-1489824904134-891ab64532f1?w=600&q=70&auto=format&fit=crop', alt:'Young African boys playing competitive football on a grass pitch', tag:'football', tagLabel:'Football', title:'Boys Final: SS3 beat JSS 4–3 in a dramatic finale',   date:'THRIVE 2025 Finals' },
+    { img:'https://images.unsplash.com/photo-1489824904134-891ab64532f1?w=600&q=70&auto=format&fit=crop', alt:'Young African boys playing competitive football on a grass pitch', tag:'football', tagLabel:'Football', title:'Boys Final: SS3 beat JSS 4–3 in a dramatic finale',   date:'TriveFoundation 2025 Finals' },
     { img:'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=600&q=70&auto=format&fit=crop', alt:'African students learning and working together on computers', tag:'tech',     tagLabel:'Tech',     title:'Students build real apps and websites from scratch',   date:'Tech Innovation Week' },
-    { img:'https://images.unsplash.com/photo-1529390079861-591de354faf5?w=600&q=70&auto=format&fit=crop', alt:'African girls playing football on a sunny field', tag:'football', tagLabel:'Football', title:'Girls Final: SS2 Girls win 3–1 against SS1 Girls',     date:'THRIVE 2025 Finals' },
-    { img:'https://images.unsplash.com/photo-1559523161-0fc0d8b814b4?w=600&q=70&auto=format&fit=crop', alt:'Speaker giving an inspiring TED-style talk on stage', tag:'community', tagLabel:'Community', title:'TED-style talks inspire hundreds of students',          date:'THRIVE Closing Ceremony' },
-    { img:'https://images.unsplash.com/photo-1544717297-fa95b6ee9643?w=600&q=70&auto=format&fit=crop', alt:'Diverse group of young people celebrating an award ceremony', tag:'community', tagLabel:'Community', title:'Award ceremony — celebrating every champion',           date:'THRIVE 2025 Closing' },
+    { img:'https://images.unsplash.com/photo-1529390079861-591de354faf5?w=600&q=70&auto=format&fit=crop', alt:'African girls playing football on a sunny field', tag:'football', tagLabel:'Football', title:'Girls Final: SS2 Girls win 3–1 against SS1 Girls',     date:'TriveFoundation 2025 Finals' },
+    { img:'https://images.unsplash.com/photo-1559523161-0fc0d8b814b4?w=600&q=70&auto=format&fit=crop', alt:'Speaker giving an inspiring TED-style talk on stage', tag:'community', tagLabel:'Community', title:'TED-style talks inspire hundreds of students',          date:'TriveFoundation Closing Ceremony' },
+    { img:'https://images.unsplash.com/photo-1544717297-fa95b6ee9643?w=600&q=70&auto=format&fit=crop', alt:'Diverse group of young people celebrating an award ceremony', tag:'community', tagLabel:'Community', title:'Award ceremony — celebrating every champion',           date:'TriveFoundation 2025 Closing' },
     { img:'https://images.unsplash.com/photo-1573496358961-3c82861ab8f4?w=600&q=70&auto=format&fit=crop', alt:'Young African student focused on a laptop screen', tag:'tech',     tagLabel:'Tech',     title:'Capstone projects showcased and evaluated',             date:'Tech Showcase Day' },
   ],
 };

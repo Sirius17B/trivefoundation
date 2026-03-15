@@ -366,6 +366,14 @@ function buildAttemptCode(){
   return `TF-${t.slice(-5)}-${r.slice(-4)}`;
 }
 
+function shuffle(arr){
+  const copy=[...arr];
+  for(let i=copy.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [copy[i],copy[j]]=[copy[j],copy[i]];
+  }
+  return copy;
+}
 function shuffle(arr){return [...arr].sort(()=>Math.random()-.5);}
 
 function normalizeQuestion(q,idx){
@@ -390,6 +398,7 @@ function buildBalancedQuestionSet(allQuestions,target=50){
     const filler=shuffle([...by.easy,...by.medium,...by.hard]);
     for(const q of filler){ if(selected.length>=target) break; if(!selected.includes(q)) selected.push(q); }
   }
+  return shuffle(selected);
   return shuffle(selected).map((q,i)=>normalizeQuestion(q,i));
 }
 
