@@ -378,6 +378,7 @@ function shuffle(arr){
   }
   return copy;
 }
+function shuffle(arr){return [...arr].sort(()=>Math.random()-.5);}
 
 function normalizeQuestion(q,idx){
   const letters=['A','B','C','D'];
@@ -402,6 +403,7 @@ function buildBalancedQuestionSet(allQuestions,target=50){
     for(const q of filler){ if(selected.length>=target) break; if(!selected.includes(q)) selected.push(q); }
   }
   return shuffle(selected);
+  return shuffle(selected).map((q,i)=>normalizeQuestion(q,i));
 }
 
 
