@@ -271,7 +271,8 @@ async function saveQuizzes(){
 /* Compute timer: questions × timePerQuestion seconds */
 function getTimerSeconds(quiz){
   const tpq = window.SITE_CONFIG.QUIZ_SETTINGS.timePerQuestion || 14;
-  return quiz.questions.length * tpq;
+  const sessionQuestions = Math.min(50, quiz.questions.length || 50);
+  return sessionQuestions * tpq;
 }
 
 /* ── Render quiz cards ── */
@@ -337,7 +338,7 @@ function startQuiz(quizId){
     quiz, questions:selected, current:0,
     answers:new Array(selected.length).fill(null),
     answered:new Array(selected.length).fill(false),
-    timeLeft:getTimerSeconds({questions:selected}),
+    timeLeft:getTimerSeconds(quiz),
     finished:false,
     candidate:{fullName,candidateCode,attemptCode:buildAttemptCode()}
   };
