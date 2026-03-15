@@ -286,53 +286,53 @@ window.SITE_CONFIG = {
   ],
 };
 
-
 /* ── LARGE QUIZ BANK BUILDER (1000 per quiz) ───────────── */
 (function buildLargeQuizBanks(){
   const techTopics=[
-/* ── LARGE QUIZ BANK BUILDER (1000 questions) ───────────── */
-(function buildLargeQuizBank(){
-  const topics=[
-    ['AI','internal workings'],['AI','applications'],['AI','ethics and safety'],
-    ['Machine Learning','internal workings'],['Machine Learning','applications'],['Machine Learning','model evaluation'],
-    ['Neural Networks','internal workings'],['Neural Networks','training and optimisation'],['Neural Networks','applications'],
-    ['Robotics','internal workings'],['Robotics','applications'],['Robotics','safety and controls'],
-    ['Frontend Development','internal workings'],['Frontend Development','applications'],['Frontend Development','performance and accessibility'],
-    ['Backend Development','internal workings'],['Backend Development','applications'],['Backend Development','security and scalability'],
-    ['Web Design','internal workings'],['Web Design','applications'],['Web Design','visual hierarchy and usability'],
-    ['Product Development and Design','internal workings'],['Product Development and Design','applications'],['Product Development and Design','roadmapping and validation'],
-    ['UI/UX','internal workings'],['UI/UX','applications'],['UI/UX','research and testing'],
-    ['Debugging','internal workflows'],['Debugging','tooling and diagnostics'],['Debugging','best practices']
+    ['AI','core concepts'],['AI','ethics and safety'],['AI','real-world applications'],
+    ['Machine Learning','model training'],['Machine Learning','evaluation metrics'],['Machine Learning','overfitting and generalisation'],
+    ['Neural Networks','architectures'],['Neural Networks','backpropagation'],['Neural Networks','practical use cases'],
+    ['Robotics','sensors and actuators'],['Robotics','control systems'],['Robotics','human safety in deployment'],
+    ['Frontend Development','accessibility'],['Frontend Development','performance'],['Frontend Development','responsive design'],
+    ['Backend Development','APIs and services'],['Backend Development','security'],['Backend Development','scalability'],
+    ['Web Design','visual hierarchy'],['Web Design','usability'],['Web Design','design systems'],
+    ['Product Development','discovery and validation'],['Product Development','roadmapping'],['Product Development','delivery workflows'],
+    ['UI/UX','user research'],['UI/UX','interaction patterns'],['UI/UX','testing and iteration'],
+    ['Debugging','root-cause analysis'],['Debugging','tooling and diagnostics'],['Debugging','preventive practices']
   ];
 
   const footballTopics=[
-    ['Football Rules','laws of the game'],['Football Rules','offside, fouls and cards'],['Football Rules','VAR and refereeing decisions'],
-    ['Tactics','pressing and transitions'],['Tactics','formations and roles'],['Tactics','set-pieces and game management'],
-    ['Playing Styles','possession vs direct play'],['Playing Styles','counter-attack patterns'],['Playing Styles','high block vs low block'],
-    ['Positions','goalkeeper responsibilities'],['Positions','defensive roles'],['Positions','midfield and forward roles'],
-    ['Recent Football History','major events in the last 10 years'],['Recent Football History','continental tournaments'],['Recent Football History','World Cup and club finals'],
-    ['Players and Coaches','famous players of the modern era'],['Players and Coaches','famous coaches and systems'],['Players and Coaches','awards and records'],
-    ['Nigerian Football','Super Eagles and Super Falcons'],['Nigerian Football','NPFL and grassroots football'],['Nigerian Football','Nigerian players abroad'],
-    ['Nigerian Ancestry Abroad','dual-national players'],['Nigerian Ancestry Abroad','career pathways'],['Nigerian Ancestry Abroad','international representation']
+    ['Football Rules','laws of the game'],['Football Rules','offside, fouls, and cards'],['Football Rules','VAR and officiating decisions'],
+    ['Tactics','pressing, transitions, and compactness'],['Tactics','formations and role balance'],['Tactics','set-piece organisation and game management'],
+    ['Playing Styles','possession versus direct play'],['Playing Styles','counter-attacking patterns'],['Playing Styles','high block and low block structure'],
+    ['Positions','goalkeeper decision making'],['Positions','defensive responsibilities'],['Positions','midfield and attacking roles'],
+    ['Recent Football History','major tournaments in the last 10 years'],['Recent Football History','club finals and continental titles'],['Recent Football History','notable title races and records'],
+    ['Players and Coaches','current stars and elite veterans'],['Players and Coaches','coaching philosophies'],['Players and Coaches','awards and landmark achievements'],
+    ['Nigerian Football','Super Eagles and Super Falcons'],['Nigerian Football','NPFL and grassroots development'],['Nigerian Football','iconic Nigerian football moments'],
+    ['Nigerian Ancestry Abroad','dual-national footballers'],['Nigerian Ancestry Abroad','diaspora player pathways'],['Nigerian Ancestry Abroad','international representation choices']
   ];
 
-  const makeQ=(topic,focus,idx,diff,domain)=>{
-    const stems={
-      easy:`In ${topic}, which statement best describes ${focus}?`,
-      medium:`Which option is most accurate about ${topic} ${focus} in real situations?`,
-      hard:`In advanced ${topic}, what is the most reliable principle for ${focus}?`
-    };
-    const domainText=domain==='football' ? 'match outcomes and tactical understanding' : 'solution quality and maintainability';
-    const correct=[
-      `A clear understanding of ${focus} improves ${domainText}.`,
-      `${focus[0].toUpperCase()+focus.slice(1)} should be analysed and improved iteratively.`,
-      `${topic} outcomes improve when ${focus} is validated with evidence and review.`,
-      `Strong ${focus} practice reduces mistakes and improves consistency.`
+  const makeQ=(topic,focus,idx,difficulty,domain)=>{
+    const lead = domain==='football' ? 'football understanding' : 'technology problem-solving';
+    const correct = [
+      `Strong knowledge of ${focus} improves ${lead} in real situations.`,
+      `${focus[0].toUpperCase()+focus.slice(1)} should be reviewed with evidence and adjusted over time.`,
+      `Reliable ${topic} decisions come from context, analysis, and feedback loops.`,
+      `Consistent ${focus} practice reduces avoidable errors and improves outcomes.`
     ][idx%4];
-    const wrongA=`${focus[0].toUpperCase()+focus.slice(1)} is optional and does not affect results.`;
-    const wrongB=`Best performance comes from ignoring context and repeating one approach.`;
-    const wrongC=`The best practice is to skip analysis and rely on luck.`;
-    return {q:`${stems[diff]} (#${idx+1})`, options:[correct,wrongA,wrongB,wrongC], answer:0, difficulty:diff, explanation:`${topic}: ${focus} should be deliberate, measurable, and continuously refined.`};
+
+    return {
+      q: `In ${topic}, which option best reflects ${focus}? (#${idx+1})`,
+      options: [
+        correct,
+        `${focus[0].toUpperCase()+focus.slice(1)} has little impact on outcomes, so it can be ignored.`,
+        `The best approach is to use one fixed method, regardless of context.`,
+        `Skipping review and relying on luck is usually the most effective strategy.`
+      ],
+      answer: 0,
+      difficulty,
+      explanation: `${topic}: ${focus} should be deliberate, evidence-based, and continuously refined.`
+    };
   };
 
   const buildBank=(topics,domain)=>{
@@ -340,62 +340,26 @@ window.SITE_CONFIG = {
     for(let i=0;i<1000;i++){
       const [topic,focus]=topics[i%topics.length];
       const mod=i%4;
-      const diff=mod===0?'easy':(mod<=2?'medium':'hard');
-      bank.push(makeQ(topic,focus,i,diff,domain));
+      const difficulty=mod===0 ? 'easy' : (mod<=2 ? 'medium' : 'hard');
+      bank.push(makeQ(topic,focus,i,difficulty,domain));
     }
     return bank;
   };
-
-  const techBank=buildBank(techTopics,'tech');
-  const footballBank=buildBank(footballTopics,'football');
 
   window.SITE_CONFIG.QUIZZES=[
     {
       id:'technology-mastery',
       title:'Tech Quiz',
       category:'tech',
-      description:'AI, ML, neural networks, robotics, frontend, backend, design, product, UI/UX, and debugging.',
-      questions:techBank
+      description:'AI, ML, neural networks, robotics, frontend, backend, web design, product, UI/UX, and debugging.',
+      questions:buildBank(techTopics,'tech')
     },
     {
       id:'football-mastery',
       title:'Football Quiz',
       category:'football',
-      description:'Recent football history, rules, tactics, positions, modern players/coaches, and Nigerian football context.',
-      questions:footballBank
+      description:'Football rules, tactics, playing styles, positions, recent history (last decade), and Nigerian football context.',
+      questions:buildBank(footballTopics,'football')
     }
   ];
-  const makeQ=(topic,focus,idx,diff)=>{
-    const stems={
-      easy:`In ${topic}, which statement best describes ${focus}?`,
-      medium:`Which option is most accurate about ${topic} ${focus} in real projects?`,
-      hard:`In advanced ${topic} practice, what is the most reliable principle for ${focus}?`
-    };
-    const correct=[
-      `A clear understanding of ${focus} helps teams build reliable solutions.`,
-      `${focus[0].toUpperCase()+focus.slice(1)} should be measured and improved iteratively.`,
-      `${topic} outcomes improve when ${focus} is validated with data and testing.`,
-      `Strong ${focus} practices reduce defects and improve maintainability in ${topic}.`
-    ][idx%4];
-    const wrongA=`${focus[0].toUpperCase()+focus.slice(1)} is optional and does not affect quality.`;
-    const wrongB=`${topic} success depends only on writing more code quickly.`;
-    const wrongC=`Best practice is to skip review and deploy changes without validation.`;
-    return {q:`${stems[diff]} (#${idx+1})`, options:[correct,wrongA,wrongB,wrongC], answer:0, difficulty:diff, explanation:`${topic}: ${focus} should be intentional, measurable, and continuously improved.`};
-  };
-
-  const bank=[];
-  for(let i=0;i<1000;i++){
-    const [topic,focus]=topics[i%topics.length];
-    const mod=i%4;
-    const diff=mod===0?'easy':(mod<=2?'medium':'hard');
-    bank.push(makeQ(topic,focus,i,diff));
-  }
-
-  window.SITE_CONFIG.QUIZZES=[{
-    id:'technology-mastery',
-    title:'Technology Mastery Assessment',
-    category:'tech',
-    description:'AI, ML, neural networks, robotics, frontend, backend, design, product, UI/UX, and debugging.',
-    questions:bank
-  }];
 })();
