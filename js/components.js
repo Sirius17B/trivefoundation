@@ -9,7 +9,7 @@ window.LOGO_SVG=function(dark){
   /* dark=true → use on dark nav/footer; false → use on light bg */
   const nameCol = dark ? '#FFFFFF' : '#1C2B1C';
   const tagCol  = dark ? '#3DB870' : '#1B7B78';
-  const name    = (window.SITE_CONFIG&&window.SITE_CONFIG.ORG_NAME)||'THRIVE';
+  const name    = (window.SITE_CONFIG&&window.SITE_CONFIG.ORG_NAME)||'TriveFoundation';
   const tagline = (window.SITE_CONFIG&&window.SITE_CONFIG.ORG_TAGLINE)||'Raising Champions';
   return `<span class="logo-lockup" aria-label="${name} — ${tagline}" role="img" style="display:inline-flex;align-items:center;gap:10px;text-decoration:none">
     <img src="assets/tree-logo.png" alt="" aria-hidden="true"
@@ -25,16 +25,13 @@ window.LOGO_SVG=function(dark){
 window.injectNav=function(){
   const el=document.querySelector('.nav');if(!el)return;
   const cfg=window.SITE_CONFIG||{};
-  const name=cfg.ORG_NAME||'THRIVE';
+  const name=cfg.ORG_NAME||'TriveFoundation';
   el.innerHTML=`<div class="nav-inner">
     <a href="index.html" class="nav-logo" aria-label="${name} — Home">${window.LOGO_SVG(true)}</a>
     <nav class="nav-links" role="navigation" aria-label="Main navigation">
       <a href="index.html" class="nav-link">Home</a>
       <a href="about.html" class="nav-link">About</a>
       <a href="activities.html" class="nav-link">Activities</a>
-      <a href="league.html" class="nav-link">League</a>
-      <a href="quiz.html" class="nav-link">Quiz</a>
-      <a href="videos.html" class="nav-link">Videos</a>
       <a href="gallery.html" class="nav-link">Gallery</a>
       <a href="contact.html" class="nav-link">Contact</a>
       <a href="donate.html" class="nav-link nav-donate-btn">Donate</a>
@@ -97,7 +94,7 @@ window.injectAdminUI=function(){
       <button class="btn btn-green" onclick="window._doAdminLogin()">Sign In</button>
       <button class="btn" style="background:var(--c-sand);color:var(--c-muted)" onclick="window._closeLoginModal()">Cancel</button>
     </div>
-    <p style="font-size:.74rem;color:var(--c-muted);margin-top:12px">Default PIN: <strong>2025</strong></p>
+    <p style="font-size:.74rem;color:var(--c-muted);margin-top:12px">PIN available to authorised administrators only</p>
   </div>
 </div>
 
@@ -142,7 +139,7 @@ window.injectAdminUI=function(){
       <div class="cms-panel active" style="display:block">
         <p style="font-size:.82rem;background:rgba(27,123,120,.08);border-radius:var(--r-sm);padding:10px 13px;color:var(--c-teal);margin-bottom:16px">Changing the name here updates it everywhere — nav, footer, all pages. Refresh other tabs to see it.</p>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px" class="cms-field-row">
-          <div><label style="font-size:.82rem;font-weight:600;color:var(--c-dark);display:block;margin-bottom:4px">Organisation Name</label><input id="cms-org-name" type="text" class="fi" placeholder="THRIVE"></div>
+          <div><label style="font-size:.82rem;font-weight:600;color:var(--c-dark);display:block;margin-bottom:4px">Organisation Name</label><input id="cms-org-name" type="text" class="fi" placeholder="TriveFoundation"></div>
           <div><label style="font-size:.82rem;font-weight:600;color:var(--c-dark);display:block;margin-bottom:4px">Tagline</label><input id="cms-org-tagline" type="text" class="fi" placeholder="Raising Champions"></div>
         </div>
         <div style="margin-bottom:12px"><label style="font-size:.82rem;font-weight:600;color:var(--c-dark);display:block;margin-bottom:4px">Mission Statement</label><input id="cms-org-mission" type="text" class="fi"></div>
@@ -320,9 +317,9 @@ window.saveCMS=function(section){
     window.CMS.set('org_mission',    g('cms-org-mission'));
     window.CMS.set('org_email',      g('cms-org-email'));
     /* Live-update org name on page */
-    const name=g('cms-org-name')||window.SITE_CONFIG?.ORG_NAME||'THRIVE';
+    const name=g('cms-org-name')||window.SITE_CONFIG?.ORG_NAME||'TriveFoundation';
     document.querySelectorAll('[data-org-name]').forEach(el=>el.textContent=name);
-    document.title=document.title.replace(/THRIVE/g,name);
+    document.title=document.title.replace(/TriveFoundation/g,name);
   }
   if(section==='homepage'){
     window.CMS.set('hero_line1',      g('cms-hero1'));
@@ -419,7 +416,7 @@ function _onEditBlur(e){
 window.injectFooter=function(){
   const el=document.querySelector('.site-footer');if(!el)return;
   const cfg=window.SITE_CONFIG||{};
-  const name=cfg.ORG_NAME||'THRIVE';
+  const name=cfg.ORG_NAME||'TriveFoundation';
   el.innerHTML=`<footer class="footer" role="contentinfo">
     <div class="footer-grid">
       <div>
@@ -436,18 +433,18 @@ window.injectFooter=function(){
           <li><a href="index.html" class="footer-lnk">Home</a></li>
           <li><a href="about.html" class="footer-lnk">About</a></li>
           <li><a href="activities.html" class="footer-lnk">Activities</a></li>
-          <li><a href="league.html" class="footer-lnk">League</a></li>
-          <li><a href="videos.html" class="footer-lnk">Videos</a></li>
-          <li><a href="gallery.html" class="footer-lnk">Gallery</a></li>
+          <li><a href="activities.html#league-hub" class="footer-lnk">League</a></li>
+          <li><a href="activities.html#quiz-hub" class="footer-lnk">Quiz</a></li>
+          <li><a href="gallery.html" class="footer-lnk">Gallery & Videos</a></li>
         </ul>
       </div>
       <div>
         <div class="footer-hdr">Programme</div>
         <ul class="footer-links">
           <li><a href="activities.html#tech" class="footer-lnk">Tech Innovation</a></li>
-          <li><a href="activities.html#football" class="footer-lnk">Football League</a></li>
+          <li><a href="activities.html#league-hub" class="footer-lnk">Football League</a></li>
           <li><a href="activities.html#tedtalk" class="footer-lnk">Inspiration Talks</a></li>
-          <li><a href="quiz.html" class="footer-lnk">Quiz Arena</a></li>
+          <li><a href="activities.html#quiz-hub" class="footer-lnk">Quiz Arena</a></li>
           <li><a href="gallery.html" class="footer-lnk">Gallery</a></li>
         </ul>
       </div>
@@ -462,7 +459,7 @@ window.injectFooter=function(){
     </div>
     <div class="footer-btm">
       <span class="footer-copy">© 2026 <span data-org-name>${name}</span> · Independent Youth Development Initiative · Nigeria</span>
-      <span style="color:rgba(255,255,255,.28);font-size:.76rem;font-style:italic" data-cms="footer_quote">"Every living being is designed to grow and THRIVE."</span>
+      <span style="color:rgba(255,255,255,.28);font-size:.76rem;font-style:italic" data-cms="footer_quote">"Every living being is designed to grow and thrive."</span>
     </div>
   </footer>`;
 };

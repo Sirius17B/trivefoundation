@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
   <meta http-equiv="X-Content-Type-Options" content="nosniff"><meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
-  <meta name="description" content="THRIVE Activities — Tech, Football, Inspiration and the latest news from the programme.">
-  <title>Activities — THRIVE</title>
+  <meta name="description" content="TriveFoundation Activities — Tech, Football, Inspiration and the latest news from the programme.">
+  <title>Activities — TriveFoundation</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" href="assets/tree-logo.png">
   <style>
@@ -36,6 +36,10 @@
     .story-card-headline{font-size:.86rem;font-weight:600;color:var(--c-dark);line-height:1.35}
 
     /* Admin story editor */
+    .hub-menu{position:sticky;top:68px;z-index:30;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);border-bottom:1px solid var(--c-border)}
+    .hub-menu-inner{display:flex;gap:8px;overflow:auto;padding:10px var(--pad)}
+    .hub-pill{white-space:nowrap;padding:8px 12px;border:1px solid var(--c-border);border-radius:999px;color:var(--c-dark);font-size:.82rem;text-decoration:none;background:var(--c-white)}
+    .hub-pill:hover{border-color:var(--c-teal);color:var(--c-teal)}
     .story-editor{background:var(--c-white);border:1px solid var(--c-border);border-radius:var(--r-lg);padding:clamp(18px,3vw,28px);margin-top:24px}
     .story-editor h3{font-size:.95rem;margin-bottom:16px;color:var(--c-dark);display:flex;align-items:center;justify-content:space-between}
     .story-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
@@ -70,8 +74,16 @@
 <section class="page-hdr">
   <span class="eyebrow" style="color:var(--c-green-lt);display:block;margin-bottom:.4rem">Programme</span>
   <h1>Activities &amp; News</h1>
-  <p class="lead" style="margin-top:.5rem;max-width:540px">Three pillars. One mission. Plus the latest stories from the THRIVE programme.</p>
+  <p class="lead" style="margin-top:.5rem;max-width:540px">Three pillars. One mission. Plus the latest stories from the TriveFoundation programme.</p>
 </section>
+
+<nav class="hub-menu" aria-label="Activities hubs">
+  <div class="hub-menu-inner">
+    <a class="hub-pill" href="#quiz-hub">Quiz Hub</a>
+    <a class="hub-pill" href="#leaderboard-hub">Leaderboard Hub</a>
+    <a class="hub-pill" href="#league-hub">League Hub</a>
+  </div>
+</nav>
 
 <!-- ══════════════════════════════════
      NEWS / STORIES FEED
@@ -186,8 +198,29 @@
   </div>
 </section>
 
+
+<section class="section" style="background:var(--c-white)" id="leaderboard-hub">
+  <div class="container">
+    <div class="fade-up">
+      <span class="eyebrow" style="color:var(--c-teal)">Hub</span>
+      <h2 style="margin-top:.4rem">Leaderboard Hub</h2>
+      <p style="margin-top:.75rem">This hub combines quiz ranking leaderboards and football league rankings in one place.</p>
+    </div>
+    <div class="grid-2" style="margin-top:1.2rem;align-items:start">
+      <div class="res-panel fade-up" style="background:var(--c-cream)">
+        <h3 style="margin-bottom:10px">Quiz Rankings (Top 10)</h3>
+        <div id="hub-quiz-rankings" style="font-size:.88rem;color:var(--c-muted)">Loading…</div>
+      </div>
+      <div class="res-panel fade-up" style="background:var(--c-cream)">
+        <h3 style="margin-bottom:10px">Football League Rankings</h3>
+        <div id="hub-football-rankings" style="font-size:.88rem;color:var(--c-muted)">Loading…</div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- FOOTBALL PILLAR -->
-<section class="section" style="background:var(--c-cream)" id="football">
+<section class="section" style="background:var(--c-cream)" id="league-hub">
   <div class="container">
     <div class="about-grid">
       <div class="fade-up" style="order:2">
@@ -199,10 +232,28 @@
           <div style="background:linear-gradient(135deg,#7C2D12,var(--c-orange));border-radius:var(--r-md);padding:14px;color:#fff;text-align:center"><div style="font-size:.68rem;opacity:.75;margin-bottom:3px;text-transform:uppercase;letter-spacing:.07em">Boys Final 2025</div><div style="font-size:1.1rem;font-weight:700">SS3 <span style="color:#FBBF24">4–3</span> JSS3</div></div>
           <div style="background:linear-gradient(135deg,#7C2D12,var(--c-orange));border-radius:var(--r-md);padding:14px;color:#fff;text-align:center"><div style="font-size:.68rem;opacity:.75;margin-bottom:3px;text-transform:uppercase;letter-spacing:.07em">Girls Final 2025</div><div style="font-size:1.1rem;font-weight:700">SS2 <span style="color:#FBBF24">3–1</span> SS1</div></div>
         </div>
-        <a href="league.html" class="btn btn-primary" style="margin-top:1.4rem">Live League Table →</a>
+        <a href="league.html" class="btn btn-primary" style="margin-top:1.4rem">Open League Subpage →</a>
       </div>
       <div class="fade-up" style="order:1;transition-delay:.1s">
         <img src="https://images.unsplash.com/photo-1529686342540-1b43aec0df75?w=800&q=75&auto=format&fit=crop" alt="African children playing football outdoors" class="mission-img" loading="lazy" data-img-editable data-cms="football_img">
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section" style="background:var(--c-cream)" id="quiz-hub">
+  <div class="container">
+    <div class="about-grid">
+      <div class="fade-up">
+        <span class="eyebrow" style="color:var(--c-teal)">Subpage</span>
+        <h2 style="margin-top:.4rem">Quiz Arena</h2>
+        <p style="margin-top:.85rem">Take the TriveFoundation skills assessment covering AI, ML, neural networks, robotics, frontend, backend, design, product development, UI/UX, and debugging.</p>
+        <p style="margin-top:.75rem">Each student attempt draws 50 questions only, with balanced difficulty and randomized answer positions.</p>
+        <a href="quiz.html" class="btn btn-teal" style="margin-top:1.4rem">Open Quiz Subpage →</a>
+      </div>
+      <div class="fade-up" style="transition-delay:.12s">
+        <img src="https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=800&q=75&auto=format&fit=crop" alt="Students taking digital assessments" class="mission-img" loading="lazy">
       </div>
     </div>
   </div>
@@ -431,6 +482,39 @@ window.deleteStory = function() {
 };
 
 // Init
+
+
+async function renderHubLeaderboards(){
+  const quizEl=document.getElementById('hub-quiz-rankings');
+  const footEl=document.getElementById('hub-football-rankings');
+  if(!quizEl||!footEl) return;
+
+  // Quiz leaderboard summary
+  let scores={};
+  try{
+    const r=await window.storage?.get('thrive_quiz_lb_v2');
+    scores=r?JSON.parse(r.value):{};
+  }catch{}
+  const rows=[];
+  Object.entries(scores).forEach(([quizId,entries])=>{
+    (entries||[]).forEach(e=>rows.push({quizId,...e}));
+  });
+  rows.sort((a,b)=>b.pct-a.pct||a.timeTaken-b.timeTaken);
+  const top=rows.slice(0,10);
+  quizEl.innerHTML=!top.length
+    ? '<p>No quiz attempts yet.</p>'
+    : `<ol style="padding-left:18px;margin:0;display:grid;gap:6px">${top.map(e=>`<li><strong>${sanitize(e.name||'Candidate')}</strong> — ${e.pct}% <span style="color:var(--c-muted)">(${sanitize(e.quizId)})</span></li>`).join('')}</ol>`;
+
+  // Football rankings summary
+  await LeagueEngine.load('boys');
+  await LeagueEngine.load('girls');
+  const boys=LeagueEngine.buildTable('boys').slice(0,5);
+  const girls=LeagueEngine.buildTable('girls').slice(0,5);
+  const mk=(title,arr)=>`<div style="margin-bottom:10px"><div style="font-weight:700;margin-bottom:6px">${title}</div>${arr.length?`<ol style="padding-left:18px;margin:0;display:grid;gap:4px">${arr.map(t=>`<li>${sanitize(t.name)} — ${t.pts} pts</li>`).join('')}</ol>`:'<p>No data yet.</p>'}</div>`;
+  footEl.innerHTML=mk('Boys Top 5',boys)+mk('Girls Top 5',girls);
+}
+
+renderHubLeaderboards();
 loadStories();
 if (window.AdminAuth?.isLoggedIn()) {
   document.querySelectorAll('.admin-only').forEach(el=>el.style.display='block');

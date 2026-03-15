@@ -1,5 +1,5 @@
 /**
- * THRIVE SITE CONFIG  ·  config.js
+ * TriveFoundation SITE CONFIG  ·  config.js
  * ════════════════════════════════
  * RENAME the organisation → change ORG_NAME (and optionally ORG_TAGLINE).
  * Every page reads from window.SITE_CONFIG so one edit changes everything.
@@ -12,12 +12,12 @@ window.SITE_CONFIG = {
   /* ── IDENTITY ─────────────────────────────────────────
      Change ORG_NAME here to rename across the whole site.
   ──────────────────────────────────────────────────────*/
-  ORG_NAME:      'THRIVE',
+  ORG_NAME:      'TriveFoundation',
   ORG_TAGLINE:   'Raising Champions',
   ORG_YEAR:      '2026',
   ORG_SEASON:    'A Time To Build',
   ORG_MISSION:   'Empowering youth through technology, sport, and inspiration.',
-  ORG_EMAIL:     'hello@thriveng.org',
+  ORG_EMAIL:     'hello@trivefoundation.org',
   ORG_PHONE:     '+234 800 000 0000',
   /* NOTE: THRIVE is an independent organisation. Events held at partner venues. */
   ORG_VENUE_2025:'FGC NISE, Anambra State, Nigeria',
@@ -37,15 +37,15 @@ window.SITE_CONFIG = {
 
   /* ── DONATION TIERS (shown inline on CTA click) ───── */
   DONATION_TIERS: [
-    { label: 'Seed',     amount: '₦10,000',  desc: 'Materials for one student' },
-    { label: 'Sapling',  amount: '₦50,000',  desc: 'Sponsor a full tech session' },
-    { label: 'Tree',     amount: '₦150,000', desc: 'Fund one event day', featured: true },
-    { label: 'Forest',   amount: '₦400,000', desc: 'Sponsor a school edition' },
+    { label: 'Starter', amount: '₦1,000', desc: 'Support one learner resource' },
+    { label: 'Builder', amount: '₦5,000', desc: 'Contribute to guided training sessions' },
+    { label: 'Impact', amount: '₦12,500', desc: 'Support project build materials' },
+    { label: 'Growth', amount: '₦27,000', desc: 'Help fund coaching and mentorship' },
   ],
 
   /* ── BANK DETAILS (/donate.html) ───────────────────── */
   BANK: {
-    account_name: 'THRIVE Foundation',
+    account_name: 'TriveFoundation',
     bank:         'First Bank of Nigeria',
     account_no:   '3012345678',
     sort_code:    '011152003',
@@ -82,9 +82,9 @@ window.SITE_CONFIG = {
     {
       id: 'story-2026-03',
       date: 'March 2026',
-      headline: 'THRIVE 2026 Officially Announced — Expanding to Three Schools',
+      headline: 'TriveFoundation 2026 Officially Announced — Expanding to Three Schools',
       category: 'Announcement',
-      body: 'We are thrilled to announce that THRIVE 2026 will be expanding its reach to three schools across the FCT. Building on the success of our maiden edition, we are set to bring technology training, competitive football, and inspirational talks to even more young Nigerians this year. Registration for partner schools opens in April.',
+      body: 'We are thrilled to announce that TriveFoundation 2026 will be expanding its reach to three schools across the FCT. Building on the success of our maiden edition, we are set to bring technology training, competitive football, and inspirational talks to even more young Nigerians this year. Registration for partner schools opens in April.',
       image: 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&q=75&auto=format&fit=crop',
       imageAlt: 'Group of young African students excited and celebrating',
       featured: true,
@@ -94,7 +94,7 @@ window.SITE_CONFIG = {
       date: 'February 2026',
       headline: 'New Quiz Arena Launched — Tech and Football Challenges Available Now',
       category: 'Tech',
-      body: 'THRIVE participants can now test their knowledge through our brand-new online Quiz Arena. Two categories are live: Tech Challenge (50 questions on programming, computers and digital skills) and Football Arena (50 questions on football rules, history and tactics). Top scores appear on the leaderboard. More quiz categories coming soon.',
+      body: 'TriveFoundation participants can now test their knowledge through our brand-new online Quiz Arena. Two categories are live: Tech Challenge (50 questions on programming, computers and digital skills) and Football Arena (50 questions on football rules, history and tactics). Top scores appear on the leaderboard. More quiz categories coming soon.',
       image: 'https://images.unsplash.com/photo-1573496358961-3c82861ab8f4?w=800&q=75&auto=format&fit=crop',
       imageAlt: 'African student focused on a laptop completing an online quiz',
       featured: false,
@@ -102,9 +102,9 @@ window.SITE_CONFIG = {
     {
       id: 'story-2025-11',
       date: 'November 2025',
-      headline: 'THRIVE 2025 Closes with Record Participation at FGC NISE',
+      headline: 'TriveFoundation 2025 Closes with Record Participation at FGC NISE',
       category: 'Event',
-      body: 'The maiden edition of THRIVE concluded at FGC NISE, Anambra State, with every programmatic objective met. Students competed in the football league, presented tech capstone projects, and attended TED-style inspiration talks at the closing ceremony. SS3 Boys clinched the football final 4–3 against JSS3, while SS2 Girls won the girls competition 3–1.',
+      body: 'The maiden edition of TriveFoundation concluded at FGC NISE, Anambra State, with every programmatic objective met. Students competed in the football league, presented tech capstone projects, and attended TED-style inspiration talks at the closing ceremony. SS3 Boys clinched the football final 4–3 against JSS3, while SS2 Girls won the girls competition 3–1.',
       image: 'https://images.unsplash.com/photo-1544717297-fa95b6ee9643?w=800&q=75&auto=format&fit=crop',
       imageAlt: 'Young African students celebrating at an award ceremony',
       featured: false,
@@ -114,7 +114,7 @@ window.SITE_CONFIG = {
       date: 'October 2025',
       headline: 'Tech Capstone Week: Students Build Real Apps and Websites',
       category: 'Tech',
-      body: 'Over five days of intensive learning, THRIVE participants at FGC NISE designed, built, and presented their own digital products. Projects ranged from weather apps and school portals to recipe finders and budget trackers. Facilitator Yahnazo Basil described the energy as "electric — these students exceeded every expectation."',
+      body: 'Over five days of intensive learning, TriveFoundation participants at FGC NISE designed, built, and presented their own digital products. Projects ranged from weather apps and school portals to recipe finders and budget trackers. Facilitator Yahnazo Basil described the energy as "electric — these students exceeded every expectation."',
       image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800&q=75&auto=format&fit=crop',
       imageAlt: 'African students working on computers during a tech training session',
       featured: false,
@@ -124,7 +124,7 @@ window.SITE_CONFIG = {
       date: 'September 2025',
       headline: 'Football League Kicks Off — 14 Teams Compete Across Boys and Girls Divisions',
       category: 'Football',
-      body: 'The THRIVE 2025 football season opened with 14 teams — 8 in the boys division and 6 in the girls division. Every match was fiercely contested. Football Coordinator Odinaka Okoye noted the remarkable level of organisation and sportsmanship from all participants. The league ran for four weeks, with results tracked live on this website.',
+      body: 'The TriveFoundation 2025 football season opened with 14 teams — 8 in the boys division and 6 in the girls division. Every match was fiercely contested. Football Coordinator Odinaka Okoye noted the remarkable level of organisation and sportsmanship from all participants. The league ran for four weeks, with results tracked live on this website.',
       image: 'https://images.unsplash.com/photo-1547347298-4074fc3086f0?w=800&q=75&auto=format&fit=crop&crop=center',
       imageAlt: 'Young African children competing in a football league match',
       featured: false,
@@ -277,11 +277,89 @@ window.SITE_CONFIG = {
 
   /* ── HIGHLIGHTS CAROUSEL ────────────────────────────── */
   HIGHLIGHTS: [
-    { img:'https://images.unsplash.com/photo-1489824904134-891ab64532f1?w=600&q=70&auto=format&fit=crop', alt:'Young African boys playing competitive football on a grass pitch', tag:'football', tagLabel:'Football', title:'Boys Final: SS3 beat JSS 4–3 in a dramatic finale',   date:'THRIVE 2025 Finals' },
+    { img:'https://images.unsplash.com/photo-1489824904134-891ab64532f1?w=600&q=70&auto=format&fit=crop', alt:'Young African boys playing competitive football on a grass pitch', tag:'football', tagLabel:'Football', title:'Boys Final: SS3 beat JSS 4–3 in a dramatic finale',   date:'TriveFoundation 2025 Finals' },
     { img:'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=600&q=70&auto=format&fit=crop', alt:'African students learning and working together on computers', tag:'tech',     tagLabel:'Tech',     title:'Students build real apps and websites from scratch',   date:'Tech Innovation Week' },
-    { img:'https://images.unsplash.com/photo-1529390079861-591de354faf5?w=600&q=70&auto=format&fit=crop', alt:'African girls playing football on a sunny field', tag:'football', tagLabel:'Football', title:'Girls Final: SS2 Girls win 3–1 against SS1 Girls',     date:'THRIVE 2025 Finals' },
-    { img:'https://images.unsplash.com/photo-1559523161-0fc0d8b814b4?w=600&q=70&auto=format&fit=crop', alt:'Speaker giving an inspiring TED-style talk on stage', tag:'community', tagLabel:'Community', title:'TED-style talks inspire hundreds of students',          date:'THRIVE Closing Ceremony' },
-    { img:'https://images.unsplash.com/photo-1544717297-fa95b6ee9643?w=600&q=70&auto=format&fit=crop', alt:'Diverse group of young people celebrating an award ceremony', tag:'community', tagLabel:'Community', title:'Award ceremony — celebrating every champion',           date:'THRIVE 2025 Closing' },
+    { img:'https://images.unsplash.com/photo-1529390079861-591de354faf5?w=600&q=70&auto=format&fit=crop', alt:'African girls playing football on a sunny field', tag:'football', tagLabel:'Football', title:'Girls Final: SS2 Girls win 3–1 against SS1 Girls',     date:'TriveFoundation 2025 Finals' },
+    { img:'https://images.unsplash.com/photo-1559523161-0fc0d8b814b4?w=600&q=70&auto=format&fit=crop', alt:'Speaker giving an inspiring TED-style talk on stage', tag:'community', tagLabel:'Community', title:'TED-style talks inspire hundreds of students',          date:'TriveFoundation Closing Ceremony' },
+    { img:'https://images.unsplash.com/photo-1544717297-fa95b6ee9643?w=600&q=70&auto=format&fit=crop', alt:'Diverse group of young people celebrating an award ceremony', tag:'community', tagLabel:'Community', title:'Award ceremony — celebrating every champion',           date:'TriveFoundation 2025 Closing' },
     { img:'https://images.unsplash.com/photo-1573496358961-3c82861ab8f4?w=600&q=70&auto=format&fit=crop', alt:'Young African student focused on a laptop screen', tag:'tech',     tagLabel:'Tech',     title:'Capstone projects showcased and evaluated',             date:'Tech Showcase Day' },
   ],
 };
+
+
+/* ── LARGE QUIZ BANK BUILDER (1000 per quiz) ───────────── */
+(function buildLargeQuizBanks(){
+  const techTopics=[
+    ['AI','internal workings'],['AI','applications'],['AI','ethics and safety'],
+    ['Machine Learning','internal workings'],['Machine Learning','applications'],['Machine Learning','model evaluation'],
+    ['Neural Networks','internal workings'],['Neural Networks','training and optimisation'],['Neural Networks','applications'],
+    ['Robotics','internal workings'],['Robotics','applications'],['Robotics','safety and controls'],
+    ['Frontend Development','internal workings'],['Frontend Development','applications'],['Frontend Development','performance and accessibility'],
+    ['Backend Development','internal workings'],['Backend Development','applications'],['Backend Development','security and scalability'],
+    ['Web Design','internal workings'],['Web Design','applications'],['Web Design','visual hierarchy and usability'],
+    ['Product Development and Design','internal workings'],['Product Development and Design','applications'],['Product Development and Design','roadmapping and validation'],
+    ['UI/UX','internal workings'],['UI/UX','applications'],['UI/UX','research and testing'],
+    ['Debugging','internal workflows'],['Debugging','tooling and diagnostics'],['Debugging','best practices']
+  ];
+
+  const footballTopics=[
+    ['Football Rules','laws of the game'],['Football Rules','offside, fouls and cards'],['Football Rules','VAR and refereeing decisions'],
+    ['Tactics','pressing and transitions'],['Tactics','formations and roles'],['Tactics','set-pieces and game management'],
+    ['Playing Styles','possession vs direct play'],['Playing Styles','counter-attack patterns'],['Playing Styles','high block vs low block'],
+    ['Positions','goalkeeper responsibilities'],['Positions','defensive roles'],['Positions','midfield and forward roles'],
+    ['Recent Football History','major events in the last 10 years'],['Recent Football History','continental tournaments'],['Recent Football History','World Cup and club finals'],
+    ['Players and Coaches','famous players of the modern era'],['Players and Coaches','famous coaches and systems'],['Players and Coaches','awards and records'],
+    ['Nigerian Football','Super Eagles and Super Falcons'],['Nigerian Football','NPFL and grassroots football'],['Nigerian Football','Nigerian players abroad'],
+    ['Nigerian Ancestry Abroad','dual-national players'],['Nigerian Ancestry Abroad','career pathways'],['Nigerian Ancestry Abroad','international representation']
+  ];
+
+  const makeQ=(topic,focus,idx,diff,domain)=>{
+    const stems={
+      easy:`In ${topic}, which statement best describes ${focus}?`,
+      medium:`Which option is most accurate about ${topic} ${focus} in real situations?`,
+      hard:`In advanced ${topic}, what is the most reliable principle for ${focus}?`
+    };
+    const domainText=domain==='football' ? 'match outcomes and tactical understanding' : 'solution quality and maintainability';
+    const correct=[
+      `A clear understanding of ${focus} improves ${domainText}.`,
+      `${focus[0].toUpperCase()+focus.slice(1)} should be analysed and improved iteratively.`,
+      `${topic} outcomes improve when ${focus} is validated with evidence and review.`,
+      `Strong ${focus} practice reduces mistakes and improves consistency.`
+    ][idx%4];
+    const wrongA=`${focus[0].toUpperCase()+focus.slice(1)} is optional and does not affect results.`;
+    const wrongB=`Best performance comes from ignoring context and repeating one approach.`;
+    const wrongC=`The best practice is to skip analysis and rely on luck.`;
+    return {q:`${stems[diff]} (#${idx+1})`, options:[correct,wrongA,wrongB,wrongC], answer:0, difficulty:diff, explanation:`${topic}: ${focus} should be deliberate, measurable, and continuously refined.`};
+  };
+
+  const buildBank=(topics,domain)=>{
+    const bank=[];
+    for(let i=0;i<1000;i++){
+      const [topic,focus]=topics[i%topics.length];
+      const mod=i%4;
+      const diff=mod===0?'easy':(mod<=2?'medium':'hard');
+      bank.push(makeQ(topic,focus,i,diff,domain));
+    }
+    return bank;
+  };
+
+  const techBank=buildBank(techTopics,'tech');
+  const footballBank=buildBank(footballTopics,'football');
+
+  window.SITE_CONFIG.QUIZZES=[
+    {
+      id:'technology-mastery',
+      title:'Tech Quiz',
+      category:'tech',
+      description:'AI, ML, neural networks, robotics, frontend, backend, design, product, UI/UX, and debugging.',
+      questions:techBank
+    },
+    {
+      id:'football-mastery',
+      title:'Football Quiz',
+      category:'football',
+      description:'Recent football history, rules, tactics, positions, modern players/coaches, and Nigerian football context.',
+      questions:footballBank
+    }
+  ];
+})();
