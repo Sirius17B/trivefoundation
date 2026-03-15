@@ -331,11 +331,17 @@ function startQuiz(quizId){
   };
 
   document.getElementById('q-quiz-title').textContent = quiz.title;
-  document.getElementById('quiz-runner-content').innerHTML = '';
-  document.getElementById('quiz-runner-content').appendChild(
-    document.getElementById('q-body').parentElement ? document.getElementById('q-body') :
-    (() => { const d=document.createElement('div'); d.className='q-body'; document.getElementById('quiz-runner-content').appendChild(d); return d; })()
-  );
+  const runner = document.getElementById('quiz-runner-content');
+  runner.innerHTML = `<div class="q-body" id="q-body">
+      <div class="q-number" id="q-number"></div>
+      <p class="q-text" id="q-text"></p>
+      <div class="q-options" id="q-options" role="radiogroup" aria-labelledby="q-text"></div>
+      <div class="q-explanation" id="q-explanation" role="note"></div>
+      <div class="q-nav">
+        <button class="btn btn-sm btn-no-print" style="background:var(--c-sand);color:var(--c-muted)" id="q-prev" onclick="prevQ()">← Back</button>
+        <button class="btn btn-primary btn-sm btn-no-print" id="q-next" onclick="nextQ()">Next →</button>
+      </div>
+    </div>`;
 
   const overlay = document.getElementById('quiz-overlay');
   overlay.classList.add('open');
@@ -643,6 +649,13 @@ window.deleteQuestion = function(quizIdx, qIdx){
 document.getElementById('question-modal').addEventListener('click',e=>{
   if(e.target===document.getElementById('question-modal')) closeQuestionModal();
 });
+
+window.startQuiz=startQuiz;
+window.selectOption=selectOption;
+window.nextQ=nextQ;
+window.prevQ=prevQ;
+window.closeQuiz=closeQuiz;
+window.confirmQuit=confirmQuit;
 
 loadQuizzes();
 </script>

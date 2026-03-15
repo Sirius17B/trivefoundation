@@ -150,7 +150,7 @@
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Admin
         </span>
         <button class="btn btn-teal btn-sm admin-only" id="cms-btn" onclick="openCMS()">Edit Site Content</button>
-        <button class="btn btn-outline btn-sm" id="admin-toggle-btn" onclick="toggleAdmin()">Admin Login</button>
+        <button class="btn btn-outline btn-sm" id="admin-toggle-btn" onclick="toggleAdmin()" style="display:none">Admin Login</button>
       </div>
     </div>
 
@@ -349,6 +349,7 @@ function toggleAdmin(){
     AdminAuth.logout();
     document.getElementById('admin-badge').style.display='none';
     document.getElementById('admin-toggle-btn').textContent='Admin Login';
+    document.getElementById('admin-toggle-btn').style.display='none';
     document.querySelectorAll('.admin-only').forEach(el=>el.style.display='none');
     showToast('Logged out');
   } else {
@@ -368,6 +369,7 @@ function doLogin(){
     err.style.display='none';document.getElementById('pin-input').value='';
     document.getElementById('admin-badge').style.display='inline-flex';
     document.getElementById('admin-toggle-btn').textContent='Log Out';
+    document.getElementById('admin-toggle-btn').style.display='inline-flex';
     document.querySelectorAll('.admin-only').forEach(el=>el.style.display='block');
     showAdminFor(_main==='tech'?'tech':_sub);
     showToast('Welcome, Admin','ok');
@@ -383,6 +385,14 @@ function closeLogin(){document.getElementById('login-modal').classList.remove('o
 window.closeLogin=closeLogin;
 document.getElementById('pin-input').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 document.getElementById('login-modal').addEventListener('click',e=>{if(e.target===document.getElementById('login-modal'))closeLogin();});
+document.addEventListener('keydown',e=>{
+  const aKey=String(e.key||'').toLowerCase()==='a';
+  if(aKey&&(e.ctrlKey||e.metaKey)&&e.shiftKey&&!AdminAuth.isLoggedIn()){
+    e.preventDefault();
+    document.getElementById('login-modal').classList.add('open');
+    setTimeout(()=>document.getElementById('pin-input').focus(),100);
+  }
+});
 
 /* ── Results / teams ── */
 function submitResult(lg){
@@ -546,6 +556,7 @@ async function init(){
   if(AdminAuth.isLoggedIn()){
     document.getElementById('admin-badge').style.display='inline-flex';
     document.getElementById('admin-toggle-btn').textContent='Log Out';
+    document.getElementById('admin-toggle-btn').style.display='inline-flex';
     document.querySelectorAll('.admin-only').forEach(el=>el.style.display='block');
     showAdminFor(_main==='tech'?'tech':_sub);
   }

@@ -18,14 +18,16 @@
 })();
 
 /* ── NAV SCROLL + HAMBURGER ── */
-(function(){
+window.initNavInteractions=function(){
   const nav=document.querySelector('.nav');
-  if(!nav)return;
+  if(!nav||nav.dataset.ready==='1')return;
+  nav.dataset.ready='1';
+
   const update=()=>nav.classList.toggle('scrolled',window.scrollY>36);
   window.addEventListener('scroll',update,{passive:true});update();
 
-  const btn=document.querySelector('.nav-hamburger');
-  const links=document.querySelector('.nav-links');
+  const btn=nav.querySelector('.nav-hamburger');
+  const links=nav.querySelector('.nav-links');
   if(btn&&links){
     btn.addEventListener('click',()=>{
       const o=links.classList.toggle('open');
@@ -35,18 +37,20 @@
     document.addEventListener('click',e=>{
       if(!nav.contains(e.target)){links.classList.remove('open');btn.classList.remove('open');}
     });
-    // Close on nav link click (mobile)
     links.querySelectorAll('.nav-link').forEach(a=>{
       a.addEventListener('click',()=>{links.classList.remove('open');btn.classList.remove('open');});
     });
   }
-  // Active link
+
   const p=(location.pathname.split('/').pop()||'index.html');
   nav.querySelectorAll('.nav-link').forEach(a=>{
     const h=a.getAttribute('href')||'';
     if(h===p||(p===''&&h==='index.html')||(p==='index.html'&&h==='index.html'))a.classList.add('active');
   });
-})();
+};
+
+document.addEventListener('thrive:nav-injected',()=>window.initNavInteractions?.());
+document.addEventListener('DOMContentLoaded',()=>window.initNavInteractions?.());
 
 /* ── SCROLL REVEAL ── */
 (function(){
@@ -244,7 +248,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     const lbl=document.getElementById('nav-admin-lbl');
     if(lbl)lbl.textContent='Edit Content';
     const btn=document.getElementById('nav-admin-btn');
-    if(btn){btn.style.background='rgba(46,125,79,.35)';btn.style.borderColor='rgba(61,214,140,.4)';btn.style.color='#3DB870';}
+    if(btn){btn.style.display='flex';btn.style.background='rgba(46,125,79,.35)';btn.style.borderColor='rgba(61,214,140,.4)';btn.style.color='#3DB870';}
     document.querySelectorAll('.admin-only').forEach(el=>el.style.display='block');
     window._enableInlineEdit?.();
   },120);

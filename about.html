@@ -114,22 +114,71 @@
 'use strict';
 injectNav();
 injectAdminUI();injectFooter();
+const TEAM_PHOTO_KEY='thrive_team_photos_v1';
+let teamPhotoOverrides={};
+
+async function loadTeamPhotoOverrides(){
+  try{
+    const r=await window.storage?.get(TEAM_PHOTO_KEY);
+    teamPhotoOverrides=r?JSON.parse(r.value):{};
+  }catch{teamPhotoOverrides={};}
+}
+
+async function saveTeamPhotoOverrides(){
+  try{await window.storage?.set(TEAM_PHOTO_KEY,JSON.stringify(teamPhotoOverrides));}
+  catch{showToast('Storage unavailable — photo changes may reset on reload','err');}
+}
+
+function initials(name){return sanitize(name.split(' ').map(w=>w[0]).join('').slice(0,2));}
+
 function renderTeam(){
   const team=(window.SITE_CONFIG||{}).TEAM||[];
   const grid=document.getElementById('team-grid');if(!grid)return;
-  grid.innerHTML=team.map(m=>`<div class="team-card">
-    ${m.photo?`<img src="${sanitize(m.photo)}" alt="${sanitize(m.name)}" class="team-avatar" style="width:60px;height:60px;object-fit:cover;border-radius:50%" loading="lazy">`:`<div class="team-avatar" style="background:${sanitize(m.color)}">${sanitize(m.name.split(' ').map(w=>w[0]).join('').slice(0,2))}</div>`}
-    <div class="team-name">${sanitize(m.name)}</div>
-    <div class="team-role">${sanitize(m.role)}</div>
-  </div>`).join('');
-  // Join card
+  const isAdmin=window.AdminAuth?.isLoggedIn();
+  grid.innerHTML=team.map((m,i)=>{
+    const photo=(teamPhotoOverrides[m.name]??m.photo??'').trim();
+    const photoNode=photo
+      ? `<img src="${sanitize(photo)}" alt="${sanitize(m.name)}" class="team-avatar" style="width:60px;height:60px;object-fit:cover;border-radius:50%;border:2px solid rgba(46,125,79,.15)" loading="lazy" data-team-photo="${i}">`
+      : `<label class="team-avatar" style="background:${sanitize(m.color)};cursor:${isAdmin?'pointer':'default'};border:2px dashed rgba(28,43,28,.25);font-size:.76rem" ${isAdmin?`for="team-photo-inp-${i}" title="Click to upload a profile photo"`:''}>${initials(m.name)}</label>`;
+    return `<div class="team-card">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+        ${photoNode}
+        ${isAdmin?`<input id="team-photo-inp-${i}" type="file" accept="image/*" style="display:none" onchange="replaceTeamPhoto(${i},this.files?.[0])"><button class="btn btn-sm" style="padding:6px 10px;font-size:.72rem;background:var(--c-sand);color:var(--c-muted)" onclick="triggerTeamPhotoUpload(${i})">${photo?'Replace':'Add'} Photo</button>`:''}
+      </div>
+      <div class="team-name">${sanitize(m.name)}</div>
+      <div class="team-role">${sanitize(m.role)}</div>
+    </div>`;
+  }).join('');
   grid.innerHTML+=`<div class="team-card" style="border:2px dashed var(--c-border);background:var(--c-cream)">
     <div class="team-avatar" style="background:var(--c-border);color:var(--c-muted)">+</div>
     <div class="team-name" style="color:var(--c-muted)">Join the team</div>
     <div class="team-role"><a href="contact.html#volunteer" style="color:var(--c-teal)">Volunteer →</a></div>
   </div>`;
 }
-async function init(){await CMS.load();CMS.apply();renderTeam();}
+
+window.triggerTeamPhotoUpload=function(idx){
+  document.getElementById(`team-photo-inp-${idx}`)?.click();
+};
+
+window.replaceTeamPhoto=function(idx,file){
+  if(!window.AdminAuth?.isLoggedIn())return;
+  if(!file)return;
+  const team=(window.SITE_CONFIG||{}).TEAM||[];
+  const member=team[idx];
+  if(!member)return;
+  const r=new FileReader();
+  r.onload=async e=>{
+    teamPhotoOverrides[member.name]=String(e.target?.result||'');
+    await saveTeamPhotoOverrides();
+    renderTeam();
+    showToast('Profile photo updated','ok');
+  };
+  r.readAsDataURL(file);
+};
+
+
+document.addEventListener('thrive:admin-state',()=>renderTeam());
+async function init(){await CMS.load();await loadTeamPhotoOverrides();CMS.apply();renderTeam();}
 init();
 </script>
 </body>

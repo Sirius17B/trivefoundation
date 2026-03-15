@@ -52,8 +52,9 @@ window.injectNav=function(){
       </button>
     </div>
   </div>`;
-  /* Update admin button state if already logged in */
-  if(window.AdminAuth?.isLoggedIn()) _setAdminNavState(true);
+  /* Hide admin button for external users; reveal for logged-in admins only */
+  _setAdminNavState(Boolean(window.AdminAuth?.isLoggedIn()));
+  document.dispatchEvent(new CustomEvent('thrive:nav-injected'));
 };
 
 function _setAdminNavState(on){
@@ -61,11 +62,13 @@ function _setAdminNavState(on){
   const lbl=document.getElementById('nav-admin-lbl');
   if(!btn||!lbl)return;
   if(on){
+    btn.style.display='flex';
     btn.style.background='rgba(46,125,79,.35)';
     btn.style.borderColor='rgba(61,214,140,.4)';
     btn.style.color='#3DB870';
     lbl.textContent='Edit Content';
   } else {
+    btn.style.display='none';
     btn.style.background='rgba(255,255,255,.1)';
     btn.style.borderColor='rgba(255,255,255,.2)';
     btn.style.color='rgba(255,255,255,.7)';
@@ -196,6 +199,19 @@ window.injectAdminUI=function(){
 </div>`;
   document.body.appendChild(wrap);
 
+
+  /* Hidden shortcut for admins: Ctrl/Cmd + Shift + A opens admin login */
+  if(!window._adminShortcutBound){
+    window._adminShortcutBound=true;
+    document.addEventListener('keydown',e=>{
+      const aKey=String(e.key||'').toLowerCase()==='a';
+      if(aKey&&(e.ctrlKey||e.metaKey)&&e.shiftKey){
+        e.preventDefault();
+        window._openAdminLogin();
+      }
+    });
+  }
+
   /* Keyboard: Enter submits login */
   document.getElementById('admin-pin-inp')?.addEventListener('keydown',e=>{
     if(e.key==='Enter') window._doAdminLogin();
@@ -231,6 +247,7 @@ window._doAdminLogin=function(){
     window.showToast?.('Admin mode active — click highlighted text or images to edit','ok');
     /* Show .admin-only sections on this page */
     document.querySelectorAll('.admin-only').forEach(el=>el.style.display='block');
+    document.dispatchEvent(new CustomEvent('thrive:admin-state',{detail:{loggedIn:true}}));
   } else {
     _showLoginErr(window._locked()?'Locked — too many attempts. Wait 60s.':'Incorrect PIN.');
     document.getElementById('admin-pin-inp').value='';
@@ -246,6 +263,7 @@ window._adminLogout=function(){
   document.getElementById('cms-toolbar').style.display='none';
   window._disableInlineEdit();
   document.querySelectorAll('.admin-only').forEach(el=>el.style.display='none');
+  document.dispatchEvent(new CustomEvent('thrive:admin-state',{detail:{loggedIn:false}}));
   window.showToast?.('Logged out');
 };
 window._openCMSPanel=function(){
