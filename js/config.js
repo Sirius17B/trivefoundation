@@ -290,6 +290,9 @@ window.SITE_CONFIG = {
 /* ── LARGE QUIZ BANK BUILDER (1000 per quiz) ───────────── */
 (function buildLargeQuizBanks(){
   const techTopics=[
+/* ── LARGE QUIZ BANK BUILDER (1000 questions) ───────────── */
+(function buildLargeQuizBank(){
+  const topics=[
     ['AI','internal workings'],['AI','applications'],['AI','ethics and safety'],
     ['Machine Learning','internal workings'],['Machine Learning','applications'],['Machine Learning','model evaluation'],
     ['Neural Networks','internal workings'],['Neural Networks','training and optimisation'],['Neural Networks','applications'],
@@ -362,4 +365,37 @@ window.SITE_CONFIG = {
       questions:footballBank
     }
   ];
+  const makeQ=(topic,focus,idx,diff)=>{
+    const stems={
+      easy:`In ${topic}, which statement best describes ${focus}?`,
+      medium:`Which option is most accurate about ${topic} ${focus} in real projects?`,
+      hard:`In advanced ${topic} practice, what is the most reliable principle for ${focus}?`
+    };
+    const correct=[
+      `A clear understanding of ${focus} helps teams build reliable solutions.`,
+      `${focus[0].toUpperCase()+focus.slice(1)} should be measured and improved iteratively.`,
+      `${topic} outcomes improve when ${focus} is validated with data and testing.`,
+      `Strong ${focus} practices reduce defects and improve maintainability in ${topic}.`
+    ][idx%4];
+    const wrongA=`${focus[0].toUpperCase()+focus.slice(1)} is optional and does not affect quality.`;
+    const wrongB=`${topic} success depends only on writing more code quickly.`;
+    const wrongC=`Best practice is to skip review and deploy changes without validation.`;
+    return {q:`${stems[diff]} (#${idx+1})`, options:[correct,wrongA,wrongB,wrongC], answer:0, difficulty:diff, explanation:`${topic}: ${focus} should be intentional, measurable, and continuously improved.`};
+  };
+
+  const bank=[];
+  for(let i=0;i<1000;i++){
+    const [topic,focus]=topics[i%topics.length];
+    const mod=i%4;
+    const diff=mod===0?'easy':(mod<=2?'medium':'hard');
+    bank.push(makeQ(topic,focus,i,diff));
+  }
+
+  window.SITE_CONFIG.QUIZZES=[{
+    id:'technology-mastery',
+    title:'Technology Mastery Assessment',
+    category:'tech',
+    description:'AI, ML, neural networks, robotics, frontend, backend, design, product, UI/UX, and debugging.',
+    questions:bank
+  }];
 })();

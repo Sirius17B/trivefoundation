@@ -250,11 +250,7 @@ async function loadQuizzes(){
   } catch {
     quizzes = JSON.parse(JSON.stringify(window.SITE_CONFIG.QUIZZES));
   }
-  const valid=Array.isArray(quizzes)
-    && quizzes.length===2
-    && quizzes.some(q=>q.id==='technology-mastery'&&Array.isArray(q.questions)&&q.questions.length>=1000)
-    && quizzes.some(q=>q.id==='football-mastery'&&Array.isArray(q.questions)&&q.questions.length>=1000);
-  if(!valid){
+  if(!Array.isArray(quizzes)||quizzes.length<2){
     quizzes = JSON.parse(JSON.stringify(window.SITE_CONFIG.QUIZZES));
     saveQuizzes();
   }
@@ -382,6 +378,7 @@ function shuffle(arr){
   }
   return copy;
 }
+function shuffle(arr){return [...arr].sort(()=>Math.random()-.5);}
 
 function normalizeQuestion(q,idx){
   const letters=['A','B','C','D'];
@@ -406,6 +403,7 @@ function buildBalancedQuestionSet(allQuestions,target=50){
     for(const q of filler){ if(selected.length>=target) break; if(!selected.includes(q)) selected.push(q); }
   }
   return shuffle(selected);
+  return shuffle(selected).map((q,i)=>normalizeQuestion(q,i));
 }
 
 
