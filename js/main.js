@@ -161,6 +161,23 @@ window.initCarousel=function(wrapSelector,opts={}){
 };
 
 /* ── LEAGUE ENGINE ── */
+function _deepClone(value){
+  return JSON.parse(JSON.stringify(value));
+}
+
+async function _loadFromStorage(key,fallback){
+  try{
+    const stored=await window.storage?.get(key);
+    return stored?JSON.parse(stored.value):_deepClone(fallback);
+  }catch{
+    return _deepClone(fallback);
+  }
+}
+
+async function _saveToStorage(key,payload){
+  try{await window.storage?.set(key,JSON.stringify(payload));}catch{}
+}
+
 const _LK='thrive_league_v3_';
 const _DEMO_BOYS={teams:['SS3 Boys','SS2 Boys','SS1 Boys A','SS1 Boys B','JSS3 Boys','JSS2 Boys','JSS1 Boys','Staff FC'],results:[{home:'SS3 Boys',hg:4,ag:3,away:'JSS3 Boys'},{home:'SS2 Boys',hg:2,ag:1,away:'SS1 Boys A'},{home:'SS1 Boys B',hg:3,ag:0,away:'JSS2 Boys'},{home:'Staff FC',hg:1,ag:1,away:'JSS1 Boys'},{home:'SS3 Boys',hg:2,ag:2,away:'SS2 Boys'},{home:'JSS3 Boys',hg:0,ag:2,away:'SS1 Boys A'}]};
 const _DEMO_GIRLS={teams:['SS2 Girls','SS1 Girls','SS3 Girls','JSS3 Girls','JSS2 Girls','JSS1 Girls'],results:[{home:'SS2 Girls',hg:3,ag:1,away:'SS1 Girls'},{home:'SS3 Girls',hg:2,ag:0,away:'JSS3 Girls'},{home:'SS2 Girls',hg:2,ag:0,away:'SS3 Girls'},{home:'SS1 Girls',hg:2,ag:1,away:'JSS3 Girls'}]};
@@ -168,11 +185,10 @@ const _DEMO_GIRLS={teams:['SS2 Girls','SS1 Girls','SS3 Girls','JSS3 Girls','JSS2
 window.LeagueEngine={
   _d:{},
   async load(lg){
-    try{const r=await window.storage?.get(_LK+lg);this._d[lg]=r?JSON.parse(r.value):JSON.parse(JSON.stringify(lg==='boys'?_DEMO_BOYS:_DEMO_GIRLS));}
-    catch{this._d[lg]=JSON.parse(JSON.stringify(lg==='boys'?_DEMO_BOYS:_DEMO_GIRLS));}
+    this._d[lg]=await _loadFromStorage(_LK+lg,lg==='boys'?_DEMO_BOYS:_DEMO_GIRLS);
     return this._d[lg];
   },
-  async save(lg){try{await window.storage?.set(_LK+lg,JSON.stringify(this._d[lg]));}catch{}},
+  async save(lg){await _saveToStorage(_LK+lg,this._d[lg]);},
   get(lg){return this._d[lg]||{teams:[],results:[]};},
   addResult(lg,home,away,hg,ag){
     const d=this.get(lg);
@@ -206,11 +222,11 @@ const _DEMO_TECH={participants:[{name:'Amara Okafor',class:'SS3',score:92,projec
 
 window.TechEngine={
   _d:null,
-  async load(){try{const r=await window.storage?.get(_TK+'data');this._d=r?JSON.parse(r.value):JSON.parse(JSON.stringify(_DEMO_TECH));}catch{this._d=JSON.parse(JSON.stringify(_DEMO_TECH));}return this._d;},
-  async save(){try{await window.storage?.set(_TK+'data',JSON.stringify(this._d));}catch{}},
+  async load(){this._d=await _loadFromStorage(_TK+'data',_DEMO_TECH);return this._d;},
+  async save(){await _saveToStorage(_TK+'data',this._d);},
   get(){return this._d||_DEMO_TECH;},
   getTop(n=5){return[...this.get().participants].sort((a,b)=>b.score-a.score).slice(0,n);},
-  add(name,cls,score,project){if(!this._d)this._d=JSON.parse(JSON.stringify(_DEMO_TECH));this._d.participants.push({name,class:cls,score:+score,project});this.save();},
+  add(name,cls,score,project){if(!this._d)this._d=_deepClone(_DEMO_TECH);this._d.participants.push({name,class:cls,score:+score,project});this.save();},
   remove(idx){this.get().participants.splice(idx,1);this.save();},
 };
 
@@ -218,8 +234,8 @@ window.TechEngine={
 const _VK='thrive_videos_v1_';
 window.VideoEngine={
   _d:null,
-  async load(){try{const r=await window.storage?.get(_VK+'list');this._d=r?JSON.parse(r.value):{videos:[]};}catch{this._d={videos:[]};}return this._d;},
-  async save(){try{await window.storage?.set(_VK+'list',JSON.stringify(this._d));}catch{}},
+  async load(){this._d=await _loadFromStorage(_VK+'list',{videos:[]});return this._d;},
+  async save(){await _saveToStorage(_VK+'list',this._d);},
   get(){return(this._d||{videos:[]}).videos;},
   add(title,dataUrl,type){const vids=this._d=this._d||{videos:[]};vids.videos.push({title,dataUrl,type,date:new Date().toLocaleDateString()});this.save();},
   remove(idx){this.get().splice(idx,1);this.save();},
@@ -258,10 +274,10 @@ const _CK='thrive_cms_v1_';
 window.CMS={
   _d:{},
   async load(){
-    try{const r=await window.storage?.get(_CK+'data');if(r)this._d=JSON.parse(r.value);}catch{}
+    this._d=await _loadFromStorage(_CK+'data',{});
     return this._d;
   },
-  async save(){try{await window.storage?.set(_CK+'data',JSON.stringify(this._d));}catch{}},
+  async save(){await _saveToStorage(_CK+'data',this._d);},
   get(key,fallback=''){return this._d[key]??fallback;},
   set(key,val){this._d[key]=val;this.save();},
   /* Apply all CMS overrides to the DOM */
