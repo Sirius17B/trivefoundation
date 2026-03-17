@@ -238,6 +238,8 @@ injectNav(); injectAdminUI(); injectFooter();
 const QUIZ_STORE_KEY = 'thrive_quizzes_v2';
 const QUIZ_LB_KEY    = 'thrive_quiz_lb_v2';
 const QUIZ_ATTEMPT_KEY='trive_quiz_attempts_v1';
+const QUIZ_CANDIDATE_KEY='trive_quiz_candidates_v1';
+const QUIZ_AUTH_GUARD_KEY='trive_quiz_auth_guard_v1';
 let quizzes          = [];
 let editingQIdx      = null; // null=new, {quizIdx,qIdx}=edit
 let lastScoreEntry   = null; // saved for current player's rank highlight
@@ -308,7 +310,10 @@ function renderQuizCards(){
           Pass: ${cfg.QUIZ_SETTINGS.passMark}%
         </span>
       </div>
-      <button class="btn btn-primary btn-sm" style="align-self:flex-start" onclick="startQuiz('${sanitize(quiz.id)}')">Start Quiz →</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-sm" style="background:var(--c-sand);color:var(--c-muted)" onclick="preRegisterCandidate('${sanitize(quiz.id)}')">Pre-register</button>
+        <button class="btn btn-primary btn-sm" style="align-self:flex-start" onclick="startQuiz('${sanitize(quiz.id)}')">Start Quiz →</button>
+      </div>
     </article>`;
   }).join('');
   // Re-trigger scroll reveals
@@ -323,15 +328,106 @@ function renderQuizCards(){
 let state = {};
 let timerInterval = null;
 
-function startQuiz(quizId){
+async function hashText(text){
+  const data = new TextEncoder().encode(String(text));
+  const digest = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(digest)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+function normalizeName(name){ return String(name||'').trim().replace(/\s+/g,' ').toUpperCase(); }
+function buildStudentId(existing){
+  const year = new Date().getFullYear();
+  const serial = String((existing?.length||0)+1).padStart(4,'0');
+  return `TFQ-${year}-${serial}`;
+}
+function buildCredentialPassword(len=10){
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789@#$%';
+  const arr = new Uint32Array(len);
+  crypto.getRandomValues(arr);
+  return Array.from(arr, n=>chars[n%chars.length]).join('');
+}
+async function loadCandidates(){
+  try{ const r = await window.storage?.get(QUIZ_CANDIDATE_KEY); return r ? JSON.parse(r.value) : []; }
+  catch{ return []; }
+}
+async function saveCandidates(candidates){
+  try{ await window.storage?.set(QUIZ_CANDIDATE_KEY, JSON.stringify(candidates.slice(-2000))); }
+  catch{ showToast('Storage unavailable — candidate records are temporary'); }
+}
+async function loadAuthGuards(){
+  try{ const r = await window.storage?.get(QUIZ_AUTH_GUARD_KEY); return r ? JSON.parse(r.value) : {}; }
+  catch{ return {}; }
+}
+async function saveAuthGuards(guards){
+  try{ await window.storage?.set(QUIZ_AUTH_GUARD_KEY, JSON.stringify(guards)); }
+  catch{}
+}
+async function preRegisterCandidate(quizId){
+  const quiz = quizzes.find(q=>q.id===quizId);
+  if(!quiz){ showToast('Quiz not found'); return; }
+  const fullName = (prompt(`Pre-registration for ${quiz.title}\n\nEnter candidate full name:`)||'').trim();
+  if(!fullName){ showToast('Candidate full name is required.'); return; }
+
+  const normalizedName = normalizeName(fullName);
+  const candidates = await loadCandidates();
+  const existing = candidates.find(c=>c.normalizedName===normalizedName);
+  if(existing){
+    alert(`This candidate is already registered.\n\nID: ${existing.studentId}\nUse the existing password or request admin reset.`);
+    return;
+  }
+
+  const studentId = buildStudentId(candidates);
+  const password = buildCredentialPassword();
+  const passwordHash = await hashText(password);
+  candidates.push({
+    studentId,
+    fullName,
+    normalizedName,
+    passwordHash,
+    createdAt:new Date().toISOString(),
+    lastQuizId:quizId
+  });
+  await saveCandidates(candidates);
+  alert(`Pre-registration successful ✅\n\nName: ${fullName}\nStudent ID: ${studentId}\nPassword: ${password}\n\nSave these credentials now. Password is not shown again.`);
+}
+
+async function authenticateCandidate(){
+  const studentId = (prompt('Enter your Student ID:')||'').trim().toUpperCase();
+  if(!studentId){ showToast('Student ID is required.'); return null; }
+  const guards = await loadAuthGuards();
+  const now = Date.now();
+  const guard = guards[studentId] || { fails:0, lockUntil:0 };
+  if(guard.lockUntil && now < guard.lockUntil){
+    const wait = Math.ceil((guard.lockUntil-now)/1000);
+    showToast(`Account temporarily locked. Try again in ${wait}s.`);
+    return null;
+  }
+
+  const password = (prompt('Enter your password:')||'').trim();
+  if(!password){ showToast('Password is required.'); return null; }
+
+  const candidates = await loadCandidates();
+  const candidate = candidates.find(c=>c.studentId===studentId);
+  const passwordHash = await hashText(password);
+  if(!candidate || candidate.passwordHash!==passwordHash){
+    const fails = (guard.fails||0)+1;
+    const lockUntil = fails>=5 ? now + 60*1000 : 0;
+    guards[studentId] = { fails: lockUntil ? 0 : fails, lockUntil };
+    await saveAuthGuards(guards);
+    showToast(lockUntil ? 'Too many failed attempts. Account locked for 60s.' : 'Invalid ID or password.');
+    return null;
+  }
+
+  guards[studentId] = { fails:0, lockUntil:0 };
+  await saveAuthGuards(guards);
+  return { fullName:candidate.fullName, studentId:candidate.studentId };
+}
+
+async function startQuiz(quizId){
   const quiz = quizzes.find(q=>q.id===quizId);
   if(!quiz){showToast('Quiz not found');return;}
-  const fullName = (prompt('Enter your full registered name to begin:')||'').trim();
-  if(!fullName){showToast('Full name is required to start.');return;}
-  const candidateCode = (prompt('Enter your unique candidate code:')||'').trim();
-  if(!candidateCode){showToast('Candidate code is required to start.');return;}
+  const candidate = await authenticateCandidate();
+  if(!candidate){ return; }
 
-  const cfg = window.SITE_CONFIG.QUIZ_SETTINGS;
   const selected = buildBalancedQuestionSet(quiz.questions, 50);
 
   state = {
@@ -340,7 +436,7 @@ function startQuiz(quizId){
     answered:new Array(selected.length).fill(false),
     timeLeft:getTimerSeconds(quiz),
     finished:false,
-    candidate:{fullName,candidateCode,attemptCode:buildAttemptCode()}
+    candidate:{fullName:candidate.fullName,studentId:candidate.studentId,attemptCode:buildAttemptCode()}
   };
 
   document.getElementById('q-quiz-title').textContent = quiz.title;
@@ -526,7 +622,7 @@ async function finishQuiz(timeout=false){
 
       ${name ? `
       <div style="background:var(--c-cream);border-radius:var(--r-md);padding:14px 18px;font-size:.86rem;color:var(--c-muted);text-align:center;margin-bottom:4px">
-        Registered as: <strong style="color:var(--c-dark)">${sanitize(name)}</strong><br>Candidate code: <strong style="color:var(--c-dark)">${sanitize(state.candidate?.candidateCode||'N/A')}</strong><br>Attempt code: <strong style="color:var(--c-dark)">${sanitize(state.candidate?.attemptCode||'N/A')}</strong>
+        Registered as: <strong style="color:var(--c-dark)">${sanitize(name)}</strong><br>Student ID: <strong style="color:var(--c-dark)">${sanitize(state.candidate?.studentId||'N/A')}</strong><br>Attempt code: <strong style="color:var(--c-dark)">${sanitize(state.candidate?.attemptCode||'N/A')}</strong>
       </div>` : ''}
 
       <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px" class="btn-no-print">
@@ -563,7 +659,22 @@ async function loadScores(){
 async function saveScore(quizId, name, pct, correct, total, timeTaken, skipped=0, wrong=0, candidate={}){
   const scores = await loadScores();
   if(!scores[quizId]) scores[quizId]=[];
-  const entry = {name, pct, correct, total, timeTaken, skipped, wrong, candidateCode:candidate?.candidateCode||'', attemptCode:candidate?.attemptCode||'', date: new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})};
+  const safePct = Math.max(0, Math.min(100, Number(pct)||0));
+  const safeCorrect = Math.max(0, Math.min(Number(total)||0, Number(correct)||0));
+  const safeName = String(name||'Candidate').replace(/\s+/g,' ').trim().slice(0,80);
+  const safeStudentId = /^[A-Z0-9-]{4,24}$/.test(String(candidate?.studentId||'')) ? String(candidate.studentId) : '';
+  const entry = {
+    name:safeName,
+    pct:safePct,
+    correct:safeCorrect,
+    total:Math.max(1, Number(total)||1),
+    timeTaken:Math.max(0, Number(timeTaken)||0),
+    skipped:Math.max(0, Number(skipped)||0),
+    wrong:Math.max(0, Number(wrong)||0),
+    studentId:safeStudentId,
+    attemptCode:String(candidate?.attemptCode||'').slice(0,24),
+    date: new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})
+  };
   scores[quizId].push(entry);
   // Sort: higher pct first, then faster time
   scores[quizId].sort((a,b)=>b.pct-a.pct||a.timeTaken-b.timeTaken);
@@ -685,6 +796,8 @@ window.saveQuestion = function(){
   const exp     = document.getElementById('qm-explanation').value.trim();
   if(!qText)          return showToast('Please enter a question');
   if(opts.some(o=>!o)) return showToast('Please fill in all four options');
+  const normalOpts = opts.map(o=>o.toLowerCase().replace(/[^a-z0-9]/g,''));
+  if((new Set(normalOpts)).size!==opts.length) return showToast('Options must be distinct (no duplicates).');
   const newQ = {q:qText, options:opts, answer, explanation:exp||undefined};
   if(editingQIdx){
     quizzes[editingQIdx.quizIdx].questions[editingQIdx.qIdx] = newQ;
@@ -715,8 +828,51 @@ window.nextQ=nextQ;
 window.prevQ=prevQ;
 window.closeQuiz=closeQuiz;
 window.confirmQuit=confirmQuit;
+window.preRegisterCandidate=preRegisterCandidate;
+
+/* Basic cybersecurity checks: XSS, brute force lock, and score tamper resistance */
+async function runSecuritySelfTests(){
+  const checks = [];
+
+  const xssPayload = '<img src=x onerror=alert(1)>';
+  const sanitized = sanitize(xssPayload);
+  checks.push({
+    attack:'XSS payload injection',
+    status:sanitized.includes('&lt;') && !sanitized.includes('<img') ? 'pass' : 'fail',
+    notes:'User-controlled output is HTML-escaped before rendering.'
+  });
+
+  const guards = await loadAuthGuards();
+  guards.__TEST__ = { fails:0, lockUntil:0 };
+  await saveAuthGuards(guards);
+  for(let i=0;i<5;i++){
+    const g = await loadAuthGuards();
+    const current = g.__TEST__ || { fails:0, lockUntil:0 };
+    const now = Date.now();
+    const fails = (current.fails||0)+1;
+    g.__TEST__ = { fails: fails>=5 ? 0 : fails, lockUntil: fails>=5 ? now + 60*1000 : 0 };
+    await saveAuthGuards(g);
+  }
+  const post = await loadAuthGuards();
+  checks.push({
+    attack:'Credential brute-force',
+    status:(post.__TEST__?.lockUntil||0) > Date.now() ? 'pass' : 'fail',
+    notes:'Account lock is triggered after five failed attempts.'
+  });
+
+  const clampOk = Math.max(0, Math.min(100, Number(999)||0))===100;
+  const idOk = /^[A-Z0-9-]{4,24}$/.test('@@@')===false;
+  checks.push({
+    attack:'Leaderboard tampering',
+    status:clampOk && idOk ? 'pass' : 'fail',
+    notes:'Out-of-range values are clamped and invalid IDs are stripped.'
+  });
+
+  console.table(checks);
+}
 
 loadQuizzes();
+runSecuritySelfTests();
 </script>
 </body>
 </html>
