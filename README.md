@@ -955,3 +955,23 @@ docs: update README contributing section
 ---
 
 *This documentation was written for TriveFoundation v4.0. If you make significant structural changes, please update the relevant sections.*
+
+
+## QA and Production Readiness
+
+Run the static standards check before publishing changes:
+
+```bash
+npm run check:static
+# or, without npm:
+python3 scripts/static_checks.py
+```
+
+Optional browser smoke tests are scaffolded with Playwright:
+
+```bash
+npm install
+npm run test:e2e
+```
+
+Donor confirmations and contact messages should use a secure backend before production. See `BACKEND_DONOR_PRIVACY.md` for the included Netlify function starters, required environment variables, and donor identity protection model.

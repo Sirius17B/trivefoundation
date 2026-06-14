@@ -26,7 +26,7 @@ window.injectNav=function(){
   const el=document.querySelector('.nav');if(!el)return;
   const cfg=window.SITE_CONFIG||{};
   const name=cfg.ORG_NAME||'TriveFoundation';
-  el.innerHTML=`<div class="nav-inner">
+  el.innerHTML=`<a class="skip-link" href="#main">Skip to main content</a><div class="nav-inner">
     <a href="index.html" class="nav-logo" aria-label="${name} — Home">${window.LOGO_SVG(true)}</a>
     <nav class="nav-links" role="navigation" aria-label="Main navigation">
       <a href="index.html" class="nav-link">Home</a>
@@ -424,7 +424,7 @@ window.injectFooter=function(){
         <p class="footer-brand" data-cms="footer_tagline">Raising the next generation of champions through technology, sport, and community.</p>
         <div class="sec-badge">
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          Secure · No tracking · Privacy-first
+          Privacy-first · Minimal data
         </div>
       </div>
       <div>
@@ -454,6 +454,8 @@ window.injectFooter=function(){
           <li><a href="donate.html" class="footer-lnk">Donate / Sponsor</a></li>
           <li><a href="contact.html#volunteer" class="footer-lnk">Volunteer</a></li>
           <li><a href="contact.html" class="footer-lnk">Contact Us</a></li>
+          <li><a href="privacy.html" class="footer-lnk">Privacy Policy</a></li>
+          <li><a href="terms.html" class="footer-lnk">Terms</a></li>
         </ul>
       </div>
     </div>
