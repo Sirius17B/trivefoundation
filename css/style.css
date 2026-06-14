@@ -498,3 +498,14 @@ p{font-size:clamp(.93rem,1.5vw,1rem);color:var(--c-muted);line-height:1.75}
 @media (max-width: 1023px){
   .lb-track{display:flex}
 }
+
+/* ── Accessibility hardening ── */
+.skip-link{position:absolute;left:var(--pad);top:8px;z-index:2000;transform:translateY(-160%);background:var(--c-white);color:var(--c-dark);padding:8px 12px;border-radius:var(--r-sm);box-shadow:var(--sh-md);font-weight:700;transition:transform var(--t)}
+.skip-link:focus{transform:translateY(0);outline:3px solid var(--c-green-lt);outline-offset:2px}
+:focus-visible{outline:3px solid var(--c-green-lt);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}
+  .hero-bg,.pband-bg{background-attachment:scroll!important}
+}
+@media (max-width:768px){.hero-bg,.pband-bg{background-attachment:scroll}}

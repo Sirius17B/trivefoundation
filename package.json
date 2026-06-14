@@ -1,0 +1,14 @@
+{
+  "name": "trivefoundation-site",
+  "version": "4.1.0",
+  "private": true,
+  "description": "Static TriveFoundation website with QA, accessibility, and production-readiness checks.",
+  "scripts": {
+    "check:static": "python3 scripts/static_checks.py",
+    "test:e2e": "playwright test",
+    "test": "npm run check:static && npm run test:e2e"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.54.0"
+  }
+}

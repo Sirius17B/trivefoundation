@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+  <meta charset="UTF-8">
+  <meta name="description" content="Support TriveFoundation youth development programmes with transparent donation tiers, bank transfer details, and donor privacy guidance.">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+  <link rel="canonical" href="https://trivefoundation.org/donate.html">
   <title>Donate &amp; Support — TriveFoundation</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
 </head>
 <body>
 <header class="nav" role="banner"></header>
-<main>
+<main id="main">
 
 <section class="page-hdr" style="text-align:center">
   <span class="eyebrow" style="color:var(--c-green-lt);display:block;margin-bottom:.5rem">Support the Mission</span>
@@ -44,7 +47,26 @@
     </div>
     <div class="account-box fade-up" id="account-box" style="max-width:560px;margin:0 auto"></div>
     <div class="text-center fade-up" style="margin-top:clamp(18px,3vw,28px)">
-      <p style="font-size:.86rem;color:var(--c-muted)" data-cms="bank_confirm_note">After transferring, please <a href="contact.html" style="color:var(--c-teal)">send us a message</a> with your name and amount so we can acknowledge your support.</p>
+      <p style="font-size:.86rem;color:var(--c-muted)" data-cms="bank_confirm_note">After transferring, please <a href="contact.html" style="color:var(--c-teal)">send us a private message</a> with your preferred acknowledgement name and amount so we can reconcile and thank you safely.</p>
+    </div>
+    <div class="res-panel fade-up" style="max-width:760px;margin:clamp(18px,3vw,28px) auto 0;background:var(--c-cream);border-left:4px solid var(--c-teal)">
+      <h3 style="font-size:1rem;margin-bottom:.5rem">Donor privacy promise</h3>
+      <p style="font-size:.9rem;color:var(--c-muted);line-height:1.7">We do not publish donor names, transfer references, phone numbers, or email addresses without explicit consent. If you want acknowledgement, choose what may be displayed: anonymous, first name, organisation name, or a custom display name. For production, donor confirmations should be submitted through a secure backend form rather than browser storage or public comments.</p>
+      <p style="font-size:.86rem;margin-top:.6rem"><a href="privacy.html" style="color:var(--c-teal);font-weight:600">Read donor privacy details →</a></p>
+    </div>
+    <div class="res-panel fade-up" style="max-width:760px;margin:clamp(18px,3vw,28px) auto 0;background:var(--c-white)">
+      <h3 style="font-size:1rem;margin-bottom:.5rem">Private donation confirmation</h3>
+      <p style="font-size:.88rem;color:var(--c-muted);line-height:1.7;margin-bottom:1rem">Use this only after a transfer. In production this submits to a secure backend endpoint; until then it prepares a private email and never stores donor identity in browser storage.</p>
+      <div class="grid-2">
+        <div class="fg"><label for="donor-name">Your name *</label><input id="donor-name" type="text" maxlength="80" autocomplete="name"></div>
+        <div class="fg"><label for="donor-email">Email *</label><input id="donor-email" type="email" maxlength="100" autocomplete="email"></div>
+        <div class="fg"><label for="donor-amount">Amount transferred (₦) *</label><input id="donor-amount" type="number" min="1" inputmode="numeric" placeholder="e.g. 50000"></div>
+        <div class="fg"><label for="donor-ack">Public acknowledgement</label><select id="donor-ack"><option value="anonymous">Anonymous</option><option value="first_name">First name only</option><option value="organisation">Organisation name</option><option value="custom">Custom display name</option></select></div>
+      </div>
+      <div class="fg"><label for="donor-display">Display name (optional)</label><input id="donor-display" type="text" maxlength="80" placeholder="Only if not anonymous"></div>
+      <div class="fg"><label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;font-weight:400"><input type="checkbox" id="donor-consent" style="width:auto;margin-top:3px"><span style="font-size:.82rem;color:var(--c-muted)">I confirm this information may be used privately to reconcile and acknowledge my donation according to my selected acknowledgement preference.</span></label></div>
+      <button class="btn btn-green btn-full" id="donor-submit" onclick="submitDonorConfirmation()">Submit private confirmation</button>
+      <div class="form-ok" id="donor-ok">Confirmation prepared. If your email app does not open, email hello@trivefoundation.org directly.</div>
     </div>
   </div>
 </section>
@@ -110,6 +132,43 @@ function copyText(txt,btn){
   showToast('Copied to clipboard','ok');
 }
 window.copyText=copyText;
+
+async function submitDonorConfirmation(){
+  const name=(document.getElementById('donor-name').value||'').trim();
+  const email=(document.getElementById('donor-email').value||'').trim();
+  const amount=(document.getElementById('donor-amount').value||'').trim();
+  const acknowledgement=(document.getElementById('donor-ack').value||'anonymous').trim();
+  const displayName=(document.getElementById('donor-display').value||'').trim();
+  const consent=document.getElementById('donor-consent').checked;
+  if(!name)return showToast('Please enter your name','err');
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return showToast('Please enter a valid email','err');
+  if(!amount||Number(amount)<1)return showToast('Please enter the amount transferred','err');
+  if(!consent)return showToast('Please confirm donor privacy consent','err');
+  const endpoint=(window.SITE_CONFIG?.API?.donor_confirmation||'').trim();
+  const payload={name,email,amount,acknowledgement,displayName,consent:true,source:'donate.html'};
+  const btn=document.getElementById('donor-submit');
+  if(endpoint){
+    btn.disabled=true;btn.textContent='Submitting…';
+    const res=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    btn.disabled=false;btn.textContent='Submit private confirmation';
+    if(!res.ok)return showToast('Confirmation could not be sent. Please email us directly.','err');
+    document.getElementById('donor-ok').textContent='Donation confirmation submitted securely. Thank you.';
+    document.getElementById('donor-ok').classList.add('show');
+    return showToast('Donation confirmation sent','ok');
+  }
+  const subject=encodeURIComponent('TriveFoundation private donation confirmation');
+  const body=encodeURIComponent(`Name: ${name}
+Email: ${email}
+Amount: ₦${amount}
+Acknowledgement: ${acknowledgement}
+Display name: ${displayName||'N/A'}
+
+Please keep my donor information private according to my acknowledgement preference.`);
+  window.location.href=`mailto:hello@trivefoundation.org?subject=${subject}&body=${body}`;
+  document.getElementById('donor-ok').classList.add('show');
+  showToast('Private email draft prepared','ok');
+}
+window.submitDonorConfirmation=submitDonorConfirmation;
 
 async function saveBankDetails(){
   const b={account_name:document.getElementById('bank-name').value,bank:document.getElementById('bank-bank').value,account_no:document.getElementById('bank-acct').value,sort_code:document.getElementById('bank-sort').value,note:document.getElementById('bank-note').value};

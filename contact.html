@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+  <meta charset="UTF-8">
+  <meta name="description" content="Contact TriveFoundation to sponsor, volunteer, partner with a school, or ask questions about youth development programmes.">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
   <meta http-equiv="X-Content-Type-Options" content="nosniff"><meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+  <link rel="canonical" href="https://trivefoundation.org/contact.html">
   <title>Contact — TriveFoundation</title>
   <link rel="stylesheet" href="css/style.css"><link rel="icon" type="image/svg+xml" href="assets/logo.svg">
 </head>
 <body>
 <header class="nav" role="banner"></header>
-<main>
+<main id="main">
 <section class="page-hdr">
   <span class="eyebrow" style="color:var(--c-green-lt);display:block;margin-bottom:.4rem">Get in Touch</span>
   <h1>Contact Us</h1>
@@ -55,9 +58,9 @@
           </select>
         </div>
         <div class="fg"><label for="cf-msg">Message *</label><textarea id="cf-msg" rows="4" required maxlength="2000"></textarea></div>
-        <div class="fg"><label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;font-weight:400"><input type="checkbox" id="cf-consent" style="width:auto;margin-top:3px"><span style="font-size:.82rem;color:var(--c-muted)">I agree that this information may be used to respond to my enquiry.</span></label></div>
+        <div class="fg"><label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;font-weight:400"><input type="checkbox" id="cf-consent" style="width:auto;margin-top:3px"><span style="font-size:.82rem;color:var(--c-muted)">I agree that this information may be used to respond to my enquiry and understand this static site prepares an email unless a secure backend form is connected. See the <a href="privacy.html" style="color:var(--c-teal)">Privacy Policy</a>.</span></label></div>
         <button class="btn btn-green btn-full" onclick="submitForm()" id="cf-submit">Send Message</button>
-        <div class="form-ok" id="form-ok">Message sent! We'll be in touch soon.</div>
+        <div class="form-ok" id="form-ok">Your email app should open with a prepared message. If it does not, email hello@trivefoundation.org directly.</div>
       </div>
     </div>
   </div>
@@ -78,7 +81,7 @@
 'use strict';
 injectNav();
 injectAdminUI();injectFooter();
-function submitForm(){
+async function submitForm(){
   const name=(document.getElementById('cf-name').value||'').trim();
   const email=(document.getElementById('cf-email').value||'').trim();
   const msg=(document.getElementById('cf-msg').value||'').trim();
@@ -89,10 +92,28 @@ function submitForm(){
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return showToast('Please enter a valid email','err');
   if(msg.length<10)return showToast('Please write a brief message','err');
   if(!consent)return showToast('Please tick the consent box','err');
-  // For Netlify/Formspree: add action to the form element
+  const type=(document.getElementById('cf-type').value||'general').trim();
+  const submitBtn=document.getElementById('cf-submit');
+  const endpoint=(window.SITE_CONFIG?.API?.contact||'').trim();
+  const payload={name,email,type,message:msg,consent:true,source:'contact.html'};
+  if(endpoint){
+    submitBtn.disabled=true;submitBtn.textContent='Sending…';
+    const res=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    submitBtn.disabled=false;submitBtn.textContent='Send Message';
+    if(!res.ok)return showToast('Message could not be sent. Please email us directly.','err');
+    document.getElementById('form-ok').textContent='Message sent securely. We will be in touch soon.';
+    document.getElementById('form-ok').classList.add('show');
+    return showToast('Message sent','ok');
+  }
+  const subject=encodeURIComponent(`TriveFoundation enquiry: ${type}`);
+  const body=encodeURIComponent(`Name: ${name}
+Email: ${email}
+Interest: ${type}
+
+${msg}`);
+  window.location.href=`mailto:hello@trivefoundation.org?subject=${subject}&body=${body}`;
   document.getElementById('form-ok').classList.add('show');
-  document.getElementById('cf-submit').disabled=true;
-  showToast('Message sent!','ok');
+  showToast('Email draft prepared','ok');
 }
 window.submitForm=submitForm;
 CMS.load().then(()=>CMS.apply());

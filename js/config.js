@@ -35,6 +35,16 @@ window.SITE_CONFIG = {
     partners: { value: 6,    label: 'Partners & Donors', suffix: '' },
   },
 
+  /* ── BACKEND ENDPOINTS ───────────────────────────────
+     Leave blank for static/mailto fallback. In production, point these
+     to HTTPS endpoints such as /.netlify/functions/contact and
+     /.netlify/functions/donor-confirmation.
+  ──────────────────────────────────────────────────── */
+  API: {
+    contact: '',
+    donor_confirmation: '',
+  },
+
   /* ── DONATION TIERS (shown inline on CTA click) ───── */
   DONATION_TIERS: [
     { label: 'Starter', amount: '₦1,000', desc: 'Support one learner resource' },
