@@ -37,7 +37,7 @@ window.injectNav=function(){
       <a href="donate.html" class="nav-link nav-donate-btn">Donate</a>
     </nav>
     <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-      <button id="nav-admin-btn" onclick="window._openAdminLogin()" aria-label="Admin login"
+      <button id="nav-admin-btn" onclick="window._openAdminLogin?.()" aria-label="Admin login"
         style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.7);
                padding:6px 13px;border-radius:var(--r-sm);font-size:.78rem;font-weight:600;
                display:flex;align-items:center;gap:5px;cursor:pointer;transition:all var(--t)">
@@ -49,7 +49,7 @@ window.injectNav=function(){
       </button>
     </div>
   </div>`;
-  /* Hide admin button for external users; reveal for logged-in admins only */
+  /* Keep admin access discoverable; switch styling when authenticated. */
   _setAdminNavState(Boolean(window.AdminAuth?.isLoggedIn()));
   document.dispatchEvent(new CustomEvent('thrive:nav-injected'));
 };
@@ -65,7 +65,7 @@ function _setAdminNavState(on){
     btn.style.color='#3DB870';
     lbl.textContent='Edit Content';
   } else {
-    btn.style.display='none';
+    btn.style.display='flex';
     btn.style.background='rgba(255,255,255,.1)';
     btn.style.borderColor='rgba(255,255,255,.2)';
     btn.style.color='rgba(255,255,255,.7)';
@@ -76,6 +76,7 @@ function _setAdminNavState(on){
 /* Inject the login modal + CMS panel once into every page */
 window.injectAdminUI=function(){
   if(document.getElementById('_thrive-admin-ui'))return; /* only once */
+  if(document.body?.dataset?.customAdminUi==='true')return; /* page supplies its own admin UI */
   const wrap=document.createElement('div');
   wrap.id='_thrive-admin-ui';
   wrap.innerHTML=`
