@@ -37,12 +37,12 @@ window.injectNav=function(){
       <a href="donate.html" class="nav-link nav-donate-btn">Donate</a>
     </nav>
     <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-      <button id="nav-admin-btn" onclick="window._openAdminLogin?.()" aria-label="Admin login"
+      <button id="nav-admin-btn" onclick="window._openAdminLogin?.()" aria-label="Admin login (Ctrl+Shift+A shortcut)"
         style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.7);
                padding:6px 13px;border-radius:var(--r-sm);font-size:.78rem;font-weight:600;
                display:flex;align-items:center;gap:5px;cursor:pointer;transition:all var(--t)">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        <span id="nav-admin-lbl">Admin</span>
+        <span id="nav-admin-lbl">Admin</span><span class="nav-admin-shortcut" aria-hidden="true">Ctrl+Shift+A</span>
       </button>
       <button class="nav-hamburger" aria-label="Toggle menu" aria-expanded="false" aria-controls="nav-menu">
         <span></span><span></span><span></span>
@@ -64,12 +64,14 @@ function _setAdminNavState(on){
     btn.style.borderColor='rgba(61,214,140,.4)';
     btn.style.color='#3DB870';
     lbl.textContent='Edit Content';
+    const hint=btn.querySelector('.nav-admin-shortcut'); if(hint)hint.textContent='Ctrl+Shift+A';
   } else {
     btn.style.display='flex';
     btn.style.background='rgba(255,255,255,.1)';
     btn.style.borderColor='rgba(255,255,255,.2)';
     btn.style.color='rgba(255,255,255,.7)';
     lbl.textContent='Admin';
+    const hint=btn.querySelector('.nav-admin-shortcut'); if(hint)hint.textContent='Ctrl+Shift+A';
   }
 }
 

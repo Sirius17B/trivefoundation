@@ -362,6 +362,7 @@ window.SITE_CONFIG = {
       title:'Tech Quiz',
       category:'tech',
       description:'AI, ML, neural networks, robotics, frontend, backend, web design, product, UI/UX, and debugging.',
+      sessionSize:50,
       questions:buildBank(techTopics,'tech')
     },
     {
@@ -369,6 +370,7 @@ window.SITE_CONFIG = {
       title:'Football Quiz',
       category:'football',
       description:'Football rules, tactics, playing styles, positions, recent history (last decade), and Nigerian football context.',
+      sessionSize:25,
       questions:buildBank(footballTopics,'football')
     }
   ];
