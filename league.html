@@ -18,7 +18,7 @@
     .score-num{font-weight:700;color:var(--c-teal);font-size:.92rem}
   </style>
 </head>
-<body>
+<body data-custom-admin-ui="true">
 <header class="nav" role="banner"></header>
 
 <!-- ADMIN LOGIN MODAL -->
@@ -153,7 +153,7 @@
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Admin
         </span>
         <button class="btn btn-teal btn-sm admin-only" id="cms-btn" onclick="openCMS()">Edit Site Content</button>
-        <button class="btn btn-outline btn-sm" id="admin-toggle-btn" onclick="toggleAdmin()" style="display:none">Admin Login</button>
+        <button class="btn btn-outline btn-sm" id="admin-toggle-btn" onclick="toggleAdmin()" style="display:inline-flex">Admin Login</button>
       </div>
     </div>
 
@@ -252,7 +252,6 @@
 <script>
 'use strict';
 injectNav();injectFooter();
-injectAdminUI();
 
 let _main='football', _sub='boys';
 const MC=['lt-gold','lt-silver','lt-bronze'];

@@ -15,6 +15,11 @@
 7. Admin opens admin login → authenticates with PIN → edits CMS content, gallery/video, quiz, and leaderboard data.
 
 
+
+## Remediation update — 2026-07-15
+
+A fresh QA pass found no unresolved Git conflict markers in the tracked website source, and the static QA parser passes. Admin access was made discoverable from the shared navigation instead of being hidden for anonymous sessions, while still requiring the existing authorized PIN. The league page now declares its custom admin UI to avoid duplicate global login/CMS modal injection and keeps its Admin Login control visible. The design system received a holistic 2026 refresh with layered warm backgrounds, stronger nav/hero treatment, improved card depth, hover motion, form focus visibility, and mobile admin-button handling. Playwright browser QA remains blocked in this environment because the Chromium binary is missing and the Playwright CDN download returns HTTP 403.
+
 ## Remediation update — 2026-06-14
 
 The highest-impact static-site issues identified in this assessment have now been addressed in the codebase: `videos.html` is a clean redirect page with one title and one meta description, all public HTML pages have meta descriptions and canonical links, duplicate homepage CTA copy was removed, privacy and terms pages were added, `robots.txt` and `sitemap.xml` were added, and `scripts/static_checks.py` now guards against duplicate titles, missing metadata, broken internal links, missing image alt attributes, and missing standards files. Donor identity protection still requires a real backend before production collection of private donor confirmations; see `BACKEND_DONOR_PRIVACY.md` for the recommended architecture and controls.
