@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="description" content="Explore THRIVE photos and programme videos from technology training, football, community events, and inspirational talks.">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+  <link rel="canonical" href="https://thrivefoundation.org/gallery.html">
+  <title>Gallery — THRIVE</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <style>
+    .video-card{background:var(--surface);border-radius:var(--r-xl);overflow:hidden;border:1px solid var(--border);box-shadow:var(--sh-sm)}
+    .video-card video{width:100%;max-height:240px;display:block;background:#000;border-radius:var(--r-xl) var(--r-xl) 0 0}
+    .video-card-body{padding:14px 16px}
+    .video-title{font-weight:600;font-size:.92rem;color:var(--ink-900);font-family:var(--font-head)}
+    .video-date{font-size:.74rem;color:var(--ink-300);margin-top:3px}
+    .upload-zone{border:2px dashed var(--border-dark);border-radius:var(--r-xl);padding:clamp(28px,5vw,48px) 20px;text-align:center;cursor:pointer;transition:all var(--t-base);background:var(--off-white)}
+    .upload-zone:hover,.upload-zone.drag-over{border-color:var(--teal-600);background:var(--teal-100)}
+    .upload-zone input[type=file]{display:none}
+    .tag-football-badge{background:var(--orange-100);color:var(--orange-600)}
+    .tag-tech-badge{background:var(--teal-100);color:var(--teal-700)}
+    .tag-community-badge{background:var(--green-100);color:var(--green-700)}
+  </style>
+</head>
+<body>
+<header class="nav" role="banner"></header>
+<main id="main">
+
+<section class="page-hdr">
+  <span class="eyebrow" style="color:rgba(110,231,160,.8);display:block;margin-bottom:.4rem">Visual Story</span>
+  <h1 data-cms="gallery_title">THRIVE Gallery</h1>
+  <p class="lead" style="margin-top:.5rem;max-width:500px" data-cms="gallery_sub">Moments that capture the energy, joy, and growth of every event.</p>
+</section>
+
+<!-- PHOTO GALLERY -->
+<section class="section" style="background:var(--off-white)">
+  <div class="container">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:1rem">
+      <div class="filter-bar" role="group" aria-label="Filter gallery">
+        <button class="filter-btn active" onclick="filterGallery('all',this)">All</button>
+        <button class="filter-btn" onclick="filterGallery('football',this)">Football</button>
+        <button class="filter-btn" onclick="filterGallery('tech',this)">Tech</button>
+        <button class="filter-btn" onclick="filterGallery('community',this)">Community</button>
+      </div>
+      <!-- Admin: add image -->
+      <div class="admin-only" id="gallery-add-toggle" style="display:none">
+        <button class="btn btn-green btn-sm" onclick="toggleAddForm()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Image
+        </button>
+      </div>
+    </div>
+
+    <!-- Admin add form -->
+    <div class="admin-only" id="gallery-add-form" style="display:none;background:var(--surface);border-radius:var(--r-xl);padding:18px;margin-bottom:18px;border:1px solid var(--border)">
+      <h3 style="font-size:.95rem;margin-bottom:14px;color:var(--ink-900)">Add Gallery Image</h3>
+      <div class="grid-2" style="margin-bottom:10px">
+        <div class="fg"><label>Image URL</label><input id="gi-url" type="url" class="fi" placeholder="https://…"></div>
+        <div class="fg"><label>Caption</label><input id="gi-label" type="text" class="fi" placeholder="Caption…" maxlength="80"></div>
+        <div class="fg"><label>Alt text (accessibility)</label><input id="gi-alt" type="text" class="fi" placeholder="Describe image for screen readers"></div>
+        <div class="fg"><label>Category</label>
+          <select id="gi-tag" class="fi">
+            <option value="football">Football</option>
+            <option value="tech">Tech</option>
+            <option value="community">Community</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-green btn-sm" onclick="addGalleryItem()">Add Image</button>
+        <button class="btn btn-ghost btn-sm" onclick="toggleAddForm()">Cancel</button>
+      </div>
+    </div>
+
+    <div class="gallery-grid" id="gallery-grid" role="list"></div>
+  </div>
+</section>
+
+<!-- VIDEO SECTION -->
+<section class="section" style="background:var(--white)" id="videos">
+  <div class="container">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:clamp(18px,3vw,28px)">
+      <div>
+        <span class="eyebrow">Programme Recordings</span>
+        <h2 style="margin-top:.3rem">Gallery Videos</h2>
+      </div>
+      <!-- Admin upload zone -->
+      <div class="admin-only" id="video-upload-area" style="display:none">
+        <button class="btn btn-teal btn-sm" onclick="document.getElementById('video-file-inp').click()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+          Upload Video
+        </button>
+        <input id="video-file-inp" type="file" accept="video/mp4,video/webm,video/mov" style="display:none" onchange="uploadVideo(this.files?.[0])">
+        <div id="upload-progress" style="display:none;margin-top:8px">
+          <div style="height:4px;background:var(--border-dark);border-radius:2px;overflow:hidden">
+            <div id="upload-bar" style="height:100%;background:var(--green-600);width:0%;transition:width .3s ease"></div>
+          </div>
+          <div id="upload-label" style="font-size:.76rem;color:var(--ink-300);margin-top:4px">Loading…</div>
+        </div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:clamp(14px,2.5vw,22px)" id="video-grid"></div>
+  </div>
+</section>
+
+</main>
+<div class="site-footer"></div>
+<div class="toast" role="alert" aria-live="polite"></div>
+<script src="js/config.js"></script>
+<script src="js/quiz-bank.js"></script>
+<script src="js/components.js"></script>
+<script src="js/main.js"></script>
+<script>
+'use strict';
+injectNav(); injectAdminUI(); injectFooter();
+
+const TAG_CLS = { football:'tag-football', tech:'tag-tech', community:'tag-community' };
+const TAG_LBL = { football:'Football', tech:'Tech', community:'Community' };
+let _cur = 'all', _items = [];
+
+function getItems() {
+  const saved = CMS.get('gallery_items');
+  return saved ? JSON.parse(saved) : (window.SITE_CONFIG || {}).GALLERY || [];
+}
+
+function filterGallery(tag, btn) {
+  _cur = tag;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGallery();
+}
+window.filterGallery = filterGallery;
+
+function renderGallery() {
+  _items = getItems();
+  const show = _cur === 'all' ? _items : _items.filter(d => d.tag === _cur);
+  const grid = document.getElementById('gallery-grid'); if (!grid) return;
+  const isAdmin = AdminAuth.isLoggedIn();
+  grid.innerHTML = show.map((d, i) => `
+    <div class="gallery-item fade-up" role="listitem" style="transition-delay:${(i % 6) * .05}s">
+      <img src="${sanitize(d.src)}" alt="${sanitize(d.alt || d.label)}" loading="lazy">
+      <div class="gallery-overlay"></div>
+      <span class="gallery-tag-pos c-tag ${TAG_CLS[d.tag] || ''}">${TAG_LBL[d.tag] || sanitize(d.tag)}</span>
+      <div class="gallery-label">${sanitize(d.label)}</div>
+      ${isAdmin ? `<button onclick="delGalleryItem(${_items.indexOf(d)})"
+        style="position:absolute;top:8px;right:8px;background:rgba(220,38,38,.85);color:#fff;
+               border:none;border-radius:50%;width:26px;height:26px;font-size:.85rem;
+               cursor:pointer;line-height:26px;text-align:center;font-weight:700"
+        aria-label="Remove image">×</button>` : ''}
+    </div>`).join('');
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.gallery-item.fade-up').forEach((el, i) => {
+      setTimeout(() => el.classList.add('visible'), i * 40);
+    });
+  });
+}
+
+function toggleAddForm() {
+  const form = document.getElementById('gallery-add-form');
+  form.style.display = form.style.display === 'none' ? 'block' : 'none';
+}
+window.toggleAddForm = toggleAddForm;
+
+function addGalleryItem() {
+  const url   = document.getElementById('gi-url').value.trim();
+  const label = document.getElementById('gi-label').value.trim();
+  const alt   = document.getElementById('gi-alt').value.trim();
+  const tag   = document.getElementById('gi-tag').value;
+  if (!url || !label) { showToast('Image URL and caption are required', 'err'); return; }
+  const items = getItems();
+  items.push({ src:url, alt:alt||label, label, tag });
+  CMS.set('gallery_items', JSON.stringify(items));
+  ['gi-url','gi-label','gi-alt'].forEach(id => document.getElementById(id).value = '');
+  toggleAddForm();
+  renderGallery(); showToast('Image added', 'ok');
+}
+window.addGalleryItem = addGalleryItem;
+
+function delGalleryItem(idx) {
+  const items = getItems();
+  items.splice(idx, 1);
+  CMS.set('gallery_items', JSON.stringify(items));
+  renderGallery(); showToast('Image removed');
+}
+window.delGalleryItem = delGalleryItem;
+
+/* ── Videos ────────────────────────────────────────────────────────────────── */
+function renderVideos() {
+  const vids = VideoEngine.get();
+  const grid = document.getElementById('video-grid'); if (!grid) return;
+  if (!vids.length) {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:48px 20px;color:var(--ink-300)">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin:0 auto 12px;display:block" aria-hidden="true"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+      No videos yet${AdminAuth.isLoggedIn() ? ' — click "Upload Video" to add one.' : '.'}
+    </div>`;
+    return;
+  }
+  grid.innerHTML = vids.map((v, i) => `
+    <div class="video-card">
+      <video src="${sanitize(v.dataUrl)}" controls preload="metadata" aria-label="${sanitize(v.title)}"></video>
+      <div class="video-card-body">
+        <div class="video-title">${sanitize(v.title)}</div>
+        <div class="video-date">${sanitize(v.date)}</div>
+        ${AdminAuth.isLoggedIn() ? `<button class="btn btn-sm" style="background:var(--red-100);color:var(--red-600);margin-top:10px" onclick="delVideo(${i})">Remove</button>` : ''}
+      </div>
+    </div>`).join('');
+}
+
+window.uploadVideo = function (file) {
+  if (!file) return;
+  const MAX = 200 * 1024 * 1024;
+  if (file.size > MAX) { showToast('File too large — max 200 MB', 'err'); return; }
+  const prog  = document.getElementById('upload-progress');
+  const bar   = document.getElementById('upload-bar');
+  const label = document.getElementById('upload-label');
+  prog.style.display = 'block';
+  const r = new FileReader();
+  r.onprogress = e => {
+    if (e.lengthComputable) { const pct = Math.round((e.loaded / e.total) * 100); bar.style.width = pct + '%'; label.textContent = pct + '%…'; }
+  };
+  r.onload = async e => {
+    const title = file.name.replace(/\.[^/.]+$/, '');
+    await VideoEngine.add(title, String(e.target?.result || ''), file.type);
+    prog.style.display = 'none'; bar.style.width = '0%';
+    renderVideos(); showToast('Video uploaded', 'ok');
+  };
+  r.onerror = () => { prog.style.display = 'none'; showToast('Upload failed', 'err'); };
+  r.readAsDataURL(file);
+};
+
+window.delVideo = async function (idx) {
+  if (!confirm('Remove this video?')) return;
+  await VideoEngine.remove(idx); renderVideos(); showToast('Video removed');
+};
+
+document.addEventListener('thrive:admin-state', () => {
+  renderGallery(); renderVideos();
+  const uploadArea = document.getElementById('video-upload-area');
+  if (uploadArea) uploadArea.style.display = AdminAuth.isLoggedIn() ? 'block' : 'none';
+});
+
+async function init() {
+  await CMS.load(); CMS.apply();
+  await VideoEngine.load();
+  renderGallery(); renderVideos();
+  if (AdminAuth.isLoggedIn()) {
+    document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
+  }
+}
+init();
+</script>
+</body>
+</html>
