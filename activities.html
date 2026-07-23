@@ -327,7 +327,8 @@ async function loadStories() {
 }
 
 async function saveStories() {
-  try { await window.storage?.set(STORIES_KEY, JSON.stringify(stories)); } catch {}
+  try { await window.storage?.set(STORIES_KEY, JSON.stringify(stories)); }
+  catch (e) { showToast(e?.message || 'Save failed — check your connection and try again', 'err'); }
 }
 
 function renderStories() {
@@ -493,7 +494,7 @@ async function renderHubLeaderboards(){
   // Quiz leaderboard summary
   let scores={};
   try{
-    const r=await window.storage?.get('thrive_quiz_lb_v2');
+    const r=await window.storage?.get('thrive_v5_quiz_lb');
     scores=r?JSON.parse(r.value):{};
   }catch{}
   const rows=[];

@@ -357,18 +357,24 @@ CMS.set('hero_line1', 'New text');       // Write a value (also saves)
 
 ```js
 AdminAuth.isLoggedIn();       // true/false
-AdminAuth.login(pin);         // returns true, 'locked', or false
+await AdminAuth.login(pin);   // async — returns true, 'locked', or false
 AdminAuth.logout();           // clears session
-
-// Change the PIN:
-// 1. Open js/main.js
-// 2. Find the line: const _AH = btoa('thrive-' + PIN + '-admin');
-// 3. Compute a new hash for your new PIN and replace the value of _AH
-// 4. Save the file
-// The current PIN is not stored anywhere in this repo — ask the site owner.
 ```
 
-> **Security note:** This is a client-side PIN for convenience — suitable for a small team's internal tool. For a public-facing admin system handling sensitive data, replace this with server-side authentication (Firebase Auth, Supabase, etc.).
+`login()` only gates the client-side UI (instant "wrong PIN" feedback in the
+modal, and caches the plaintext PIN in `sessionStorage` so subsequent saves
+can send it along). It is **not** the real security boundary — every write
+is re-checked server-side against the `ADMIN_PIN` environment variable in
+`netlify/functions/admin-data.js`. See [Section 16](#16-storage--how-data-persists)
+for the full picture and how to rotate the PIN (it's a two-step process now:
+the client-side hash in `js/main.js`, and the Netlify env var).
+
+> **Security note:** This is a lightweight PIN system appropriate for a small
+> team's convenience — not bank-grade auth. The actual persistence write is
+> now gated server-side (not just client-side obfuscation), which is a real
+> improvement, but for a public-facing admin system handling sensitive data
+> you'd still want proper authenticated sessions (Netlify Identity, Auth0,
+> Supabase Auth, etc.) rather than a single shared PIN.
 
 ### `initCarousel(selector)` — Carousel
 
@@ -699,36 +705,83 @@ This site follows WCAG 2.1 AA guidance:
 
 ## 16. Storage — How Data Persists
 
-This site uses `window.storage` (provided by the Claude.ai hosting environment). It works like a simple key-value store:
+Admin edits are persisted through a real backend: a Netlify Function
+(`netlify/functions/admin-data.js`) backed by **Netlify Blobs**, a key-value
+store included on every Netlify site — no separate database to provision.
+
+`window.storage` (defined once in `js/main.js`, near the top) is a thin
+client over that Function. Every page already calls it the same way:
 
 ```js
-await window.storage.set('my-key', 'my-value');
+await window.storage.set('my-key', 'my-value'); // admin-gated writes need to be logged in first
 const result = await window.storage.get('my-key');
 console.log(result.value); // 'my-value'
 ```
 
+- **Reads are public** — any visitor loading a page can read published content.
+- **Writes to admin content are PIN-gated server-side.** The client-side PIN
+  check in `js/main.js` (`AdminAuth`) is only for instant UX feedback in the
+  login modal — the *authoritative* check happens inside the Function, which
+  compares against the `ADMIN_PIN` environment variable. That variable is
+  never committed to this repo; you set it in the Netlify dashboard.
+- **One key is public-write:** `thrive_v5_quiz_lb` (the quiz leaderboard) —
+  every visitor who finishes a quiz submits their own score, so that write
+  doesn't require the PIN. Every other key does. See the `ADMIN_WRITE_KEYS` /
+  `PUBLIC_WRITE_KEYS` split in `netlify/functions/admin-data.js`.
+
 **What is stored:**
 
-| Storage key | Contents |
-|---|---|
-| `thrive_league_v3_boys` | Boys league teams and results |
-| `thrive_league_v3_girls` | Girls league teams and results |
-| `thrive_tech_v2_` | Tech rankings participants |
-| `thrive_cms_v1_data` | Admin CMS overrides |
-| `thrive_quizzes_v1` | Admin-edited quiz questions |
-| `thrive_quiz_lb_v1` | Quiz leaderboard scores |
+| Storage key | Contents | Write access |
+|---|---|---|
+| `thrive_league_v3_boys` | Boys league teams and results | Admin (PIN) |
+| `thrive_league_v3_girls` | Girls league teams and results | Admin (PIN) |
+| `thrive_tech_v2_data` | Tech rankings participants | Admin (PIN) |
+| `thrive_cms_v1_data` | CMS text/image overrides, gallery items, bank override | Admin (PIN) |
+| `thrive_team_photos_v1` | About page team member photos | Admin (PIN) |
+| `thrive_stories_v1` | Activities page news/stories feed | Admin (PIN) |
+| `thrive_v5_quizzes` | Admin-edited quiz questions | Admin (PIN) |
+| `thrive_v5_quiz_lb` | Quiz leaderboard scores | Public — any visitor |
 
-**If deployed outside Claude.ai:** Replace `window.storage` with your own backend or `localStorage`. The simplest swap:
+### One-time setup to make admin edits actually publish
 
-```js
-// Drop this in before config.js loads:
-window.storage = {
-  async get(key) { const v = localStorage.getItem(key); return v ? {value:v} : null; },
-  async set(key, value) { localStorage.setItem(key, value); return {value}; },
-  async delete(key) { localStorage.removeItem(key); return {deleted:true}; },
-  async list(prefix) { const keys = Object.keys(localStorage).filter(k=>k.startsWith(prefix||'')); return {keys}; },
-};
-```
+This site is static and hosted from this GitHub repo. To make the backend
+above work, connect it to Netlify (free tier is enough):
+
+1. [netlify.com](https://netlify.com) → sign up → **Add new site → Import an
+   existing project → GitHub** → select this repo. Netlify auto-detects
+   `netlify.toml` and deploys.
+2. Site settings → **Environment variables** → add `ADMIN_PIN` set to the
+   current admin PIN (ask whoever last rotated it — it's intentionally never
+   written down in this repo).
+3. Trigger a redeploy if you added the env var after the first deploy (env
+   vars are picked up at deploy time).
+4. Test it: log in with Ctrl+Shift+A, edit something, refresh the page — it
+   should still be there. Open the same URL in an incognito window to
+   confirm the edit is visible to other visitors too, not just your browser.
+
+**If you deploy somewhere other than Netlify:** you'll need to rewrite
+`netlify/functions/admin-data.js` as an equivalent function for that
+platform (Vercel, Cloudflare Workers, etc.) and swap the storage backend
+(Netlify Blobs → whatever key-value store that platform offers). The
+`window.storage` client contract in `js/main.js` (`get(key)` → `{value}`,
+`set(key, value, pin)`) can stay the same either way.
+
+### Changing the admin PIN (now two steps)
+
+The PIN exists in two places that must be updated together:
+
+1. **`js/main.js`** — the `_AH` constant, a SHA-256 hash used only for
+   instant client-side feedback in the login modal. See the comment above
+   it in that file for the exact command to compute a new hash.
+2. **Netlify dashboard → Environment variables → `ADMIN_PIN`** — the
+   plaintext value the Function actually checks for every write. This is
+   the real authority; update it and redeploy (or just save it — Netlify
+   Functions read env vars fresh on each invocation, but a redeploy
+   guarantees it).
+
+If these two ever get out of sync, the login modal and the actual save
+function will disagree about whether a PIN is valid — always change both
+at the same time.
 
 ---
 
@@ -841,26 +894,32 @@ The team renders automatically on `about.html`. No HTML changes needed.
 
 ## 21. Deploying to a Live Server
 
-This site is fully static — it can be hosted anywhere that serves HTML files.
+The static pages will render anywhere, but **admin persistence (Section 16)
+requires Netlify** — it's the only option here that runs the
+`netlify/functions/admin-data.js` function and gives it Netlify Blobs to
+write to. If you deploy elsewhere, admin saves will fail gracefully (a toast
+error, nothing corrupts) but won't actually publish anything.
 
-### Option A — Netlify (free, recommended)
+### Netlify (required for working admin edits)
 
 1. Create a free account at [netlify.com](https://netlify.com)
-2. Drag and drop the `thrive-website/` folder onto the Netlify dashboard
-3. Your site is live instantly at a `*.netlify.app` URL
-4. To connect a custom domain: Site settings → Domain management
+2. **Add new site → Import an existing project → GitHub** → select this repo
+   (not drag-and-drop — importing from GitHub is what gives you auto-deploy
+   on every push, and lets Netlify pick up `netlify.toml`)
+3. Site settings → Environment variables → add `ADMIN_PIN` (see
+   [Section 16](#16-storage--how-data-persists) for the full one-time setup)
+4. Your site is live at a `*.netlify.app` URL; connect a custom domain under
+   Site settings → Domain management
 
-### Option B — GitHub Pages (free, see GitHub guide below)
+### If you deploy elsewhere instead (GitHub Pages, any static host, etc.)
 
-See the GitHub section at the end of this document.
-
-### Option C — Any web host (cPanel, etc.)
-
-Upload all files to the `public_html` folder via FTP or the file manager. The entry point is `index.html`.
-
-### After deploying
-
-If you deploy outside Claude.ai, `window.storage` will not exist. Add the `localStorage` shim from [Section 16](#16-storage--how-data-persists) to make all data persistence work.
+The public pages work fine, quizzes work, everything works — except admin
+edits won't persist anywhere, the same broken state this section exists to
+fix. To get real persistence on a non-Netlify host, you'd need to port
+`netlify/functions/admin-data.js` to that platform's equivalent (a Vercel
+serverless function, a Cloudflare Worker, etc.) and swap Netlify Blobs for
+whatever key-value store that platform provides — the `window.storage`
+client contract in `js/main.js` doesn't need to change.
 
 ---
 
@@ -868,9 +927,9 @@ If you deploy outside Claude.ai, `window.storage` will not exist. Add the `local
 
 | Limitation | Details | Suggested fix |
 |---|---|---|
-| **Client-side admin PIN** | The PIN is a light convenience lock, not cryptographic security | Migrate to Firebase Auth or Supabase |
+| **Single shared admin PIN** | One PIN for all admins, not per-person accounts — fine for a small team, not for tracking who changed what | Migrate to Netlify Identity, Auth0, or Supabase Auth for per-user login |
 | **No email on contact form** | Contact form has client-side validation but no backend | Add Netlify Forms or Formspree action |
-| **No real-time multi-user** | Two admins editing at the same time will overwrite each other | Add a backend (Firebase Firestore, etc.) |
+| **No real-time multi-user** | Two admins editing at the same time will overwrite each other (last write wins, no conflict detection) | Add optimistic concurrency (version/etag check) to `admin-data.js` |
 | **Quiz: no per-user accounts** | Leaderboard names are self-reported | Add authentication for verified scores |
 | **Images are Unsplash URLs** | External URLs could break if Unsplash changes | Upload real photos and host them locally |
 

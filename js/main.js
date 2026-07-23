@@ -160,6 +160,41 @@ window.initCarousel=function(wrapSelector,opts={}){
   window.addEventListener('resize',()=>go(current));
 };
 
+/* ── STORAGE (Netlify Function + Blobs backend) ──
+   Real persistence for admin edits. Reads are public; writes to admin-only
+   keys require the PIN, checked server-side in netlify/functions/admin-data.js
+   (the quiz leaderboard is the one public-write key — see that file).
+   If the function isn't reachable — e.g. a local static preview, or the site
+   hasn't been connected to Netlify yet — get() returns null (callers already
+   fall back to their defaults) and set() throws (callers already catch and
+   can show a toast). This is the ONLY place window.storage is defined; every
+   existing page already calls window.storage.get/set expecting this shape. */
+window.storage={
+  async get(key){
+    try{
+      const res=await fetch('/.netlify/functions/admin-data?key='+encodeURIComponent(key));
+      if(!res.ok)return null;
+      const data=await res.json();
+      return data.value!=null?{value:data.value}:null;
+    }catch{
+      return null;
+    }
+  },
+  async set(key,value){
+    const pin=sessionStorage.getItem(window.AdminAuth?._pk||'thrive_admin_pin_v1')||'';
+    const res=await fetch('/.netlify/functions/admin-data',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({key,value,pin}),
+    });
+    if(!res.ok){
+      const err=await res.json().catch(()=>({}));
+      throw new Error(err.error||'Save failed');
+    }
+    return{value};
+  },
+};
+
 /* ── LEAGUE ENGINE ── */
 function _deepClone(value){
   return JSON.parse(JSON.stringify(value));
@@ -175,7 +210,11 @@ async function _loadFromStorage(key,fallback){
 }
 
 async function _saveToStorage(key,payload){
-  try{await window.storage?.set(key,JSON.stringify(payload));}catch{}
+  try{
+    await window.storage?.set(key,JSON.stringify(payload));
+  }catch(e){
+    window.showToast?.(e?.message||'Save failed — check your connection and try again','err');
+  }
 }
 
 const _LK='thrive_league_v3_';
@@ -230,20 +269,40 @@ window.TechEngine={
   remove(idx){this.get().participants.splice(idx,1);this.save();},
 };
 
-/* ── ADMIN AUTH ── */
-/* Admin PIN hash — the plaintext PIN is never committed to this repo.
-   To rotate it: pick a new PIN, then in a scratch console run
-   btoa('thrive-' + NEW_PIN + '-admin') and paste the result below. */
-const _AH='dGhyaXZlLUhhcnZlc3Q2M1BlYWshLWFkbWlu';
+/* ── ADMIN AUTH ──
+   This client-side check is a SHA-256 digest — real UX convenience (instant
+   "wrong PIN" feedback), but NOT the security boundary. The authority for
+   actual admin writes is the ADMIN_PIN environment variable checked
+   server-side in netlify/functions/admin-data.js. Rotating the PIN means
+   updating BOTH: this hash, and the Netlify dashboard env var — see README
+   "Changing the admin PIN".
+   To compute a new hash for a new PIN, run in any browser console:
+     crypto.subtle.digest('SHA-256', new TextEncoder().encode('thrive-' + NEW_PIN + '-admin'))
+       .then(b => console.log([...new Uint8Array(b)].map(x => x.toString(16).padStart(2,'0')).join('')))
+   and paste the printed hex string in as _AH below. */
+const _AH='c6bbf60576296bc4076a0113d9950be88ca7c296286d96b1bba00689509cdbd0';
+async function _sha256Hex(str){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
+  return[...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
+}
 window.AdminAuth={
   _k:'thrive_admin_v3',
+  _pk:'thrive_admin_pin_v1', /* sessionStorage key for the plaintext PIN, needed to authenticate writes via window.storage.set — cleared on logout */
   isLoggedIn(){return sessionStorage.getItem(this._k)==='1';},
-  login(pin){
+  async login(pin){
     if(window._locked())return'locked';
-    if(btoa('thrive-'+pin+'-admin')===_AH){sessionStorage.setItem(this._k,'1');return true;}
+    const hash=await _sha256Hex('thrive-'+pin+'-admin');
+    if(hash===_AH){
+      sessionStorage.setItem(this._k,'1');
+      sessionStorage.setItem(this._pk,pin);
+      return true;
+    }
     window._loginFail();return false;
   },
-  logout(){sessionStorage.removeItem(this._k);},
+  logout(){
+    sessionStorage.removeItem(this._k);
+    sessionStorage.removeItem(this._pk);
+  },
 };
 
 /* Auto-restore admin UI on page load if already logged in this session.

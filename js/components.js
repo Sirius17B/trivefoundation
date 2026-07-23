@@ -207,10 +207,10 @@ window._closeLoginModal=function(){
   document.getElementById('login-err').style.display='none';
   document.getElementById('admin-pin-inp').value='';
 };
-window._doAdminLogin=function(){
+window._doAdminLogin=async function(){
   if(window._locked()){_showLoginErr('Too many attempts. Wait 60 seconds.');return;}
   const pin=document.getElementById('admin-pin-inp')?.value||'';
-  const result=window.AdminAuth?.login(pin);
+  const result=await window.AdminAuth?.login(pin);
   if(result===true){
     window._closeLoginModal();
     document.getElementById('cms-toolbar').style.display='flex';
