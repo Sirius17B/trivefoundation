@@ -197,6 +197,7 @@
 <div class="site-footer"></div>
 <div class="toast" role="alert" aria-live="polite"></div>
 <script src="js/config.js"></script>
+<script src="js/quiz-bank.js"></script>
 <script src="js/components.js"></script>
 <script src="js/main.js"></script>
 <script>
@@ -205,7 +206,7 @@ injectNav(); injectAdminUI(); injectFooter();
 
 const QUIZ_STORE_KEY = 'thrive_v5_quizzes';
 const QUIZ_LB_KEY   = 'thrive_v5_quiz_lb';
-const SESSION_Q     = 50; // fallback (overridden by quiz.sessionSize) — overridden per quiz by sessionSize
+const SESSION_Q     = 50; // fallback only — each quiz in js/quiz-bank.js sets its own sessionSize
 
 let quizzes         = [];
 let editingQIdx     = null;
@@ -217,12 +218,12 @@ let timerInterval   = null;
 async function loadQuizzes() {
   try {
     const r = await window.storage?.get(QUIZ_STORE_KEY);
-    quizzes = r ? normalizeQuizzes(JSON.parse(r.value)) : normalizeQuizzes(JSON.parse(JSON.stringify(window.SITE_CONFIG.QUIZZES || [])));
+    quizzes = r ? JSON.parse(r.value) : JSON.parse(JSON.stringify(window.SITE_CONFIG.QUIZZES || []));
   } catch {
-    quizzes = normalizeQuizzes(JSON.parse(JSON.stringify(window.SITE_CONFIG.QUIZZES || [])));
+    quizzes = JSON.parse(JSON.stringify(window.SITE_CONFIG.QUIZZES || []));
   }
   if (!Array.isArray(quizzes) || !quizzes.length) {
-    quizzes = normalizeQuizzes(JSON.parse(JSON.stringify(window.SITE_CONFIG.QUIZZES || [])));
+    quizzes = JSON.parse(JSON.stringify(window.SITE_CONFIG.QUIZZES || []));
   }
   renderQuizCards(); buildSelectMenus(); renderEditorQuestions(); renderLeaderboard();
   if (window.AdminAuth?.isLoggedIn()) document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
@@ -277,27 +278,6 @@ function renderQuizCards() {
 /* ── Quiz runner ──────────────────────────────────────────────────────────── */
 function shuffle(arr) { return [...arr].sort(() => Math.random() - .5); }
 
-function getQuizQuestions(quiz) {
-  const category = String(quiz?.category || '').toLowerCase();
-  const questions = Array.isArray(quiz?.questions) ? quiz.questions : [];
-  return questions.filter(q => {
-    const text = `${q?.q || ''} ${(q?.explanation || '')}`.toLowerCase();
-    if (category === 'tech') return !/(football|offside|fifa|afcon|goalkeeper|super eagles|super falcons|npfl|tactics|formations|set-piece|goalkeeper|possession versus direct play|counter-attacking|high block|low block)/i.test(text);
-    if (category === 'football') return !/(technology|ai|machine learning|neural networks|robotics|frontend|backend|debugging|ui\/ux|web design|product development|cybersecurity|database|apis and services|accessibility|responsive design|model training|evaluation metrics|overfitting|backpropagation)/i.test(text);
-    return true;
-  });
-}
-
-function normalizeQuizzes(list) {
-  return (Array.isArray(list) ? list : []).map(quiz => {
-    const copy = { ...quiz };
-    copy.questions = getQuizQuestions(copy);
-    if (copy.category === 'tech') copy.sessionSize = copy.sessionSize || 50;
-    if (copy.category === 'football') copy.sessionSize = copy.sessionSize || 25;
-    return copy;
-  });
-}
-
 function buildQuestionSet(allQuestions, target) {
   const shuffled = shuffle(Array.isArray(allQuestions) ? allQuestions : []);
   return shuffled.slice(0, Math.min(target, shuffled.length));
@@ -308,7 +288,7 @@ async function startQuiz(quizId) {
   const name = (prompt(`Starting: ${quiz.title}\n\nEnter your name for the leaderboard:`) || '').trim();
   if (!name) { showToast('A name is required to start.', 'err'); return; }
 
-  const selected = buildQuestionSet(getQuizQuestions(quiz), quiz.sessionSize || SESSION_Q);
+  const selected = buildQuestionSet(quiz.questions, quiz.sessionSize || SESSION_Q);
   state = {
     quiz, questions: selected, current: 0,
     answers:  new Array(selected.length).fill(null),

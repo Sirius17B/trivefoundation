@@ -29,13 +29,13 @@
       <h2 style="margin-top:1.5rem;font-size:1.2rem">Quizzes and leaderboards</h2>
       <p>Quiz and leaderboard features are intended for programme engagement. Display names should not include private information, offensive language, impersonation, or school-sensitive data unless authorised.</p>
       <h2 style="margin-top:1.5rem;font-size:1.2rem">Media and uploads</h2>
-      <p>Only authorised administrators should upload programme media. Photos or videos of minors should be published only with appropriate consent and should be removed promptly if a valid takedown request is received.</p>
+      <p>Only authorised administrators should upload programme media. Photos of minors should be published only with appropriate consent and should be removed promptly if a valid takedown request is received.</p>
       <h2 style="margin-top:1.5rem;font-size:1.2rem">Donations</h2>
       <p>Donation details should be verified with TriveFoundation before transfer. Donors may request anonymous acknowledgement, and private donor information must not be placed on public pages.</p>
       <h2 style="margin-top:1.5rem;font-size:1.2rem">Admin changes</h2>
       <p>Browser-based admin tools are suitable only for low-risk content previews. Production updates that affect donations, personal data, or participant records should be handled through a secure backend with authentication, roles, audit logs, and backups.</p>
       <h2 style="margin-top:1.5rem;font-size:1.2rem">Contact</h2>
-      <p>Questions about these guidelines can be sent to <a href="mailto:hello@trivefoundation.org" style="color:var(--c-teal)">hello@trivefoundation.org</a>.</p>
+      <p>Questions about these guidelines can be sent to <a href="mailto:camplucens@gmail.com" style="color:var(--c-teal)" data-org-email>camplucens@gmail.com</a>.</p>
     </div>
   </div>
 </section>
@@ -44,6 +44,6 @@
 <script src="js/config.js"></script>
 <script src="js/components.js"></script>
 <script src="js/main.js"></script>
-<script>injectNav();injectFooter();</script>
+<script>injectNav();injectFooter();CMS.load().then(()=>CMS.apply());</script>
 </body>
 </html>

@@ -257,15 +257,14 @@ Every time you merge a Pull Request into `main`, GitHub Pages automatically rebu
 |---|---|---|
 | Change organisation name | You or collaborator | Edit `ORG_NAME` in `js/config.js` |
 | Update stats numbers | You or collaborator | Edit `STATS` in `js/config.js` |
-| Add a quiz question | Admin (browser) | Log in → `quiz.html` → Question Editor |
-| Add a quiz question (bulk) | Developer | Edit `QUIZZES` in `js/config.js` |
+| Add a quiz question | Admin (browser) | Ctrl+Shift+A → `quiz.html` → Question Editor |
+| Add a quiz question (bulk) | Developer | Edit `window.SITE_CONFIG.QUIZZES` in `js/quiz-bank.js` |
 | Update bank details | Developer | Edit `BANK` in `js/config.js` |
-| Change text on any page | Admin (browser) | Log in → click text → type → Save |
+| Change text on any page | Admin (browser) | Ctrl+Shift+A → click text → type → Save |
 | Add a new page | Developer | Copy a page, add nav link in `components.js` |
 | Change colours | Developer | Edit `:root` variables in `css/style.css` |
 | Replace the logo | Developer | Replace `assets/tree-logo.png` |
-| Upload a video | Admin (browser) | Log in → `videos.html` → upload zone |
-| Add gallery photos | Admin (browser) | Log in → `gallery.html` → Add Image |
+| Add gallery photos | Admin (browser) | Ctrl+Shift+A → `gallery.html` → Add Image |
 
 ---
 

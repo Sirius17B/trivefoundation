@@ -27,7 +27,7 @@
         <div style="margin-top:1.75rem">
           <div style="display:flex;align-items:flex-start;gap:14px;padding:15px 0;border-bottom:1px solid var(--c-border)">
             <div style="width:38px;height:38px;background:rgba(13,123,123,.1);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--c-teal)" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
-            <div><div style="font-size:.8rem;font-weight:600;color:var(--c-dark);margin-bottom:2px">Email</div><a href="mailto:hello@trivefoundation.org" style="color:var(--c-teal);font-size:.9rem" data-cms="contact_email">hello@trivefoundation.org</a></div>
+            <div><div style="font-size:.8rem;font-weight:600;color:var(--c-dark);margin-bottom:2px">Email</div><a href="mailto:camplucens@gmail.com" style="color:var(--c-teal);font-size:.9rem" data-org-email>camplucens@gmail.com</a></div>
           </div>
           <div style="display:flex;align-items:flex-start;gap:14px;padding:15px 0;border-bottom:1px solid var(--c-border)">
             <div style="width:38px;height:38px;background:rgba(45,158,107,.1);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--c-green)" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
@@ -60,7 +60,7 @@
         <div class="fg"><label for="cf-msg">Message *</label><textarea id="cf-msg" rows="4" required maxlength="2000"></textarea></div>
         <div class="fg"><label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;font-weight:400"><input type="checkbox" id="cf-consent" style="width:auto;margin-top:3px"><span style="font-size:.82rem;color:var(--c-muted)">I agree that this information may be used to respond to my enquiry and understand this static site prepares an email unless a secure backend form is connected. See the <a href="privacy.html" style="color:var(--c-teal)">Privacy Policy</a>.</span></label></div>
         <button class="btn btn-green btn-full" onclick="submitForm()" id="cf-submit">Send Message</button>
-        <div class="form-ok" id="form-ok">Your email app should open with a prepared message. If it does not, email hello@trivefoundation.org directly.</div>
+        <div class="form-ok" id="form-ok">Your email app should open with a prepared message. If it does not, email us directly using the address above.</div>
       </div>
     </div>
   </div>
@@ -111,7 +111,7 @@ Email: ${email}
 Interest: ${type}
 
 ${msg}`);
-  window.location.href=`mailto:hello@trivefoundation.org?subject=${subject}&body=${body}`;
+  window.location.href=`mailto:${getOrgEmail()}?subject=${subject}&body=${body}`;
   document.getElementById('form-ok').classList.add('show');
   showToast('Email draft prepared','ok');
 }

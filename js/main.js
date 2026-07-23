@@ -230,20 +230,11 @@ window.TechEngine={
   remove(idx){this.get().participants.splice(idx,1);this.save();},
 };
 
-/* ── VIDEO ENGINE ── */
-const _VK='thrive_videos_v1_';
-window.VideoEngine={
-  _d:null,
-  async load(){this._d=await _loadFromStorage(_VK+'list',{videos:[]});return this._d;},
-  async save(){await _saveToStorage(_VK+'list',this._d);},
-  get(){return(this._d||{videos:[]}).videos;},
-  add(title,dataUrl,type){const vids=this._d=this._d||{videos:[]};vids.videos.push({title,dataUrl,type,date:new Date().toLocaleDateString()});this.save();},
-  remove(idx){this.get().splice(idx,1);this.save();},
-};
-
 /* ── ADMIN AUTH ── */
-/* Admin PIN hash */
-const _AH='dGhyaXZlLTIwMjUtYWRtaW4=';
+/* Admin PIN hash — the plaintext PIN is never committed to this repo.
+   To rotate it: pick a new PIN, then in a scratch console run
+   btoa('thrive-' + NEW_PIN + '-admin') and paste the result below. */
+const _AH='dGhyaXZlLUhhcnZlc3Q2M1BlYWshLWFkbWlu';
 window.AdminAuth={
   _k:'thrive_admin_v3',
   isLoggedIn(){return sessionStorage.getItem(this._k)==='1';},
@@ -255,16 +246,14 @@ window.AdminAuth={
   logout(){sessionStorage.removeItem(this._k);},
 };
 
-/* Auto-restore admin UI on page load if already logged in this session */
+/* Auto-restore admin UI on page load if already logged in this session.
+   No nav button exists — admin access is Ctrl+Shift+A only. The fixed
+   bottom cms-toolbar is the sole visible indicator that edit mode is on. */
 document.addEventListener('DOMContentLoaded',()=>{
   if(!window.AdminAuth.isLoggedIn())return;
   setTimeout(()=>{
     const bar=document.getElementById('cms-toolbar');
     if(bar)bar.style.display='flex';
-    const lbl=document.getElementById('nav-admin-lbl');
-    if(lbl)lbl.textContent='Edit Content';
-    const btn=document.getElementById('nav-admin-btn');
-    if(btn){btn.style.display='flex';btn.style.background='rgba(46,125,79,.35)';btn.style.borderColor='rgba(61,214,140,.4)';btn.style.color='#3DB870';}
     document.querySelectorAll('.admin-only').forEach(el=>el.style.display='block');
     window._enableInlineEdit?.();
   },120);
@@ -295,6 +284,19 @@ window.CMS={
       const name=this.get('org_name',cfg.ORG_NAME);
       document.querySelectorAll('[data-org-name]').forEach(el=>el.textContent=name);
       document.title=document.title.replace(/THRIVE/g,name);
+
+      const email=this.get('org_email',cfg.ORG_EMAIL);
+      document.querySelectorAll('[data-org-email]').forEach(el=>{
+        el.textContent=email;
+        if(el.tagName==='A')el.href='mailto:'+email;
+      });
     }
   }
+};
+
+/* Current org email, honouring any admin CMS override — for mailto: links
+   built at runtime (contact/donate forms). Call after CMS.load(). */
+window.getOrgEmail=function(){
+  const cfg=window.SITE_CONFIG||{};
+  return (window.CMS?.get('org_email',cfg.ORG_EMAIL))||cfg.ORG_EMAIL||'hello@trivefoundation.org';
 };

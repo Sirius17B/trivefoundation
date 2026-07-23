@@ -9,7 +9,6 @@ const pages = [
   'contact.html',
   'privacy.html',
   'terms.html',
-  'videos.html',
 ];
 
 test.describe('public site smoke', () => {

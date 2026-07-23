@@ -45,7 +45,13 @@
       <h2 style="margin-top:.4rem" data-cms="bank_heading">Account Details</h2>
       <p style="margin-top:.6rem;max-width:480px;margin-left:auto;margin-right:auto" data-cms="bank_sub">Transfer directly to our account. Please use your full name as the payment reference.</p>
     </div>
-    <div class="account-box fade-up" id="account-box" style="max-width:560px;margin:0 auto"></div>
+    <div class="fade-up" style="max-width:560px;margin:0 auto">
+      <div class="account-box" id="account-box"></div>
+      <div style="display:flex;align-items:center;gap:8px;justify-content:center;margin-top:14px;font-size:.78rem;color:var(--c-muted)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--c-teal)" stroke-width="2.5" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        Every transfer goes directly to TRIVE CARE SERVICES — no intermediary
+      </div>
+    </div>
     <div class="text-center fade-up" style="margin-top:clamp(18px,3vw,28px)">
       <p style="font-size:.86rem;color:var(--c-muted)" data-cms="bank_confirm_note">After transferring, please <a href="contact.html" style="color:var(--c-teal)">send us a private message</a> with your preferred acknowledgement name and amount so we can reconcile and thank you safely.</p>
     </div>
@@ -66,7 +72,7 @@
       <div class="fg"><label for="donor-display">Display name (optional)</label><input id="donor-display" type="text" maxlength="80" placeholder="Only if not anonymous"></div>
       <div class="fg"><label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;font-weight:400"><input type="checkbox" id="donor-consent" style="width:auto;margin-top:3px"><span style="font-size:.82rem;color:var(--c-muted)">I confirm this information may be used privately to reconcile and acknowledge my donation according to my selected acknowledgement preference.</span></label></div>
       <button class="btn btn-green btn-full" id="donor-submit" onclick="submitDonorConfirmation()">Submit private confirmation</button>
-      <div class="form-ok" id="donor-ok">Confirmation prepared. If your email app does not open, email hello@trivefoundation.org directly.</div>
+      <div class="form-ok" id="donor-ok">Confirmation prepared. If your email app does not open, email us directly — see the Contact page for our address.</div>
     </div>
   </div>
 </section>
@@ -79,8 +85,7 @@
       <div class="grid-2">
         <div class="fg"><label>Account Name</label><input id="bank-name" type="text" placeholder="Account holder"></div>
         <div class="fg"><label>Bank</label><input id="bank-bank" type="text" placeholder="Bank name"></div>
-        <div class="fg"><label>Account Number</label><input id="bank-acct" type="text" placeholder="00000000"></div>
-        <div class="fg"><label>Sort Code</label><input id="bank-sort" type="text" placeholder="000000000"></div>
+        <div class="fg"><label>Account Number</label><input id="bank-acct" type="text" placeholder="0000000000"></div>
       </div>
       <div class="fg"><label>Transfer Note to Donors</label><input id="bank-note" type="text" placeholder="e.g. Use your full name as reference"></div>
       <button class="btn btn-green" onclick="saveBankDetails()">Save Bank Details</button>
@@ -114,16 +119,15 @@ function renderBank(bank){
   const b=bank||(window.SITE_CONFIG||{}).BANK||{};
   const box=document.getElementById('account-box');if(!box)return;
   box.innerHTML=`
+    <div class="acct-row"><div><div class="acct-key">Account Number</div><div class="acct-val" style="font-family:var(--font-head,inherit);font-size:1.4rem;letter-spacing:.04em;font-weight:800">${sanitize(b.account_no||b.account||'—')}</div></div><button class="copy-btn" onclick="copyText('${sanitize(b.account_no||b.account||'')}',this)">Copy</button></div>
     <div class="acct-row"><div><div class="acct-key">Account Name</div><div class="acct-val">${sanitize(b.account_name||b.name||'—')}</div></div><button class="copy-btn" onclick="copyText('${sanitize(b.account_name||b.name||'')}',this)">Copy</button></div>
     <div class="acct-row"><div><div class="acct-key">Bank</div><div class="acct-val">${sanitize(b.bank||'—')}</div></div></div>
-    <div class="acct-row"><div><div class="acct-key">Account Number</div><div class="acct-val">${sanitize(b.account_no||b.account||'—')}</div></div><button class="copy-btn" onclick="copyText('${sanitize(b.account_no||b.account||'')}',this)">Copy</button></div>
-    <div class="acct-row"><div><div class="acct-key">Sort Code</div><div class="acct-val">${sanitize(b.sort_code||b.sort||'—')}</div></div></div>
     <div class="acct-row"><div><div class="acct-key">Payment Reference</div><div class="acct-val" style="color:#3DD68C">${sanitize(b.note||'Your full name')}</div></div></div>
   `;
   // Prefill admin fields
-  ['name','bank','acct','sort','note'].forEach(k=>{
+  ['name','bank','acct','note'].forEach(k=>{
     const el=document.getElementById('bank-'+k);if(!el)return;
-    el.value=b[{name:'account_name',bank:'bank',acct:'account_no',sort:'sort_code',note:'note'}[k]]||'';
+    el.value=b[{name:'account_name',bank:'bank',acct:'account_no',note:'note'}[k]]||'';
   });
 }
 
@@ -164,14 +168,14 @@ Acknowledgement: ${acknowledgement}
 Display name: ${displayName||'N/A'}
 
 Please keep my donor information private according to my acknowledgement preference.`);
-  window.location.href=`mailto:hello@trivefoundation.org?subject=${subject}&body=${body}`;
+  window.location.href=`mailto:${getOrgEmail()}?subject=${subject}&body=${body}`;
   document.getElementById('donor-ok').classList.add('show');
   showToast('Private email draft prepared','ok');
 }
 window.submitDonorConfirmation=submitDonorConfirmation;
 
 async function saveBankDetails(){
-  const b={account_name:document.getElementById('bank-name').value,bank:document.getElementById('bank-bank').value,account_no:document.getElementById('bank-acct').value,sort_code:document.getElementById('bank-sort').value,note:document.getElementById('bank-note').value};
+  const b={account_name:document.getElementById('bank-name').value,bank:document.getElementById('bank-bank').value,account_no:document.getElementById('bank-acct').value,note:document.getElementById('bank-note').value};
   CMS.set('bank_override',JSON.stringify(b));
   renderBank(b);showToast('Bank details saved','ok');
 }

@@ -17,7 +17,7 @@ window.SITE_CONFIG = {
   ORG_YEAR:      '2026',
   ORG_SEASON:    'A Time To Build',
   ORG_MISSION:   'Empowering youth through technology, sport, and inspiration.',
-  ORG_EMAIL:     'hello@trivefoundation.org',
+  ORG_EMAIL:     'camplucens@gmail.com', /* working default — update from Admin → Site Settings → Identity once a standard org email exists */
   ORG_PHONE:     '+234 800 000 0000',
   /* NOTE: THRIVE is an independent organisation. Events held at partner venues. */
   ORG_VENUE_2025:'FGC NISE, Anambra State, Nigeria',
@@ -55,10 +55,9 @@ window.SITE_CONFIG = {
 
   /* ── BANK DETAILS (/donate.html) ───────────────────── */
   BANK: {
-    account_name: 'TriveFoundation',
-    bank:         'First Bank of Nigeria',
-    account_no:   '3012345678',
-    sort_code:    '011152003',
+    account_name: 'TRIVE CARE SERVICES',
+    bank:         'Sterling Bank',
+    account_no:   '0148347000',
     note:         'Use your full name as the payment reference.',
   },
 
@@ -155,126 +154,10 @@ window.SITE_CONFIG = {
     shuffleOptions:    false,
   },
 
-  QUIZZES: [
-    {
-      id: 'tech-general',
-      title: 'Tech Challenge',
-      category: 'tech',
-      description: 'Test your knowledge of computers, programming, and digital technology.',
-      questions: [
-        { q:'What does HTML stand for?', options:['HyperText Markup Language','High-Tech Modern Language','HyperText Machine Learning','HyperLink Text Method'], answer:0, explanation:'HTML is the standard language used to create web pages.' },
-        { q:'Which of these is a programming language?', options:['Google','Python','Chrome','Windows'], answer:1, explanation:'Python is a popular general-purpose programming language.' },
-        { q:'What does CPU stand for?', options:['Central Power Unit','Computer Personal Unit','Central Processing Unit','Control Processing Unit'], answer:2, explanation:'The CPU (Central Processing Unit) is the brain of a computer.' },
-        { q:'What does "www" stand for in a web address?', options:['World Wide Web','World Web Works','Wide World Web','Web Wide World'], answer:0 },
-        { q:'Which device stores data permanently?', options:['RAM','CPU','Hard Disk Drive','Monitor'], answer:2, explanation:'Hard drives retain data even when the computer is switched off.' },
-        { q:'What is a "bug" in programming?', options:['A type of computer virus','An error or flaw in code','A security password','A type of printer'], answer:1 },
-        { q:'What does Wi-Fi allow you to do?', options:['Watch TV without a screen','Connect to the internet wirelessly','Print documents','Charge your phone'], answer:1 },
-        { q:'Which of these is NOT a web browser?', options:['Chrome','Firefox','Safari','Photoshop'], answer:3, explanation:'Photoshop is image editing software, not a web browser.' },
-        { q:'What does "AI" stand for?', options:['Automatic Interface','Artificial Intelligence','Advanced Internet','Automated Information'], answer:1 },
-        { q:'What is the internet?', options:['A single computer','A type of software','A global network of connected computers','A storage device'], answer:2 },
-        { q:'Which language is primarily used to style web pages?', options:['Java','CSS','Python','SQL'], answer:1, explanation:'CSS (Cascading Style Sheets) controls the visual appearance of web pages.' },
-        { q:'What does "URL" stand for?', options:['Universal Resource Locator','Uniform Resource Locator','United Resource Link','Universal Resource Link'], answer:1 },
-        { q:'What is a "server" in computing?', options:['A person who serves food','A computer that provides data to other computers','A type of keyboard','A printer model'], answer:1 },
-        { q:'Which company created the Android operating system?', options:['Apple','Microsoft','Google','Samsung'], answer:2, explanation:'Android was developed by Google and is now the most widely used mobile OS.' },
-        { q:'What does RAM stand for?', options:['Random Access Memory','Read-only Accessible Memory','Rapid Action Module','Remote Access Manager'], answer:0 },
-        { q:'What is a "database"?', options:['A type of computer game','An organised collection of structured data','A kind of keyboard shortcut','A website template'], answer:1 },
-        { q:'What does "HTTP" stand for?', options:['HyperText Transfer Protocol','High Traffic Transfer Program','HyperText Technology Protocol','Home Transfer Text Protocol'], answer:0 },
-        { q:'What is "open source" software?', options:['Software that is always free to use','Software whose source code is publicly available','Software made by a single developer','Software with no security features'], answer:1 },
-        { q:'Which of these is an example of an operating system?', options:['Microsoft Word','Google Chrome','Windows 11','Minecraft'], answer:2, explanation:'Windows 11 is an OS. Word and Chrome are applications that run on an OS.' },
-        { q:'What does "encryption" do?', options:['Speeds up a computer','Converts data into a coded form to protect it','Deletes unwanted files','Connects to the internet'], answer:1 },
-        { q:'What is the function of a "router" in networking?', options:['To display images','To direct data packets between computer networks','To store files','To power the computer'], answer:1 },
-        { q:'What is "cloud computing"?', options:['Using weather data in software','Storing and accessing data/programs over the internet','A type of graphics processing','Building software for aircraft'], answer:1 },
-        { q:'What programming concept means "repeating a block of code multiple times"?', options:['A function','A loop','A variable','A comment'], answer:1, explanation:'Loops (for/while) repeat instructions until a condition is met.' },
-        { q:'What does "debugging" mean in programming?', options:['Adding new features to software','Finding and fixing errors in code','Deleting old files','Writing documentation'], answer:1 },
-        { q:'What is an "algorithm"?', options:['A type of computer virus','A step-by-step procedure to solve a problem','A social media platform','A programming language'], answer:1 },
-        { q:'What is "binary code"?', options:['A code used by spies','A number system using only 0s and 1s','A type of image file','A virus detection system'], answer:1, explanation:'All computer data is ultimately stored and processed as binary (0s and 1s).' },
-        { q:'What does a "variable" store in programming?', options:['A fixed unchangeable value','A piece of data that can change during execution','The speed of the program','A type of loop'], answer:1 },
-        { q:'What is "phishing" in cybersecurity?', options:['A type of computer game','A technique to trick users into revealing sensitive information','A method of fast file transfer','A way to speed up downloads'], answer:1 },
-        { q:'What does "USB" stand for?', options:['Universal Serial Bus','United System Board','Universal Software Base','Unified Storage Bridge'], answer:0 },
-        { q:'Which of these is a spreadsheet application?', options:['PowerPoint','Word','Excel','Outlook'], answer:2, explanation:'Microsoft Excel is a spreadsheet application used for data and calculations.' },
-        { q:'What is "syntax" in programming?', options:['The speed at which code runs','The rules that define the structure of a programming language','A type of database','A security protocol'], answer:1 },
-        { q:'What does "bandwidth" refer to in networking?', options:['The physical width of a cable','The maximum rate of data transfer across a network','The number of connected devices','The age of the network equipment'], answer:1 },
-        { q:'What is a "function" in programming?', options:['A type of error','A reusable block of code that performs a specific task','A computer port','A file storage system'], answer:1 },
-        { q:'Which file extension is commonly used for web pages?', options:['.docx','.html','.mp3','.xlsx'], answer:1, explanation:'.html files are the building blocks of web pages.' },
-        { q:'What is "version control" in software development?', options:['Checking which Windows version you have','A system that tracks changes to code over time','Setting the screen resolution','Controlling user access levels'], answer:1, explanation:'Git is the most popular version control system.' },
-        { q:'What does "API" stand for?', options:['Application Programming Interface','Automated Process Integration','Advanced Program Installer','Application Port Index'], answer:0, explanation:'APIs allow different software applications to communicate with each other.' },
-        { q:'What is "machine learning"?', options:['Training people to use machines','A type of AI where systems learn from data without explicit programming','A method of computer maintenance','A game development framework'], answer:1 },
-        { q:'What is a "pixel"?', options:['A unit of data storage','The smallest unit of a digital image','A type of network cable','A programming loop'], answer:1 },
-        { q:'What does "LAN" stand for?', options:['Large Area Network','Local Access Node','Local Area Network','Long-range Access Network'], answer:2 },
-        { q:'Which of the following is a cybersecurity best practice?', options:['Using the same password everywhere for convenience','Sharing your password with a trusted friend','Using a unique strong password for each account','Writing passwords on sticky notes near your computer'], answer:2 },
-        { q:'What is "responsive design" in web development?', options:['A website that responds to user comments','A design that adapts to different screen sizes and devices','A very fast-loading website','A website with animated elements'], answer:1 },
-        { q:'What is a "compiler" in programming?', options:['A person who writes code','A program that translates source code into machine code','A type of database','A debugging tool'], answer:1 },
-        { q:'What does "IP address" identify?', options:['The speed of your internet connection','A unique device or host on a computer network','The brand of your router','The version of your browser'], answer:1 },
-        { q:'What is "social engineering" in cybersecurity?', options:['Building social media apps','Manipulating people into revealing confidential information','Designing user interfaces','Managing social media accounts'], answer:1 },
-        { q:'What is the purpose of a "firewall"?', options:['To speed up internet connections','To monitor and control incoming and outgoing network traffic based on rules','To store website data','To compress files'], answer:1 },
-        { q:'What language is used to query databases?', options:['HTML','Python','SQL','JavaScript'], answer:2, explanation:'SQL (Structured Query Language) is used to communicate with databases.' },
-        { q:'What is "boolean" in programming?', options:['A type of loop','A data type that is either true or false','A kind of function','A network protocol'], answer:1 },
-        { q:'What does "IoT" stand for?', options:['Internet of Technology','Internet of Things','Integrated Operating Technology','Index of Tools'], answer:1, explanation:'IoT refers to everyday objects connected to the internet.' },
-        { q:'What is "pseudocode"?', options:['Fake or broken code','An informal description of an algorithm in plain language','A type of encrypted code','A programming language for beginners'], answer:1 },
-        { q:'What is the role of a "web server"?', options:['To browse websites','To store and serve web pages to clients over the internet','To create web designs','To write HTML code'], answer:1 },
-      ],
-    },
-    {
-      id: 'football-general',
-      title: 'Football Arena',
-      category: 'football',
-      description: 'How well do you know the beautiful game? Rules, tactics, and history.',
-      questions: [
-        { q:'How many players are on a football team on the pitch?', options:['9','10','11','12'], answer:2 },
-        { q:'How long is a standard football match?', options:['60 minutes','80 minutes','90 minutes','100 minutes'], answer:2 },
-        { q:'What is awarded when a player is fouled inside the penalty area?', options:['Free kick','Corner kick','Penalty kick','Goal kick'], answer:2 },
-        { q:'What does a yellow card mean?', options:['A goal is awarded','A warning to the player','The player is immediately sent off','A penalty kick is given'], answer:1 },
-        { q:'How many points does a team get for a league win?', options:['1','2','3','4'], answer:2 },
-        { q:'What position defends in front of the goal?', options:['Striker','Midfielder','Centre-back','Goalkeeper'], answer:3 },
-        { q:'What is it called when a player scores three goals in one game?', options:['Hat-trick','Triple score','Three-peat','Goal rush'], answer:0 },
-        { q:'Which country has won the most FIFA World Cups?', options:['Germany','Argentina','Brazil','France'], answer:2, explanation:'Brazil has won 5 FIFA World Cups: 1958, 1962, 1970, 1994, and 2002.' },
-        { q:'What happens after 90 minutes in a knockout game if scores are level?', options:['The game is abandoned','Extra time is played','The home team wins automatically','A coin toss decides'], answer:1 },
-        { q:'A corner kick is awarded when the ball goes out of play over the goal line and was last touched by whom?', options:['An attacking player','A defending player','The goalkeeper','The referee'], answer:1 },
-        { q:'How long is each half of extra time in football?', options:['10 minutes','15 minutes','20 minutes','30 minutes'], answer:1 },
-        { q:'What is the "offside rule" about?', options:['Running too fast','Being behind the second-last defender when the ball is played','Standing outside the pitch','Tackling from behind'], answer:1 },
-        { q:'What is a "penalty shootout" used for?', options:['Practising penalties in training','Deciding the winner of a drawn knockout match','Punishing a player for misconduct','Ending a match early due to weather'], answer:1 },
-        { q:'How wide is a standard football goal (in metres)?', options:['5.5m','6.5m','7.32m','8m'], answer:2, explanation:'A standard football goal is 7.32 metres wide and 2.44 metres tall.' },
-        { q:'What does a red card mean?', options:['The player receives a warning','The player is substituted','The player is sent off and cannot return','A penalty is awarded'], answer:2 },
-        { q:'What is a "free kick"?', options:['A kick given to restart play after a foul','A kick with no goalkeeper present','A kick from the centre circle','A kick that scores automatically'], answer:0 },
-        { q:'What organisation governs world football?', options:['UEFA','CAF','FIFA','FA'], answer:2, explanation:'FIFA (Fédération Internationale de Football Association) governs world football.' },
-        { q:'A goal kick is taken when the ball goes out over the goal line last touched by whom?', options:['A defending player','An attacking player','The goalkeeper','The referee'], answer:1 },
-        { q:'How many substitutes are typically allowed in a standard football match?', options:['3','4','5','6'], answer:2, explanation:'Most competitions allow 5 substitutions in a match.' },
-        { q:'What position plays between the defenders and attackers?', options:['Goalkeeper','Left winger','Midfielder','Striker'], answer:2 },
-        { q:'What is "dribbling" in football?', options:['Passing the ball over long distances','Moving with the ball while maintaining close control','Shooting from distance','Heading the ball'], answer:1 },
-        { q:'Which African country first reached a FIFA World Cup semi-final?', options:['Nigeria','Cameroon','Senegal','Ghana'], answer:1, explanation:'Cameroon reached the quarter-finals in 1990. No African team has reached the semi-finals.' },
-        { q:'What is a "clean sheet"?', options:['A yellow card','When a goalkeeper concedes no goals in a match','A team winning by five goals','A new contract for a player'], answer:1 },
-        { q:'What does "CAF" stand for in African football?', options:['Central African Federation','Confederation of African Football','Council of African Football','Continental African Federation'], answer:1 },
-        { q:'What is a "through ball"?', options:['A ball kicked directly at the goalkeeper','A pass played between or behind defenders into space for an attacker','A long diagonal cross','A back-pass to the keeper'], answer:1 },
-        { q:'How many officials typically oversee a professional football match?', options:['2','3','4','5'], answer:3, explanation:'A referee, two assistant referees, and a fourth official — typically four.' },
-        { q:'What is the "AFCON"?', options:['African Football Cup of Notables','Africa Cup of Nations','African Football Confederation of Nations','Association for Continental Football'], answer:1, explanation:'AFCON is the Africa Cup of Nations, the main international football tournament in Africa.' },
-        { q:'What does "possession" percentage measure in football?', options:['How many goals a team scores','The proportion of time a team has the ball','How fast a team runs','The number of fouls committed'], answer:1 },
-        { q:'What is a "counter-attack"?', options:['Defending with many players behind the ball','A rapid attack launched after winning the ball from the opposition','A set piece from a corner','An attack down the wings'], answer:1 },
-        { q:'What happens when the goalkeeper handles the ball outside the penalty area?', options:['Nothing','A penalty is awarded','A direct free kick is awarded to the opposition','The goal is disallowed'], answer:2 },
-        { q:'What is a "brace" in football terms?', options:['When a player is injured','When a player scores two goals in one match','When a match ends 0-0','A type of defensive formation'], answer:1 },
-        { q:'What does VAR stand for?', options:['Video Assisted Refereeing','Virtual Action Replay','Video Action Review','Variable Angle Refereeing'], answer:0, explanation:'VAR (Video Assistant Referee) uses video review to check key match decisions.' },
-        { q:'Which position is sometimes referred to as a "sweeper"?', options:['Striker','Attacking midfielder','Libero/central defender behind the main defensive line','Winger'], answer:2 },
-        { q:'What is the "Golden Boot" awarded for?', options:['Best goalkeeper in a tournament','Top scorer in a tournament','Best player in a tournament','Best young player in a tournament'], answer:1 },
-        { q:'In a 4-4-2 formation, what do the numbers represent?', options:['Players on each wing','Defenders, Midfielders, Forwards','Shots, passes, goals','Speed, strength, stamina'], answer:1, explanation:'4-4-2 means 4 defenders, 4 midfielders, 2 forwards.' },
-        { q:'What is "total football" (totaalvoetbal)?', options:['A system where every player can score','A tactical system where any outfield player can take over any position','Playing with the maximum number of attackers','A defensive system with all players behind the ball'], answer:1, explanation:'Total football was popularised by the Netherlands and Johan Cruyff in the 1970s.' },
-        { q:'What is the "away goals rule" (when in use)?', options:['Goals scored away from home count double in a draw after two legs','Away teams get an extra goal advantage','Away goals are worth three points','Away teams shoot penalties first'], answer:0 },
-        { q:'What Nigerian club is known as the "Pride of Rivers"?', options:['Kano Pillars','Enyimba','Rivers United','Shooting Stars'], answer:2 },
-        { q:'What is "pressing" as a football tactic?', options:['Shooting from long range','Aggressively closing down opponents to win the ball back quickly','Playing a physical style of defence','Crossing from wide positions'], answer:1 },
-        { q:'Which country hosts the Copa América?', options:['Spain','South American nations on rotation','Mexico','USA'], answer:1, explanation:'Copa América is hosted by South American nations and is the oldest international football tournament.' },
-        { q:'What does a "nil-nil draw" mean?', options:['Both teams scored one goal','The match ended 0-0','The match was abandoned','Extra time was played'], answer:1 },
-        { q:'What is the "box" in football?', options:['The dugout area','The penalty area','The centre circle','The technical area'], answer:1 },
-        { q:'What year was the first FIFA World Cup held?', options:['1924','1930','1934','1938'], answer:1, explanation:'The first FIFA World Cup was held in Uruguay in 1930.' },
-        { q:'What is "injury time" also called?', options:['Bonus time','Added time or stoppage time','Overtime','Recovery time'], answer:1 },
-        { q:'How many players are in a team during a penalty shootout?', options:['Only goalkeepers','All players can take penalties','Any player on the pitch at the end of extra time','Only substitutes'], answer:2 },
-        { q:'What is the Super Eagles?', options:['A South African club team','The Nigerian national football team','A Ghanaian club','A CAF competition'], answer:1, explanation:'The Super Eagles is the nickname of the Nigerian national football team.' },
-        { q:'What does it mean to "nutmeg" an opponent?', options:['To tackle them hard','To pass the ball through their legs','To trick them with a feint','To score a long-range goal'], answer:1 },
-        { q:'What is a "wall" in football?', options:['The advertising boards around the pitch','A line of defending players standing in front of a free kick','The goal frame','The barrier between fans and the pitch'], answer:1 },
-        { q:'What is the Champions League?', options:['A Nigerian domestic competition','UEFA\'s premier European club competition','A World Cup qualifier','An African club competition'], answer:1 },
-        { q:'What does "aggregate score" mean in a two-legged tie?', options:['The score after penalties','The combined total of goals scored across both matches','The number of yellow cards','The total possession across both games'], answer:1 },
-        { q:'Who are traditionally considered the "Big 6" of English football?', options:['Arsenal, Chelsea, Liverpool, Man City, Man United, Tottenham','Arsenal, Chelsea, Everton, Liverpool, Man United, Newcastle','Arsenal, Chelsea, Liverpool, Leeds, Man City, Tottenham','Arsenal, Chelsea, Liverpool, Man City, Man United, Leicester'], answer:0 },
-      ],
-    },
-  ],
-
+  /* QUIZZES is intentionally NOT defined here — js/quiz-bank.js sets
+     window.SITE_CONFIG.QUIZZES directly with the real, curated question
+     bank (373 tech + 159 football). quiz-bank.js must load AFTER this
+     file and BEFORE any page script reads SITE_CONFIG.QUIZZES. */
 
   TEAM: [
     { name:'Chisom Okoye',       role:'Founder & Programme Director', color:'#0A3D2E', photo:'https://images.unsplash.com/photo-1531384441138-2736e62e0919?w=200&q=80&auto=format&fit=crop&crop=faces' },
@@ -295,83 +178,3 @@ window.SITE_CONFIG = {
     { img:'https://images.unsplash.com/photo-1573496358961-3c82861ab8f4?w=600&q=70&auto=format&fit=crop', alt:'Young African student focused on a laptop screen', tag:'tech',     tagLabel:'Tech',     title:'Capstone projects showcased and evaluated',             date:'Tech Showcase Day' },
   ],
 };
-
-/* ── LARGE QUIZ BANK BUILDER (1000 per quiz) ───────────── */
-(function buildLargeQuizBanks(){
-  const techTopics=[
-    ['AI','core concepts'],['AI','ethics and safety'],['AI','real-world applications'],
-    ['Machine Learning','model training'],['Machine Learning','evaluation metrics'],['Machine Learning','overfitting and generalisation'],
-    ['Neural Networks','architectures'],['Neural Networks','backpropagation'],['Neural Networks','practical use cases'],
-    ['Robotics','sensors and actuators'],['Robotics','control systems'],['Robotics','human safety in deployment'],
-    ['Frontend Development','accessibility'],['Frontend Development','performance'],['Frontend Development','responsive design'],
-    ['Backend Development','APIs and services'],['Backend Development','security'],['Backend Development','scalability'],
-    ['Web Design','visual hierarchy'],['Web Design','usability'],['Web Design','design systems'],
-    ['Product Development','discovery and validation'],['Product Development','roadmapping'],['Product Development','delivery workflows'],
-    ['UI/UX','user research'],['UI/UX','interaction patterns'],['UI/UX','testing and iteration'],
-    ['Debugging','root-cause analysis'],['Debugging','tooling and diagnostics'],['Debugging','preventive practices']
-  ];
-
-  const footballTopics=[
-    ['Football Rules','laws of the game'],['Football Rules','offside, fouls, and cards'],['Football Rules','VAR and officiating decisions'],
-    ['Tactics','pressing, transitions, and compactness'],['Tactics','formations and role balance'],['Tactics','set-piece organisation and game management'],
-    ['Playing Styles','possession versus direct play'],['Playing Styles','counter-attacking patterns'],['Playing Styles','high block and low block structure'],
-    ['Positions','goalkeeper decision making'],['Positions','defensive responsibilities'],['Positions','midfield and attacking roles'],
-    ['Recent Football History','major tournaments in the last 10 years'],['Recent Football History','club finals and continental titles'],['Recent Football History','notable title races and records'],
-    ['Players and Coaches','current stars and elite veterans'],['Players and Coaches','coaching philosophies'],['Players and Coaches','awards and landmark achievements'],
-    ['Nigerian Football','Super Eagles and Super Falcons'],['Nigerian Football','NPFL and grassroots development'],['Nigerian Football','iconic Nigerian football moments'],
-    ['Nigerian Ancestry Abroad','dual-national footballers'],['Nigerian Ancestry Abroad','diaspora player pathways'],['Nigerian Ancestry Abroad','international representation choices']
-  ];
-
-  const makeQ=(topic,focus,idx,difficulty,domain)=>{
-    const lead = domain==='football' ? 'football understanding' : 'technology problem-solving';
-    const correct = [
-      `Strong knowledge of ${focus} improves ${lead} in real situations.`,
-      `${focus[0].toUpperCase()+focus.slice(1)} should be reviewed with evidence and adjusted over time.`,
-      `Reliable ${topic} decisions come from context, analysis, and feedback loops.`,
-      `Consistent ${focus} practice reduces avoidable errors and improves outcomes.`
-    ][idx%4];
-
-    return {
-      q: `In ${topic}, which option best reflects ${focus}? (#${idx+1})`,
-      options: [
-        correct,
-        `${focus[0].toUpperCase()+focus.slice(1)} has little impact on outcomes, so it can be ignored.`,
-        `The best approach is to use one fixed method, regardless of context.`,
-        `Skipping review and relying on luck is usually the most effective strategy.`
-      ],
-      answer: 0,
-      difficulty,
-      explanation: `${topic}: ${focus} should be deliberate, evidence-based, and continuously refined.`
-    };
-  };
-
-  const buildBank=(topics,domain)=>{
-    const bank=[];
-    for(let i=0;i<1000;i++){
-      const [topic,focus]=topics[i%topics.length];
-      const mod=i%4;
-      const difficulty=mod===0 ? 'easy' : (mod<=2 ? 'medium' : 'hard');
-      bank.push(makeQ(topic,focus,i,difficulty,domain));
-    }
-    return bank;
-  };
-
-  window.SITE_CONFIG.QUIZZES=[
-    {
-      id:'technology-mastery',
-      title:'Tech Quiz',
-      category:'tech',
-      description:'AI, ML, neural networks, robotics, frontend, backend, web design, product, UI/UX, and debugging.',
-      sessionSize:50,
-      questions:buildBank(techTopics,'tech')
-    },
-    {
-      id:'football-mastery',
-      title:'Football Quiz',
-      category:'football',
-      description:'Football rules, tactics, playing styles, positions, recent history (last decade), and Nigerian football context.',
-      sessionSize:25,
-      questions:buildBank(footballTopics,'football')
-    }
-  ];
-})();

@@ -37,43 +37,15 @@ window.injectNav=function(){
       <a href="donate.html" class="nav-link nav-donate-btn">Donate</a>
     </nav>
     <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-      <button id="nav-admin-btn" onclick="window._openAdminLogin?.()" aria-label="Admin login (Ctrl+Shift+A shortcut)"
-        style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.7);
-               padding:6px 13px;border-radius:var(--r-sm);font-size:.78rem;font-weight:600;
-               display:flex;align-items:center;gap:5px;cursor:pointer;transition:all var(--t)">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        <span id="nav-admin-lbl">Admin</span><span class="nav-admin-shortcut" aria-hidden="true">Ctrl+Shift+A</span>
-      </button>
       <button class="nav-hamburger" aria-label="Toggle menu" aria-expanded="false" aria-controls="nav-menu">
         <span></span><span></span><span></span>
       </button>
     </div>
   </div>`;
-  /* Keep admin access discoverable; switch styling when authenticated. */
-  _setAdminNavState(Boolean(window.AdminAuth?.isLoggedIn()));
+  /* No admin control here by design — access is Ctrl+Shift+A only, invisible
+     to visitors. See injectAdminUI() for the hidden shortcut listener. */
   document.dispatchEvent(new CustomEvent('thrive:nav-injected'));
 };
-
-function _setAdminNavState(on){
-  const btn=document.getElementById('nav-admin-btn');
-  const lbl=document.getElementById('nav-admin-lbl');
-  if(!btn||!lbl)return;
-  if(on){
-    btn.style.display='flex';
-    btn.style.background='rgba(46,125,79,.35)';
-    btn.style.borderColor='rgba(61,214,140,.4)';
-    btn.style.color='#3DB870';
-    lbl.textContent='Edit Content';
-    const hint=btn.querySelector('.nav-admin-shortcut'); if(hint)hint.textContent='Ctrl+Shift+A';
-  } else {
-    btn.style.display='flex';
-    btn.style.background='rgba(255,255,255,.1)';
-    btn.style.borderColor='rgba(255,255,255,.2)';
-    btn.style.color='rgba(255,255,255,.7)';
-    lbl.textContent='Admin';
-    const hint=btn.querySelector('.nav-admin-shortcut'); if(hint)hint.textContent='Ctrl+Shift+A';
-  }
-}
 
 /* Inject the login modal + CMS panel once into every page */
 window.injectAdminUI=function(){
@@ -241,7 +213,6 @@ window._doAdminLogin=function(){
   const result=window.AdminAuth?.login(pin);
   if(result===true){
     window._closeLoginModal();
-    _setAdminNavState(true);
     document.getElementById('cms-toolbar').style.display='flex';
     window._enableInlineEdit();
     window.showToast?.('Admin mode active — click highlighted text or images to edit','ok');
@@ -259,7 +230,6 @@ function _showLoginErr(msg){
 }
 window._adminLogout=function(){
   window.AdminAuth?.logout();
-  _setAdminNavState(false);
   document.getElementById('cms-toolbar').style.display='none';
   window._disableInlineEdit();
   document.querySelectorAll('.admin-only').forEach(el=>el.style.display='none');
@@ -438,7 +408,7 @@ window.injectFooter=function(){
           <li><a href="activities.html" class="footer-lnk">Activities</a></li>
           <li><a href="activities.html#league-hub" class="footer-lnk">League</a></li>
           <li><a href="activities.html#quiz-hub" class="footer-lnk">Quiz</a></li>
-          <li><a href="gallery.html" class="footer-lnk">Gallery & Videos</a></li>
+          <li><a href="gallery.html" class="footer-lnk">Gallery</a></li>
         </ul>
       </div>
       <div>

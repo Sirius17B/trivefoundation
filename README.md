@@ -19,13 +19,13 @@
 8. [Admin System & CMS](#8-admin-system--cms)
 9. [Quiz System](#9-quiz-system)
 10. [League & Tech Leaderboards](#10-league--tech-leaderboards)
-11. [Video Upload & Playback](#11-video-upload--playback)
-12. [Gallery](#12-gallery)
-13. [Donation System](#13-donation-system)
-14. [CSS Design System](#14-css-design-system)
-15. [Accessibility](#15-accessibility)
-16. [Security](#16-security)
-17. [Storage — How Data Persists](#17-storage--how-data-persists)
+11. [Gallery](#11-gallery)
+12. [Donation System](#12-donation-system)
+13. [CSS Design System](#13-css-design-system)
+14. [Accessibility](#14-accessibility)
+15. [Security](#15-security)
+16. [Storage — How Data Persists](#16-storage--how-data-persists)
+17. [How to Manage the News & Stories Feed](#17-how-to-manage-the-news--stories-feed)
 18. [How to Add a New Page](#18-how-to-add-a-new-page)
 19. [How to Add a New Quiz](#19-how-to-add-a-new-quiz)
 20. [How to Update the Team](#20-how-to-update-the-team)
@@ -44,8 +44,7 @@ TriveFoundation is an independent youth development initiative that runs technol
 - **Public pages:** Homepage, About, Activities, Gallery, Contact, Donate
 - **Live leaderboards:** Football (boys + girls leagues) and Tech Rankings with real-time tables
 - **Quiz Arena:** Timed, structured knowledge quizzes with a leaderboard
-- **Video section:** Upload and watch programme recordings
-- **Admin CMS:** Any authorised admin can log in via a PIN and edit all text, images, stats, and quiz questions directly in the browser — no server needed
+- **Admin CMS:** Any authorised admin can trigger the hidden Ctrl+Shift+A shortcut, enter the PIN, and edit all text, images, stats, and quiz questions directly in the browser — no server needed, and no admin controls visible to regular visitors
 
 ### Design principles
 
@@ -66,7 +65,6 @@ thrive-website/
 ├── activities.html       The three programme pillars
 ├── league.html           Football & Tech leaderboards (full admin)
 ├── quiz.html             Timed quiz arena
-├── videos.html           Video upload & playback
 ├── gallery.html          Photo gallery with filters
 ├── donate.html           Donation tiers & bank details
 ├── contact.html          Contact form + volunteer/sponsor info
@@ -80,9 +78,10 @@ thrive-website/
 │   └── style.css         All styles — design tokens, layout, components
 │
 ├── js/
-│   ├── config.js         ★ ALL content defaults live here — start here
+│   ├── config.js         ★ ALL content defaults live here — start here (quiz content is the one exception, see quiz-bank.js)
+│   ├── quiz-bank.js      The real quiz question bank (tech-challenge + football-arena)
 │   ├── components.js     Shared nav, footer, logo, admin UI injection
-│   └── main.js           All JS engines: carousel, league, CMS, quiz, video, auth
+│   └── main.js           All JS engines: carousel, league, CMS, quiz, auth
 │
 └── README.md             This file
 ```
@@ -93,6 +92,7 @@ Every HTML page loads scripts in this exact order at the bottom of `<body>`:
 
 ```html
 <script src="js/config.js"></script>       <!-- 1. Content defaults -->
+<script src="js/quiz-bank.js"></script>    <!-- 1b. Quiz content — quiz.html only -->
 <script src="js/components.js"></script>   <!-- 2. Shared UI (nav, footer, admin UI) -->
 <script src="js/main.js"></script>         <!-- 3. All engines -->
 <script>
@@ -120,7 +120,7 @@ python3 -m http.server 8080
 # Then visit http://localhost:8080
 ```
 
-> **Why a server?** Some browsers block `window.storage` when files are opened directly from disk (`file://`). A local server fixes this so the CMS, quiz leaderboard, and video storage all work correctly during development.
+> **Why a server?** Some browsers block `window.storage` when files are opened directly from disk (`file://`). A local server fixes this so the CMS and quiz leaderboard work correctly during development.
 
 ---
 
@@ -139,7 +139,7 @@ window.SITE_CONFIG = {
   ORG_YEAR:      '2026',
   ORG_SEASON:    'A Time To Build',  // Hero sub-heading
   ORG_MISSION:   'Empowering youth through technology, sport, and inspiration.',
-  ORG_EMAIL:     'hello@trivefoundation.org',
+  ORG_EMAIL:     'camplucens@gmail.com',  // working default — CMS-editable, see Admin System
   ORG_PHONE:     '+234 800 000 0000',
   ORG_VENUE_2025:'FGC NISE, Anambra State, Nigeria', // Venue only — not owner
 
@@ -168,12 +168,12 @@ window.SITE_CONFIG = {
 
   // ── BANK DETAILS ─────────────────────────────────────────
   BANK: {
-    account_name: 'TriveFoundation Foundation',
-    bank:         'First Bank of Nigeria',
-    account_no:   '3012345678',
-    sort_code:    '011152003',
+    account_name: 'TRIVE CARE SERVICES',
+    bank:         'Sterling Bank',
+    account_no:   '0148347000',
     note:         'Use your full name as the payment reference.',
   },
+  // No sort_code — Nigerian bank transfers don't use one.
 
   // ── GALLERY IMAGES ───────────────────────────────────────
   GALLERY: [
@@ -194,26 +194,28 @@ window.SITE_CONFIG = {
     shuffleOptions:    false, // Randomise option order (A/B/C/D)
   },
 
-  // ── QUIZZES ──────────────────────────────────────────────
-  QUIZZES: [
-    {
-      id:          'tech-general', // Unique ID — used for leaderboard storage
-      title:       'Tech Challenge',
-      category:    'tech',         // 'tech' | 'football'
-      timeMinutes: 20,
-      description: 'Short description shown on the quiz card.',
-      questions: [
-        {
-          q:           'Question text here?',
-          options:     ['Option A', 'Option B', 'Option C', 'Option D'],
-          answer:      0,           // Index of correct option (0 = A, 1 = B, etc.)
-          explanation: 'Optional explanation shown after answering.'
-        },
-        // ... more questions
-      ],
-    },
-    // ... more quizzes
-  ],
+  // QUIZZES is NOT defined in this file — see js/quiz-bank.js, which sets
+  // window.SITE_CONFIG.QUIZZES directly with the real question banks:
+  //
+  //   window.SITE_CONFIG.QUIZZES = [
+  //     {
+  //       id:          'tech-challenge', // Unique ID — used for leaderboard storage
+  //       title:       'Tech Challenge',
+  //       category:    'tech',           // 'tech' | 'football'
+  //       description: 'Short description shown on the quiz card.',
+  //       sessionSize: 50,               // Questions drawn per session
+  //       questions: [
+  //         {
+  //           q:           'Question text here?',
+  //           options:     ['Option A', 'Option B', 'Option C', 'Option D'],
+  //           answer:      0,             // Index of correct option (0 = A, 1 = B, etc.)
+  //           explanation: 'Optional explanation shown after answering.'
+  //         },
+  //         // ... more questions
+  //       ],
+  //     },
+  //     // ... more quizzes
+  //   ];
 
   // ── TEAM ─────────────────────────────────────────────────
   TEAM: [
@@ -269,7 +271,6 @@ ORG_NAME: 'TriveFoundation',  →  ORG_NAME: 'YOUR NEW NAME',
 | `activities.html` | Three pillars: Tech, Football, Talks | Inline text editing |
 | `league.html` | Full leaderboards + admin result/team entry | Full league admin, CMS panel |
 | `quiz.html` | Quiz arena — timed tests, leaderboard | Add/edit/delete questions |
-| `videos.html` | Video library | Upload, delete videos |
 | `gallery.html` | Photo gallery with tag filter | Add/delete images |
 | `donate.html` | Bank details, donation tiers | Inline text editing |
 | `contact.html` | Contact form, volunteer/sponsor info | Inline text editing |
@@ -322,22 +323,6 @@ TechEngine.add('Amara Okafor', 'SS3', 92, 'Weather App');
 TechEngine.remove(0); // by index
 ```
 
-### `VideoEngine` — Video library
-
-```js
-await VideoEngine.load();
-
-// Get all videos
-const videos = VideoEngine.get();
-// Each video: { title, dataUrl, type, date }
-
-// Add a video (dataUrl from FileReader)
-VideoEngine.add('Boys Final', dataUrl, 'video/mp4');
-
-// Remove by index
-VideoEngine.remove(0);
-```
-
 ### `CMS` — Content management
 
 ```js
@@ -372,14 +357,15 @@ CMS.set('hero_line1', 'New text');       // Write a value (also saves)
 
 ```js
 AdminAuth.isLoggedIn();       // true/false
-AdminAuth.login('2025');      // returns true, 'locked', or false
+AdminAuth.login(pin);         // returns true, 'locked', or false
 AdminAuth.logout();           // clears session
 
 // Change the PIN:
 // 1. Open js/main.js
-// 2. Find the line: const _AH = btoa('thrive-2025-admin');
-// 3. Replace '2025' with your new PIN
+// 2. Find the line: const _AH = btoa('thrive-' + PIN + '-admin');
+// 3. Compute a new hash for your new PIN and replace the value of _AH
 // 4. Save the file
+// The current PIN is not stored anywhere in this repo — ask the site owner.
 ```
 
 > **Security note:** This is a client-side PIN for convenience — suitable for a small team's internal tool. For a public-facing admin system handling sensitive data, replace this with server-side authentication (Firebase Auth, Supabase, etc.).
@@ -408,14 +394,17 @@ Called once on page load. Finds all `[data-count]` elements and animates their v
 
 ### How to log in
 
-1. Click the **Admin** button in the top-right of the navigation bar on any page
-2. Enter the PIN (default: `2025`)
+There is no visible admin button anywhere on the site — this is intentional, so
+the admin panel isn't advertised to visitors.
+
+1. On any page, press **Ctrl+Shift+A** (or **Cmd+Shift+A** on Mac)
+2. Enter the PIN
 3. Click **Sign In**
 
 ### What happens after login
 
-- The nav button turns green and says **Edit Content**
-- A green toolbar appears at the bottom of every page
+- A green toolbar appears at the bottom of every page — this is your only
+  visual confirmation that edit mode is active
 - Every editable text element gets a dashed green outline — **click any of them to edit directly**
 - Every editable image gets an orange dashed outline — **click to replace with a new image from your device**
 - Changes auto-save to browser storage as you edit
@@ -439,19 +428,21 @@ Click the **Log Out** button in the bottom toolbar. The session clears and edit 
 
 ### Changing the admin PIN
 
-Open `js/main.js` and find this line near line 220:
+Open `js/main.js` and find the `_AH` constant near the `AdminAuth` block:
 
 ```js
-const _AH = btoa('thrive-2025-admin');
+const _AH = btoa('thrive-CURRENT_PIN-admin');
 ```
 
-Change `'2025'` to your new PIN:
+In any browser console, compute a new hash for your new PIN:
 
 ```js
-const _AH = btoa('thrive-NEWPIN-admin');
+btoa('thrive-' + 'YOUR_NEW_PIN' + '-admin')
 ```
 
-The format must stay as `'thrive-' + PIN + '-admin'`. Save the file and redeploy.
+Paste the result in as the new value of `_AH`. The format must stay as
+`'thrive-' + PIN + '-admin'`. Save the file and redeploy. Never commit the
+plaintext PIN itself to this repo — only the hashed `_AH` value.
 
 ---
 
@@ -459,7 +450,7 @@ The format must stay as `'thrive-' + PIN + '-admin'`. Save the file and redeploy
 
 ### How it works
 
-1. Quizzes are defined in `js/config.js` under `QUIZZES`
+1. Quizzes are defined in `js/quiz-bank.js`, which sets `window.SITE_CONFIG.QUIZZES` directly (two quizzes: `tech-challenge` and `football-arena`, each with its own real question bank — `js/config.js` intentionally does NOT define `QUIZZES`, so don't add it back there)
 2. When a user starts a quiz, questions are loaded (optionally shuffled) and a countdown timer starts
 3. Each question shows 4 options (A/B/C/D). The user selects one, sees if they're right, and optionally reads an explanation
 4. At the end, the score is shown and the user can optionally enter their name for the leaderboard
@@ -467,7 +458,8 @@ The format must stay as `'thrive-' + PIN + '-admin'`. Save the file and redeploy
 
 ### Adding a quiz via code
 
-Add a new object to the `QUIZZES` array in `config.js`:
+Add a new object to the `window.SITE_CONFIG.QUIZZES` array set at the bottom
+of `js/quiz-bank.js` (not `config.js` — see note above):
 
 ```js
 {
@@ -496,7 +488,7 @@ Add a new object to the `QUIZZES` array in `config.js`:
 5. Fill in the question, four options, correct answer, and optional explanation
 6. Click **Save Question**
 
-Admin-added questions are stored in browser storage and persist across sessions. They layer on top of (or replace) the defaults from `config.js`.
+Admin-added questions are stored in browser storage and persist across sessions. They layer on top of (or replace) the defaults from `js/quiz-bank.js`.
 
 ### Quiz leaderboard
 
@@ -535,25 +527,7 @@ Participants are scored out of 100 based on project quality.
 
 ---
 
-## 11. Video Upload & Playback
-
-Videos are uploaded on `videos.html` by an admin and stored as base64 data URLs in browser storage.
-
-**To upload a video:**
-1. Log in as admin
-2. Go to `videos.html`
-3. Enter a title (optional — defaults to filename)
-4. Click the upload zone or drag a video file onto it
-5. A progress bar shows loading status
-6. The video appears in the grid and is playable by all visitors
-
-**File size:** Maximum 200 MB per video. This limit exists because videos are stored in browser storage — very large libraries may hit storage limits. For a production site with many videos, use an external video host (YouTube, Vimeo, Cloudflare Stream) and embed the URL instead.
-
-**Supported formats:** MP4 (recommended), WebM, MOV, OGG
-
----
-
-## 12. Gallery
+## 11. Gallery
 
 Gallery images are defined in `config.js` under `GALLERY`. Each item needs:
 
@@ -575,7 +549,7 @@ To use your own photos instead of Unsplash:
 
 ---
 
-## 13. Donation System
+## 12. Donation System
 
 ### Tiers
 
@@ -593,7 +567,7 @@ Defined in `config.js` under `BANK`. Shown on `donate.html` with a copy-to-clipb
 
 ---
 
-## 14. CSS Design System
+## 13. CSS Design System
 
 All styles are in `css/style.css`. The system uses CSS custom properties (variables) defined in `:root`.
 
@@ -689,7 +663,7 @@ Used as `padding: 0 var(--pad)` on all full-width sections. Scales from 16px on 
 
 ---
 
-## 15. Accessibility
+## 14. Accessibility
 
 This site follows WCAG 2.1 AA guidance:
 
@@ -711,7 +685,7 @@ This site follows WCAG 2.1 AA guidance:
 
 ---
 
-## 16. Security
+## 15. Security
 
 - **X-Frame-Options:** Set via meta tag to prevent clickjacking
 - **X-Content-Type-Options:** Prevents MIME sniffing
@@ -723,7 +697,7 @@ This site follows WCAG 2.1 AA guidance:
 
 ---
 
-## 17. Storage — How Data Persists
+## 16. Storage — How Data Persists
 
 This site uses `window.storage` (provided by the Claude.ai hosting environment). It works like a simple key-value store:
 
@@ -740,7 +714,6 @@ console.log(result.value); // 'my-value'
 | `thrive_league_v3_boys` | Boys league teams and results |
 | `thrive_league_v3_girls` | Girls league teams and results |
 | `thrive_tech_v2_` | Tech rankings participants |
-| `thrive_videos_v1_list` | Uploaded video data |
 | `thrive_cms_v1_data` | Admin CMS overrides |
 | `thrive_quizzes_v1` | Admin-edited quiz questions |
 | `thrive_quiz_lb_v1` | Quiz leaderboard scores |
@@ -759,7 +732,7 @@ window.storage = {
 
 ---
 
-## 18. How to Manage the News & Stories Feed
+## 17. How to Manage the News & Stories Feed
 
 The Activities page has a live news feed showing the latest programme stories. Stories appear newest-first, with the top story shown as the main featured article.
 
@@ -798,7 +771,7 @@ STORIES: [
 
 ---
 
-## 19. How to Add a New Page
+## 18. How to Add a New Page
 
 1. Copy the structure from a simple page like `about.html`
 2. Update the `<title>` and `<meta name="description">`
@@ -813,7 +786,7 @@ STORIES: [
 
 ---
 
-## 20. How to Add a New Quiz
+## 19. How to Add a New Quiz
 
 **Via code (recommended for bulk questions):**
 
@@ -847,7 +820,7 @@ Add a new object to `QUIZZES` in `js/config.js`:
 
 ---
 
-## 21. How to Update the Team
+## 20. How to Update the Team
 
 Edit the `TEAM` array in `js/config.js`:
 
@@ -866,7 +839,7 @@ The team renders automatically on `about.html`. No HTML changes needed.
 
 ---
 
-## 22. Deploying to a Live Server
+## 21. Deploying to a Live Server
 
 This site is fully static — it can be hosted anywhere that serves HTML files.
 
@@ -887,16 +860,15 @@ Upload all files to the `public_html` folder via FTP or the file manager. The en
 
 ### After deploying
 
-If you deploy outside Claude.ai, `window.storage` will not exist. Add the `localStorage` shim from [Section 17](#17-storage--how-data-persists) to make all data persistence work.
+If you deploy outside Claude.ai, `window.storage` will not exist. Add the `localStorage` shim from [Section 16](#16-storage--how-data-persists) to make all data persistence work.
 
 ---
 
-## 23. Known Limitations & Future Work
+## 22. Known Limitations & Future Work
 
 | Limitation | Details | Suggested fix |
 |---|---|---|
 | **Client-side admin PIN** | The PIN is a light convenience lock, not cryptographic security | Migrate to Firebase Auth or Supabase |
-| **Video storage size** | Videos stored as base64 in browser storage — large libraries will hit limits | Host videos on YouTube/Vimeo, embed by URL |
 | **No email on contact form** | Contact form has client-side validation but no backend | Add Netlify Forms or Formspree action |
 | **No real-time multi-user** | Two admins editing at the same time will overwrite each other | Add a backend (Firebase Firestore, etc.) |
 | **Quiz: no per-user accounts** | Leaderboard names are self-reported | Add authentication for verified scores |
@@ -904,7 +876,7 @@ If you deploy outside Claude.ai, `window.storage` will not exist. Add the `local
 
 ---
 
-## 24. Contributing Guidelines
+## 23. Contributing Guidelines
 
 ### Getting the code
 

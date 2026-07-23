@@ -41,7 +41,7 @@
       <h2 style="margin-top:1.5rem;font-size:1.2rem">Analytics and cookies</h2>
       <p>The site should avoid non-essential tracking by default. If analytics or advertising pixels are added later, TriveFoundation should publish the provider names, purpose, retention period, and any consent controls required by applicable law.</p>
       <h2 style="margin-top:1.5rem;font-size:1.2rem">Contact</h2>
-      <p>For privacy questions or donor anonymity requests, contact <a href="mailto:hello@trivefoundation.org" style="color:var(--c-teal)">hello@trivefoundation.org</a>.</p>
+      <p>For privacy questions or donor anonymity requests, contact <a href="mailto:camplucens@gmail.com" style="color:var(--c-teal)" data-org-email>camplucens@gmail.com</a>.</p>
     </div>
   </div>
 </section>
@@ -50,6 +50,6 @@
 <script src="js/config.js"></script>
 <script src="js/components.js"></script>
 <script src="js/main.js"></script>
-<script>injectNav();injectFooter();</script>
+<script>injectNav();injectFooter();CMS.load().then(()=>CMS.apply());</script>
 </body>
 </html>
