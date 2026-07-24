@@ -1,4 +1,4 @@
-Contact: mailto:hello@trivefoundation.org
+Contact: mailto:camplucens@gmail.com
 Preferred-Languages: en
-Policy: https://trivefoundation.org/privacy.html
+Policy: https://trivefoundation.netlify.app/privacy.html
 Expires: 2027-06-14T00:00:00Z
