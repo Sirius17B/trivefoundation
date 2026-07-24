@@ -753,9 +753,22 @@ above work, connect it to Netlify (free tier is enough):
 2. Site settings → **Environment variables** → add `ADMIN_PIN` set to the
    current admin PIN (ask whoever last rotated it — it's intentionally never
    written down in this repo).
-3. Trigger a redeploy if you added the env var after the first deploy (env
+3. **If a save fails with a storage/Blobs error** (check by hitting
+   `/.netlify/functions/admin-data?key=thrive_cms_v1_data` directly in a
+   browser tab — a healthy response looks like `{"value":null}` or
+   `{"value":"..."}`; an error will mention `MissingBlobsEnvironmentError`
+   or similar): some accounts don't get Netlify's automatic Blobs
+   credentials injected into functions. Fix by supplying them manually:
+   - User menu (top right) → **User settings → Applications → Personal
+     access tokens → New access token** → name it, generate, copy it
+     (shown once)
+   - Site settings → Environment variables → add `NETLIFY_BLOBS_TOKEN` =
+     that token
+   - Redeploy — `netlify/functions/admin-data.js` automatically switches to
+     using this token once it's set (see `getAdminStore()` in that file)
+4. Trigger a redeploy if you added env vars after the first deploy (env
    vars are picked up at deploy time).
-4. Test it: log in with Ctrl+Shift+A, edit something, refresh the page — it
+5. Test it: log in with Ctrl+Shift+A, edit something, refresh the page — it
    should still be there. Open the same URL in an incognito window to
    confirm the edit is visible to other visitors too, not just your browser.
 

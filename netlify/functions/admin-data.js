@@ -14,9 +14,26 @@
  * dashboard (Site settings -> Environment variables). This is the
  * authoritative PIN check for admin writes — the client-side check in
  * js/main.js is only a UX convenience and is never trusted for persistence.
+ *
+ * Blobs config: zero-config getStore(name) relies on Netlify auto-injecting
+ * site/token context into the function at deploy time. On some accounts/
+ * deploys that automatic injection doesn't happen (surfaces as
+ * MissingBlobsEnvironmentError even though the function runs fine
+ * otherwise) — so this also supports explicit manual config via
+ * NETLIFY_BLOBS_TOKEN, which is used whenever it's set. See README.md
+ * Section 16 for how to create that token if you hit that error.
  */
 const { getStore } = require('@netlify/blobs');
 const crypto = require('node:crypto');
+
+function getAdminStore() {
+  const siteID = process.env.SITE_ID || process.env.NETLIFY_SITE_ID;
+  const token = process.env.NETLIFY_BLOBS_TOKEN;
+  if (siteID && token) {
+    return getStore({ name: 'thrive-admin', siteID, token });
+  }
+  return getStore('thrive-admin');
+}
 
 const JSON_HEADERS = {
   'Content-Type': 'application/json',
@@ -63,13 +80,22 @@ function pinMatches(submitted, expected) {
 }
 
 exports.handler = async (event) => {
-  const store = getStore('thrive-admin');
+  let store;
+  try {
+    store = getAdminStore();
+  } catch (e) {
+    return blobsErrorResponse(e);
+  }
 
   if (event.httpMethod === 'GET') {
     const key = event.queryStringParameters?.key;
     if (!key || !ALLOWED_KEYS.has(key)) return response(400, { error: 'Unknown key' });
-    const value = await store.get(key);
-    return response(200, { value: value ?? null });
+    try {
+      const value = await store.get(key);
+      return response(200, { value: value ?? null });
+    } catch (e) {
+      return blobsErrorResponse(e);
+    }
   }
 
   if (event.httpMethod === 'POST') {
@@ -94,9 +120,22 @@ exports.handler = async (event) => {
       if (!pinMatches(pin, expectedPin)) return response(401, { error: 'Invalid PIN' });
     }
 
-    await store.set(key, value);
-    return response(200, { ok: true });
+    try {
+      await store.set(key, value);
+      return response(200, { ok: true });
+    } catch (e) {
+      return blobsErrorResponse(e);
+    }
   }
 
   return response(405, { error: 'Method not allowed' });
 };
+
+function blobsErrorResponse(e) {
+  if (e?.name === 'MissingBlobsEnvironmentError') {
+    return response(503, {
+      error: 'Storage is not configured. Create a Netlify personal access token and set it as the NETLIFY_BLOBS_TOKEN environment variable — see README.md Section 16.',
+    });
+  }
+  return response(500, { error: e?.message || 'Unexpected storage error' });
+}
