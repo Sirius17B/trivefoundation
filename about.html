@@ -141,7 +141,7 @@ function renderTeam(){
   grid.innerHTML=team.map((m,i)=>{
     const photo=(teamPhotoOverrides[m.name]??m.photo??'').trim();
     const photoNode=photo
-      ? `<img src="${sanitize(photo)}" alt="${sanitize(m.name)}" class="team-avatar" style="width:60px;height:60px;object-fit:cover;border-radius:50%;border:2px solid rgba(46,125,79,.15)" loading="lazy" data-team-photo="${i}">`
+      ? `<img src="${sanitize(photo)}" alt="${sanitize(m.name)}" class="team-avatar" style="object-fit:cover;border-radius:50%;border:2px solid rgba(46,125,79,.15)" loading="lazy" data-team-photo="${i}">`
       : `<label class="team-avatar" style="background:${sanitize(m.color)};cursor:${isAdmin?'pointer':'default'};border:2px dashed rgba(28,43,28,.25);font-size:.76rem" ${isAdmin?`for="team-photo-inp-${i}" title="Click to upload a profile photo"`:''}>${initials(m.name)}</label>`;
     return `<div class="team-card">
       <div style="display:flex;flex-direction:column;align-items:center;gap:8px">

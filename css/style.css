@@ -303,7 +303,7 @@ p{font-size:clamp(.93rem,1.5vw,1rem);color:var(--c-muted);line-height:1.75}
 .pillar-desc{font-size:.76rem;color:var(--c-muted);margin-top:2px}
 .team-card{background:var(--c-white);border-radius:var(--r-lg);padding:clamp(14px,2.5vw,22px);text-align:center;border:1px solid var(--c-border);transition:transform var(--t)}
 .team-card:hover{transform:translateY(-3px)}
-.team-avatar{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:1.2rem;font-weight:700;color:#fff;margin:0 auto 9px;object-fit:cover}
+.team-avatar{width:76px;height:76px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:1.5rem;font-weight:700;color:#fff;margin:0 auto 9px;object-fit:cover}
 .team-name{font-weight:600;font-size:.88rem;color:var(--c-dark)}
 .team-role{font-size:.77rem;color:var(--c-muted);margin-top:3px;line-height:1.4}
 
