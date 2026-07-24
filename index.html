@@ -12,7 +12,7 @@
   <link rel="canonical" href="https://trivefoundation.netlify.app/index.html">
   <title>TriveFoundation — A Time To Build</title>
   <link rel="stylesheet" href="css/style.css">
-  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <style>
     /* Hero mobile donate section (hidden on desktop) */
     .hero-mobile-donate{display:none;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:var(--r-xl);padding:22px;margin-top:24px}
@@ -268,16 +268,15 @@
 injectNav();
 injectAdminUI(); injectFooter();
 
-/* ── Build donate tier pills from config ── */
+/* ── Build donate tier pills from config (called after CMS.load() in init()) ── */
 function buildTiers(containerId){
   const c=document.getElementById(containerId);if(!c)return;
-  const tiers=(window.SITE_CONFIG||{}).DONATION_TIERS||[];
+  const tiers=window.getDonationTiers?window.getDonationTiers():((window.SITE_CONFIG||{}).DONATION_TIERS||[]);
   c.innerHTML=tiers.map(t=>`<a href="donate.html" class="d-tier" title="${sanitize(t.desc)}">
     <span class="d-tier-amt">${sanitize(t.amount)}</span>
     <span class="d-tier-name">${sanitize(t.label)}</span>
   </a>`).join('');
 }
-buildTiers('desktop-tiers');buildTiers('mobile-tiers');
 
 /* ── Build carousel from config ── */
 (function(){
@@ -328,6 +327,7 @@ async function init(){
   await TechEngine.load();
   await CMS.load();
   CMS.apply();
+  buildTiers('desktop-tiers');buildTiers('mobile-tiers');
   renderLB(LeagueEngine.buildTable('boys').slice(0,5),'lb-boys','pts',' pts',r=>`<span class="lb-detail">${r.p}P</span>`);
   renderLB(LeagueEngine.buildTable('girls').slice(0,5),'lb-girls','pts',' pts',r=>`<span class="lb-detail">${r.p}P</span>`);
   renderLB(TechEngine.getTop(5),'lb-tech','score','/100',r=>`<span class="lb-detail" style="font-size:.72rem">${sanitize(r.class)}</span>`);

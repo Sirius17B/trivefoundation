@@ -359,3 +359,11 @@ window.getOrgEmail=function(){
   const cfg=window.SITE_CONFIG||{};
   return (window.CMS?.get('org_email',cfg.ORG_EMAIL))||cfg.ORG_EMAIL||'hello@trivefoundation.org';
 };
+
+/* Current donation tiers, honouring any admin CMS override. Call after CMS.load(). */
+window.getDonationTiers=function(){
+  const cfg=window.SITE_CONFIG||{};
+  const raw=window.CMS?.get('donation_tiers');
+  if(raw){try{const parsed=JSON.parse(raw);if(Array.isArray(parsed)&&parsed.length)return parsed;}catch{}}
+  return cfg.DONATION_TIERS||[];
+};

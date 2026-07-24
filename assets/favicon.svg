@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="TriveFoundation">
+  <rect width="64" height="64" rx="14" fill="#1A3D2B"/>
+  <path d="M32 47 L32 30" stroke="#8A5A32" stroke-width="4.5" stroke-linecap="round"/>
+  <circle cx="32" cy="21" r="13" fill="#3DB870"/>
+  <circle cx="20" cy="27" r="9.5" fill="#2E7D4F"/>
+  <circle cx="44" cy="27" r="9.5" fill="#2E7D4F"/>
+</svg>

@@ -45,12 +45,14 @@ window.SITE_CONFIG = {
     donor_confirmation: '',
   },
 
-  /* ── DONATION TIERS (shown inline on CTA click) ───── */
+  /* ── DONATION TIERS (shown inline on CTA click) ─────
+     Admin-editable via Admin → Site Settings → Donate Tiers.
+     These are just the defaults shown until an admin override exists. ── */
   DONATION_TIERS: [
-    { label: 'Starter', amount: '₦1,000', desc: 'Support one learner resource' },
-    { label: 'Builder', amount: '₦5,000', desc: 'Contribute to guided training sessions' },
-    { label: 'Impact', amount: '₦12,500', desc: 'Support project build materials' },
-    { label: 'Growth', amount: '₦27,000', desc: 'Help fund coaching and mentorship' },
+    { label: 'Starter', amount: '₦10,000', desc: 'Support one learner resource' },
+    { label: 'Builder', amount: '₦20,000', desc: 'Contribute to guided training sessions' },
+    { label: 'Impact', amount: '₦50,000', desc: 'Support project build materials' },
+    { label: 'Growth', amount: '₦100,000', desc: 'Help fund coaching and mentorship' },
   ],
 
   /* ── BANK DETAILS (/donate.html) ───────────────────── */

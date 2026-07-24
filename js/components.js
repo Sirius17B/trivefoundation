@@ -158,6 +158,18 @@ window.injectAdminUI=function(){
         <div style="margin-bottom:12px"><label style="font-size:.82rem;font-weight:600;color:var(--c-dark);display:block;margin-bottom:4px">Donate Subtitle</label><textarea id="cms-donate-sub" rows="2" class="fi" style="resize:vertical"></textarea></div>
         <div style="margin-bottom:16px"><label style="font-size:.82rem;font-weight:600;color:var(--c-dark);display:block;margin-bottom:4px">Payment Reference Note</label><input id="cms-bank-confirm" type="text" class="fi"></div>
         <button class="btn btn-green btn-sm" onclick="saveCMS('donate')">Save Donate</button>
+
+        <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--c-border)">
+          <div style="font-size:.85rem;font-weight:700;color:var(--c-dark);margin-bottom:2px">Donation Tiers</div>
+          <p style="font-size:.78rem;color:var(--c-muted);margin-bottom:14px">Shown as pill buttons on the homepage and Donate page.</p>
+          ${[1,2,3,4].map(n=>`
+          <div style="display:grid;grid-template-columns:1fr 1fr 2fr;gap:8px;margin-bottom:8px" class="cms-field-row">
+            <div><label style="font-size:.76rem;font-weight:600;color:var(--c-dark);display:block;margin-bottom:3px">Tier ${n} Amount</label><input id="cms-tier${n}-amount" type="text" class="fi" placeholder="₦10,000"></div>
+            <div><label style="font-size:.76rem;font-weight:600;color:var(--c-dark);display:block;margin-bottom:3px">Label</label><input id="cms-tier${n}-label" type="text" class="fi" placeholder="Starter"></div>
+            <div><label style="font-size:.76rem;font-weight:600;color:var(--c-dark);display:block;margin-bottom:3px">Description</label><input id="cms-tier${n}-desc" type="text" class="fi" placeholder="What this tier supports"></div>
+          </div>`).join('')}
+          <button class="btn btn-green btn-sm" style="margin-top:8px" onclick="saveCMS('tiers')">Save Donation Tiers</button>
+        </div>
       </div>
 
       <!-- Footer -->
@@ -261,6 +273,13 @@ window._openCMSPanel=function(){
   _setVal('cms-donate-title',  d.donate_title||'');
   _setVal('cms-donate-sub',    d.donate_sub||'');
   _setVal('cms-bank-confirm',  d.bank_confirm||cfg.BANK?.note||'');
+  const tiers=window.getDonationTiers?window.getDonationTiers():(cfg.DONATION_TIERS||[]);
+  [1,2,3,4].forEach(n=>{
+    const t=tiers[n-1]||{};
+    _setVal('cms-tier'+n+'-amount', t.amount||'');
+    _setVal('cms-tier'+n+'-label',  t.label||'');
+    _setVal('cms-tier'+n+'-desc',   t.desc||'');
+  });
   _setVal('cms-footer-tag',    d.footer_tagline||'');
   _setVal('cms-footer-quote',  d.footer_quote||'');
 };
@@ -318,6 +337,15 @@ window.saveCMS=function(section){
     window.CMS.set('donate_title',  g('cms-donate-title'));
     window.CMS.set('donate_sub',    g('cms-donate-sub'));
     window.CMS.set('bank_confirm',  g('cms-bank-confirm'));
+  }
+  if(section==='tiers'){
+    const tiers=[1,2,3,4].map(n=>({
+      amount: g('cms-tier'+n+'-amount'),
+      label:  g('cms-tier'+n+'-label'),
+      desc:   g('cms-tier'+n+'-desc'),
+    })).filter(t=>t.amount&&t.label);
+    if(!tiers.length){window.showToast?.('Enter at least one tier amount and label','err');return;}
+    window.CMS.set('donation_tiers', JSON.stringify(tiers));
   }
   if(section==='footer'){
     window.CMS.set('footer_tagline', g('cms-footer-tag'));

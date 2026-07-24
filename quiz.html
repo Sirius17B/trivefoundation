@@ -9,7 +9,7 @@
   <link rel="canonical" href="https://trivefoundation.netlify.app/quiz.html">
   <title>Quiz Arena — THRIVE</title>
   <link rel="stylesheet" href="css/style.css">
-  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <style>
     .quiz-hero{background:linear-gradient(135deg,var(--green-900) 0%,#0A2A40 100%);padding:clamp(96px,14vw,136px) var(--pad) clamp(44px,6vw,64px)}
     .quiz-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:20px;padding:clamp(28px,4vw,44px) var(--pad)}
@@ -22,47 +22,6 @@
     .quiz-card-desc{font-size:.88rem;color:var(--ink-500);line-height:1.65;flex:1}
     .quiz-meta-row{display:flex;gap:14px;flex-wrap:wrap;font-size:.78rem;color:var(--ink-300)}
     .quiz-meta-item{display:flex;align-items:center;gap:4px}
-
-    /* Quiz overlay */
-    #quiz-overlay{position:fixed;inset:0;z-index:1500;background:var(--off-white);overflow-y:auto;display:none}
-    #quiz-overlay.open{display:block}
-    .q-header{position:sticky;top:0;background:var(--white);border-bottom:1px solid var(--border);padding:12px var(--pad);display:flex;align-items:center;justify-content:space-between;gap:10px;z-index:10;flex-wrap:wrap;box-shadow:var(--sh-xs)}
-    .q-progress-bar{position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--surface-2)}
-    .q-progress-fill{height:100%;background:var(--green-600);transition:width .35s ease}
-    .q-timer{display:flex;align-items:center;gap:6px;font-family:var(--font-head);font-size:1rem;font-weight:700;color:var(--ink-900);padding:6px 13px;border-radius:var(--r-md);background:var(--surface-2);min-width:72px;justify-content:center}
-    .q-timer.warning{background:var(--red-100);color:var(--red-600);animation:pulse-warn .8s ease-in-out infinite}
-    @keyframes pulse-warn{0%,100%{opacity:1}50%{opacity:.6}}
-    .q-body{max-width:680px;margin:0 auto;padding:clamp(28px,5vw,52px) var(--pad)}
-    .q-number{font-size:.74rem;font-weight:600;color:var(--ink-300);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}
-    .q-text{font-family:var(--font-head);font-size:clamp(1.05rem,2.5vw,1.3rem);font-weight:700;color:var(--ink-900);line-height:1.4;margin-bottom:26px}
-    .q-options{display:flex;flex-direction:column;gap:10px}
-    .q-option{display:flex;align-items:flex-start;gap:13px;padding:15px 18px;border:2px solid var(--border);border-radius:var(--r-xl);background:var(--white);cursor:pointer;transition:all var(--t-fast);text-align:left;font-size:.95rem;color:var(--ink-700);line-height:1.5;width:100%}
-    .q-option:hover:not(:disabled){border-color:var(--green-500);background:var(--green-50)}
-    .q-option.selected{border-color:var(--green-600);background:var(--green-50)}
-    .q-option.correct{border-color:#16A34A;background:#F0FDF4;color:#166534}
-    .q-option.wrong{border-color:var(--red-600);background:var(--red-100);color:#991B1B}
-    .q-option:disabled{cursor:default}
-    .q-opt-letter{min-width:28px;height:28px;border-radius:50%;background:var(--surface-2);color:var(--ink-300);font-size:.76rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:all var(--t-fast)}
-    .q-option.selected .q-opt-letter{background:var(--green-600);color:#fff}
-    .q-option.correct .q-opt-letter{background:#16A34A;color:#fff}
-    .q-option.wrong .q-opt-letter{background:var(--red-600);color:#fff}
-    .q-explanation{margin-top:14px;padding:13px 16px;border-radius:var(--r-lg);background:var(--teal-100);border-left:3px solid var(--teal-600);font-size:.87rem;color:var(--ink-700);line-height:1.65;display:none}
-    .q-explanation.show{display:block}
-    .q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:28px;gap:10px;flex-wrap:wrap}
-
-    /* Results */
-    .results-screen{max-width:620px;margin:0 auto;padding:clamp(32px,5vw,60px) var(--pad)}
-    .results-circle{width:110px;height:110px;border-radius:50%;border:5px solid var(--green-600);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 22px}
-    .results-circle.fail{border-color:var(--orange-600)}
-    .results-pct{font-family:var(--font-head);font-size:2rem;font-weight:800;color:var(--ink-900);line-height:1}
-    .results-lbl{font-size:.68rem;color:var(--ink-300);text-transform:uppercase;letter-spacing:.08em}
-    .results-breakdown{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:24px 0}
-    .r-stat{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:15px 10px;text-align:center}
-    .r-stat-n{font-family:var(--font-head);font-size:1.55rem;font-weight:800;color:var(--ink-900)}
-    .r-stat-l{font-size:.7rem;color:var(--ink-300);margin-top:3px}
-    .rank-banner{background:var(--ink-900);color:#fff;border-radius:var(--r-xl);padding:18px 22px;margin:16px 0;text-align:center}
-    .rank-number{font-family:var(--font-head);font-size:2.2rem;font-weight:800;color:#FBBF24}
-    .rank-label{font-size:.82rem;color:rgba(255,255,255,.6);margin-top:3px}
 
     /* Leaderboard */
     .lb-quiz-table{width:100%;border-collapse:collapse}
@@ -79,39 +38,10 @@
     .q-edit-row:last-child{border-bottom:none}
     .q-edit-row-text{flex:1;font-size:.85rem;color:var(--ink-700);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-    @media print{
-      .nav,.site-footer,#quiz-admin-notice,.q-nav,#q-header,.cms-toolbar,.btn-no-print{display:none!important}
-      #quiz-overlay{position:static;overflow:visible}
-      .results-screen{max-width:100%;padding:20px}
-    }
   </style>
 </head>
 <body>
 <header class="nav" role="banner"></header>
-
-<!-- Quiz overlay -->
-<div id="quiz-overlay" role="dialog" aria-modal="true" aria-labelledby="q-quiz-title">
-  <div class="q-header" id="q-header">
-    <div style="display:flex;align-items:center;gap:10px">
-      <button onclick="confirmQuit()" class="btn btn-ghost btn-sm btn-no-print" aria-label="Quit quiz">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
-        Quit
-      </button>
-      <span id="q-quiz-title" style="font-weight:600;font-size:.88rem;color:var(--ink-900)"></span>
-    </div>
-    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-      <span id="q-counter" style="font-size:.8rem;color:var(--ink-300)"></span>
-      <div class="q-timer" id="q-timer" aria-label="Time remaining" aria-live="polite">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        <span id="q-time-display">00:00</span>
-      </div>
-    </div>
-    <div class="q-progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-      <div class="q-progress-fill" id="q-progress"></div>
-    </div>
-  </div>
-  <div id="quiz-runner-content"></div>
-</div>
 
 <main id="main">
   <section class="quiz-hero" aria-labelledby="quiz-page-title">
@@ -127,10 +57,15 @@
   <!-- Admin notice -->
   <div id="quiz-admin-notice" class="admin-only" style="display:none;background:var(--teal-100);border-bottom:2px solid var(--teal-600);padding:11px var(--pad)">
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
-      <span style="font-size:.85rem;color:var(--teal-700);font-weight:500">Admin: manage quiz questions below</span>
-      <button class="btn btn-teal btn-sm" onclick="toggleAdminEditor()">
-        <span id="editor-toggle-lbl">Show Question Editor</span>
-      </button>
+      <span style="font-size:.85rem;color:var(--teal-700);font-weight:500">Admin: manage quiz questions and access codes below</span>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-teal btn-sm" onclick="toggleAdminEditor()">
+          <span id="editor-toggle-lbl">Show Question Editor</span>
+        </button>
+        <button class="btn btn-teal btn-sm" onclick="toggleCodesPanel()">
+          <span id="codes-toggle-lbl">Show Access Codes</span>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -153,6 +88,39 @@
     </div>
     <div style="background:var(--white);border-radius:var(--r-xl);margin:0 var(--pad);border:1px solid var(--border)">
       <div id="editor-questions-list"></div>
+    </div>
+  </section>
+
+  <!-- Admin access codes -->
+  <section id="admin-codes" class="admin-only" style="display:none;background:var(--white);padding:clamp(20px,3vw,36px) 0" aria-label="Quiz access codes">
+    <div style="padding:0 var(--pad);margin-bottom:14px">
+      <h2 style="font-size:1.1rem">Access Codes</h2>
+      <p style="font-size:.85rem;color:var(--ink-300);margin-top:.3rem">Generate one-time codes for an event, hand them out, and each one unlocks exactly one quiz attempt.</p>
+    </div>
+    <div style="padding:0 var(--pad);display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:16px">
+      <div><label style="font-size:.78rem;font-weight:600;color:var(--ink-900);display:block;margin-bottom:3px">Quiz</label><select id="codes-quiz-select" class="fi" style="padding:8px 12px;font-size:.86rem;width:auto"></select></div>
+      <div><label style="font-size:.78rem;font-weight:600;color:var(--ink-900);display:block;margin-bottom:3px">How many</label><input id="codes-count" type="number" min="1" max="500" value="20" class="fi" style="padding:8px 12px;font-size:.86rem;width:90px"></div>
+      <div><label style="font-size:.78rem;font-weight:600;color:var(--ink-900);display:block;margin-bottom:3px">Batch label (optional)</label><input id="codes-label" type="text" placeholder="e.g. August 2026 Tech Cohort" class="fi" style="padding:8px 12px;font-size:.86rem;width:220px"></div>
+      <button class="btn btn-primary btn-sm" onclick="generateCodes()">Generate Codes</button>
+    </div>
+    <div id="codes-generated-block" style="display:none;padding:0 var(--pad);margin-bottom:20px">
+      <div style="background:var(--teal-100);border-radius:var(--r-lg);padding:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px">
+          <strong style="font-size:.85rem;color:var(--teal-700)">New codes — copy or print these now</strong>
+          <button class="btn btn-teal btn-sm" onclick="copyGeneratedCodes()">Copy All</button>
+        </div>
+        <textarea id="codes-generated-text" readonly rows="6" class="fi" style="font-family:monospace;font-size:.85rem;background:var(--white)"></textarea>
+      </div>
+    </div>
+    <div style="padding:0 var(--pad);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+      <h3 style="font-size:.95rem">All Codes</h3>
+      <button class="btn btn-ghost btn-sm" onclick="loadCodesList()">Refresh</button>
+    </div>
+    <div style="background:var(--off-white);border-radius:var(--r-xl);margin:0 var(--pad);border:1px solid var(--border);overflow-x:auto">
+      <table class="lb-quiz-table" id="codes-table" aria-label="Access codes">
+        <thead><tr><th>Code</th><th>Quiz</th><th>Status</th><th>Used by</th><th>Batch</th></tr></thead>
+        <tbody id="codes-table-body"></tbody>
+      </table>
     </div>
   </section>
 
@@ -194,6 +162,21 @@
   </div>
 </div>
 
+<!-- Pre-quiz: name + access code -->
+<div id="start-modal" style="position:fixed;inset:0;z-index:2000;background:rgba(15,25,35,.5);display:none;align-items:center;justify-content:center;padding:20px" role="dialog" aria-modal="true" aria-labelledby="start-modal-heading">
+  <div style="background:var(--white);border-radius:var(--r-2xl);padding:28px;width:100%;max-width:420px;box-shadow:var(--sh-lg)">
+    <h3 id="start-modal-heading" style="margin-bottom:4px;font-size:1.05rem">Starting: <span id="start-modal-quiz-title"></span></h3>
+    <p style="font-size:.85rem;color:var(--ink-300);margin-bottom:16px">Enter your name and the one-time access code you were given.</p>
+    <div id="start-modal-err" role="alert" style="display:none;background:var(--red-100);border:1px solid var(--red-600);border-radius:var(--r-sm);padding:9px 12px;font-size:.83rem;color:var(--red-600);margin-bottom:12px"></div>
+    <div class="fg"><label for="start-name-inp">Your name</label><input id="start-name-inp" type="text" maxlength="80" placeholder="Full name" autocomplete="name"></div>
+    <div class="fg" style="margin-bottom:18px"><label for="start-code-inp">Access code</label><input id="start-code-inp" type="text" maxlength="12" placeholder="THRV-XXXX" style="text-transform:uppercase;font-family:monospace"></div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-primary" id="start-modal-submit" onclick="submitStartModal()">Begin Quiz</button>
+      <button class="btn btn-ghost" onclick="closeStartModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <div class="site-footer"></div>
 <div class="toast" role="alert" aria-live="polite"></div>
 <script src="js/config.js"></script>
@@ -211,8 +194,6 @@ const SESSION_Q     = 50; // fallback only — each quiz in js/quiz-bank.js sets
 let quizzes         = [];
 let editingQIdx     = null;
 let lastScoreEntry  = null;
-let state           = {};
-let timerInterval   = null;
 
 /* ── Load quizzes ─────────────────────────────────────────────────────────── */
 async function loadQuizzes() {
@@ -225,6 +206,11 @@ async function loadQuizzes() {
   if (!Array.isArray(quizzes) || !quizzes.length) {
     quizzes = JSON.parse(JSON.stringify(window.SITE_CONFIG.QUIZZES || []));
   }
+  /* Restore "(you)" leaderboard highlight after returning from quiz-play.html */
+  try {
+    const last = JSON.parse(sessionStorage.getItem('thrive_last_score_v1') || 'null');
+    if (last) { lastScoreEntry = last; sessionStorage.removeItem('thrive_last_score_v1'); }
+  } catch {}
   renderQuizCards(); buildSelectMenus(); renderEditorQuestions(); renderLeaderboard();
   if (window.AdminAuth?.isLoggedIn()) document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
 }
@@ -275,182 +261,139 @@ function renderQuizCards() {
   });
 }
 
-/* ── Quiz runner ──────────────────────────────────────────────────────────── */
-function shuffle(arr) { return [...arr].sort(() => Math.random() - .5); }
+/* ── Start a quiz: collect name + one-time code, redeem it, hand off to quiz-play.html ── */
+const HANDOFF_KEY = 'thrive_quiz_handoff_v1';
+let pendingQuizId = null;
 
-function buildQuestionSet(allQuestions, target) {
-  const shuffled = shuffle(Array.isArray(allQuestions) ? allQuestions : []);
-  return shuffled.slice(0, Math.min(target, shuffled.length));
-}
-
-async function startQuiz(quizId) {
+function startQuiz(quizId) {
   const quiz = quizzes.find(q => q.id === quizId); if (!quiz) { showToast('Quiz not found', 'err'); return; }
-  const name = (prompt(`Starting: ${quiz.title}\n\nEnter your name for the leaderboard:`) || '').trim();
-  if (!name) { showToast('A name is required to start.', 'err'); return; }
-
-  const selected = buildQuestionSet(quiz.questions, quiz.sessionSize || SESSION_Q);
-  state = {
-    quiz, questions: selected, current: 0,
-    answers:  new Array(selected.length).fill(null),
-    answered: new Array(selected.length).fill(false),
-    timeLeft: getTimerSeconds(quiz),
-    finished: false,
-    playerName: name,
-  };
-
-  document.getElementById('q-quiz-title').textContent = quiz.title;
-  document.getElementById('quiz-runner-content').innerHTML = buildRunnerHTML();
-
-  const overlay = document.getElementById('quiz-overlay');
-  overlay.classList.add('open');
+  pendingQuizId = quizId;
+  document.getElementById('start-modal-quiz-title').textContent = quiz.title;
+  document.getElementById('start-name-inp').value = '';
+  document.getElementById('start-code-inp').value = '';
+  document.getElementById('start-modal-err').style.display = 'none';
+  document.getElementById('start-modal').style.display = 'flex';
   document.body.style.overflow = 'hidden';
-  overlay.scrollTop = 0;
-
-  renderQuestion();
-  startTimer();
+  document.getElementById('start-name-inp').focus();
 }
+window.startQuiz = startQuiz;
 
-function buildRunnerHTML() {
-  return `<div class="q-body" id="q-body">
-    <div class="q-number" id="q-number"></div>
-    <p class="q-text" id="q-text"></p>
-    <div class="q-options" id="q-options" role="radiogroup" aria-labelledby="q-text"></div>
-    <div class="q-explanation" id="q-explanation" role="note"></div>
-    <div class="q-nav">
-      <button class="btn btn-ghost btn-sm btn-no-print" id="q-prev" onclick="prevQ()">← Back</button>
-      <button class="btn btn-primary btn-sm btn-no-print" id="q-next" onclick="nextQ()">Next →</button>
-    </div>
-  </div>`;
+function closeStartModal() {
+  document.getElementById('start-modal').style.display = 'none';
+  document.body.style.overflow = '';
+  pendingQuizId = null;
 }
+window.closeStartModal = closeStartModal;
 
-function renderQuestion() {
-  const { questions, current, answers, answered } = state;
-  const q       = questions[current];
-  const total   = questions.length;
-  const pct     = Math.round((current / total) * 100);
-  const LETTERS = ['A','B','C','D'];
+async function submitStartModal() {
+  const name = document.getElementById('start-name-inp').value.trim();
+  const code = document.getElementById('start-code-inp').value.trim().toUpperCase();
+  const errEl = document.getElementById('start-modal-err');
+  const submitBtn = document.getElementById('start-modal-submit');
+  errEl.style.display = 'none';
 
-  document.getElementById('q-number').textContent = `Question ${current + 1} of ${total}`;
-  document.getElementById('q-text').textContent   = q.q;
-  document.getElementById('q-counter').textContent = `${current + 1} / ${total}`;
-  document.getElementById('q-progress').style.width = pct + '%';
-  document.getElementById('q-progress').parentElement.setAttribute('aria-valuenow', pct);
+  if (!name) { errEl.textContent = 'Please enter your name.'; errEl.style.display = 'block'; return; }
+  if (!code) { errEl.textContent = 'Please enter your access code.'; errEl.style.display = 'block'; return; }
 
-  document.getElementById('q-options').innerHTML = q.options.map((opt, i) => {
-    let cls = '';
-    if (answered[current]) {
-      if (i === q.answer) cls = 'correct';
-      else if (i === answers[current]) cls = 'wrong';
-    } else if (i === answers[current]) cls = 'selected';
-    return `<button class="q-option ${cls}" ${answered[current] ? 'disabled' : ''}
-      onclick="selectOption(${i})" role="radio" aria-checked="${i === answers[current]}"
-      aria-label="Option ${LETTERS[i]}: ${sanitize(opt)}">
-      <span class="q-opt-letter" aria-hidden="true">${LETTERS[i]}</span>
-      <span>${sanitize(opt)}</span>
-    </button>`;
-  }).join('');
-
-  const expEl = document.getElementById('q-explanation');
-  if (answered[current] && q.explanation && window.SITE_CONFIG?.QUIZ_SETTINGS?.showExplanations) {
-    expEl.textContent = q.explanation; expEl.classList.add('show');
-  } else { expEl.classList.remove('show'); }
-
-  const prevBtn = document.getElementById('q-prev');
-  const nextBtn = document.getElementById('q-next');
-  if (prevBtn) prevBtn.style.visibility = current === 0 ? 'hidden' : 'visible';
-  if (nextBtn) {
-    const isLast = current === total - 1;
-    nextBtn.textContent = (isLast && answered[current]) ? 'Finish Quiz ✓' : answered[current] ? 'Next →' : 'Skip →';
+  submitBtn.disabled = true; submitBtn.textContent = 'Checking…';
+  try {
+    const res = await fetch('/.netlify/functions/quiz-code', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'redeem', code, quizId: pendingQuizId, name }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      errEl.textContent = data.error || 'That code could not be used. Please check it and try again.';
+      errEl.style.display = 'block';
+      submitBtn.disabled = false; submitBtn.textContent = 'Begin Quiz';
+      return;
+    }
+    sessionStorage.setItem(HANDOFF_KEY, JSON.stringify({ quizId: pendingQuizId, name }));
+    window.location.href = 'quiz-play.html?quiz=' + encodeURIComponent(pendingQuizId);
+  } catch {
+    errEl.textContent = 'Could not reach the access code service. Check your connection and try again.';
+    errEl.style.display = 'block';
+    submitBtn.disabled = false; submitBtn.textContent = 'Begin Quiz';
   }
 }
+window.submitStartModal = submitStartModal;
 
-function selectOption(i) {
-  if (state.answered[state.current]) return;
-  state.answers[state.current]  = i;
-  state.answered[state.current] = true;
-  renderQuestion();
+document.getElementById('start-code-inp')?.addEventListener('keydown', e => { if (e.key === 'Enter') submitStartModal(); });
+
+/* ── Admin: access codes ──────────────────────────────────────────────────── */
+let codesOpen = false;
+function toggleCodesPanel() {
+  codesOpen = !codesOpen;
+  document.getElementById('admin-codes').style.display = codesOpen ? 'block' : 'none';
+  document.getElementById('codes-toggle-lbl').textContent = codesOpen ? 'Hide Access Codes' : 'Show Access Codes';
+  if (codesOpen) { populateCodesQuizSelect(); loadCodesList(); }
 }
-function nextQ() { if (state.current === state.questions.length - 1) { finishQuiz(); return; } state.current++; renderQuestion(); }
-function prevQ() { if (state.current > 0) { state.current--; renderQuestion(); } }
-window.selectOption = selectOption; window.nextQ = nextQ; window.prevQ = prevQ;
+window.toggleCodesPanel = toggleCodesPanel;
 
-function startTimer() {
-  clearInterval(timerInterval);
-  timerInterval = setInterval(() => {
-    state.timeLeft--;
-    const m = Math.floor(state.timeLeft / 60);
-    const s = state.timeLeft % 60;
-    document.getElementById('q-time-display').textContent = `${m}:${String(s).padStart(2,'0')}`;
-    document.getElementById('q-timer').classList.toggle('warning', state.timeLeft <= 60);
-    if (state.timeLeft <= 0) { clearInterval(timerInterval); finishQuiz(true); }
-  }, 1000);
+function populateCodesQuizSelect() {
+  const sel = document.getElementById('codes-quiz-select'); if (!sel) return;
+  sel.innerHTML = quizzes.map(q => `<option value="${sanitize(q.id)}">${sanitize(q.title)}</option>`).join('');
 }
 
-async function finishQuiz(timeout = false) {
-  clearInterval(timerInterval);
-  state.finished = true;
-  const { questions, answers, answered, quiz, playerName } = state;
-  const correct   = questions.filter((q, i) => answered[i] && answers[i] === q.answer).length;
-  const total     = questions.length;
-  const pct       = Math.round((correct / total) * 100);
-  const passed    = pct >= (window.SITE_CONFIG?.QUIZ_SETTINGS?.passMark || 50);
-  const totalSecs = getTimerSeconds(quiz);
-  const timeTaken = totalSecs - state.timeLeft;
-  const skipped   = answered.filter(a => !a).length;
-  const wrong     = total - correct - skipped;
+async function generateCodes() {
+  const quizId = document.getElementById('codes-quiz-select').value;
+  const count  = Math.floor(Number(document.getElementById('codes-count').value));
+  const label  = document.getElementById('codes-label').value.trim();
+  const pin    = sessionStorage.getItem(window.AdminAuth?._pk || 'thrive_admin_pin_v1') || '';
+  if (!quizId) return showToast('Choose a quiz first', 'err');
+  if (!Number.isFinite(count) || count < 1) return showToast('Enter how many codes to generate', 'err');
 
-  const rank = await saveScore(quiz.id, playerName, pct, correct, total, timeTaken);
-  lastScoreEntry = { quizId: quiz.id, name: playerName, pct };
+  try {
+    const res = await fetch('/.netlify/functions/quiz-code', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'generate', quizId, count, label, pin }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) return showToast(data.error || 'Could not generate codes', 'err');
 
-  const overlay = document.getElementById('quiz-overlay');
-  overlay.scrollTop = 0;
-  document.getElementById('quiz-runner-content').innerHTML = `
-    <div class="results-screen">
-      <div style="text-align:center;margin-bottom:20px">
-        <img src="assets/tree-logo.png" alt="THRIVE" style="height:44px;margin:0 auto 8px" onerror="this.style.display='none'">
-        <div style="font-weight:700;color:var(--ink-900)">${sanitize((window.SITE_CONFIG?.ORG_NAME)||'THRIVE')}</div>
-        <div style="font-size:.78rem;color:var(--ink-300)">${sanitize(quiz.title)} · ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}</div>
-      </div>
-      <div class="results-circle ${passed ? '' : 'fail'}">
-        <span class="results-pct">${pct}%</span>
-        <span class="results-lbl">${passed ? 'Pass' : 'Try again'}</span>
-      </div>
-      <h2 style="font-size:clamp(1.3rem,3vw,1.8rem);text-align:center;margin-bottom:.5rem">${passed ? 'Well done, ' + sanitize(playerName) + '!' : 'Keep practising!'}</h2>
-      <p style="color:var(--ink-500);text-align:center">
-        ${timeout ? 'Time ran out. ' : ''}You answered <strong>${correct} of ${total}</strong> questions correctly.
-      </p>
-      ${!passed ? `<p style="color:var(--ink-300);font-size:.86rem;text-align:center;margin-top:.4rem">You need ${window.SITE_CONFIG?.QUIZ_SETTINGS?.passMark||50}% to pass. Try again!</p>` : ''}
-      <div class="results-breakdown">
-        <div class="r-stat"><div class="r-stat-n" style="color:var(--green-600)">${correct}</div><div class="r-stat-l">Correct</div></div>
-        <div class="r-stat"><div class="r-stat-n" style="color:var(--red-600)">${wrong}</div><div class="r-stat-l">Wrong</div></div>
-        <div class="r-stat"><div class="r-stat-n" style="color:var(--orange-600)">${skipped}</div><div class="r-stat-l">Skipped</div></div>
-      </div>
-      <div class="r-stat" style="max-width:200px;margin:0 auto 16px">
-        <div class="r-stat-n">${Math.floor(timeTaken/60)}m ${timeTaken%60}s</div>
-        <div class="r-stat-l">Time taken</div>
-      </div>
-      ${rank ? `<div class="rank-banner"><div class="rank-number">#${rank}</div><div class="rank-label">Your ranking on the ${sanitize(quiz.title)} leaderboard</div></div>` : ''}
-      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px" class="btn-no-print">
-        <button class="btn btn-primary btn-sm" onclick="startQuiz('${sanitize(quiz.id)}')">Try Again</button>
-        <button class="btn btn-ghost btn-sm" onclick="closeQuiz()">← All Quizzes</button>
-        <button class="btn btn-teal btn-sm" onclick="window.print()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-          Print Result
-        </button>
-      </div>
-    </div>`;
-
-  renderLeaderboard();
+    const block = document.getElementById('codes-generated-block');
+    document.getElementById('codes-generated-text').value = data.codes.join('\n');
+    block.style.display = 'block';
+    showToast(`✓ Generated ${data.codes.length} codes`, 'ok');
+    loadCodesList();
+  } catch {
+    showToast('Could not reach the access code service', 'err');
+  }
 }
+window.generateCodes = generateCodes;
 
-function closeQuiz() {
-  clearInterval(timerInterval);
-  document.getElementById('quiz-overlay').classList.remove('open');
-  document.body.style.overflow = '';
-  renderLeaderboard();
+function copyGeneratedCodes() {
+  const el = document.getElementById('codes-generated-text');
+  el.select();
+  navigator.clipboard?.writeText(el.value).then(() => showToast('Copied to clipboard', 'ok'));
 }
-function confirmQuit() { if (confirm('Quit this quiz? Your progress will not be saved.')) closeQuiz(); }
-window.closeQuiz = closeQuiz; window.confirmQuit = confirmQuit;
+window.copyGeneratedCodes = copyGeneratedCodes;
+
+async function loadCodesList() {
+  const pin = sessionStorage.getItem(window.AdminAuth?._pk || 'thrive_admin_pin_v1') || '';
+  const tbody = document.getElementById('codes-table-body'); if (!tbody) return;
+  try {
+    const res = await fetch('/.netlify/functions/quiz-code', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'list', pin }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) { tbody.innerHTML = `<tr><td colspan="5" style="padding:16px;text-align:center;color:var(--ink-300)">${sanitize(data.error || 'Could not load codes')}</td></tr>`; return; }
+    const codes = data.codes || [];
+    if (!codes.length) { tbody.innerHTML = `<tr><td colspan="5" style="padding:16px;text-align:center;color:var(--ink-300)">No codes generated yet.</td></tr>`; return; }
+    const titleFor = id => quizzes.find(q => q.id === id)?.title || id;
+    tbody.innerHTML = codes.map(c => `<tr>
+      <td style="font-family:monospace;font-weight:700">${sanitize(c.code)}</td>
+      <td>${sanitize(titleFor(c.quizId))}</td>
+      <td>${c.used ? '<span style="color:var(--red-600)">Used</span>' : '<span style="color:var(--green-600)">Unused</span>'}</td>
+      <td>${sanitize(c.usedBy || '—')}</td>
+      <td>${sanitize(c.batchLabel || '—')}</td>
+    </tr>`).join('');
+  } catch {
+    tbody.innerHTML = `<tr><td colspan="5" style="padding:16px;text-align:center;color:var(--ink-300)">Could not reach the access code service.</td></tr>`;
+  }
+}
+window.loadCodesList = loadCodesList;
 
 /* ── Leaderboard ──────────────────────────────────────────────────────────── */
 async function loadScores() {
