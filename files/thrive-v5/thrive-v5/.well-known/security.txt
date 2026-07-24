@@ -1,4 +1,0 @@
-Contact: mailto:hello@thrivefoundation.org
-Preferred-Languages: en
-Policy: https://thrivefoundation.org/privacy.html
-Expires: 2027-06-14T00:00:00Z
