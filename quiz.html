@@ -86,6 +86,11 @@
         <button class="btn btn-primary btn-sm" onclick="openAddQuestion()">+ Add Question</button>
       </div>
     </div>
+    <div style="padding:0 var(--pad);margin-bottom:14px">
+      <div style="font-size:.82rem;color:var(--ink-300);background:var(--teal-100);border-radius:var(--r-md);padding:10px 14px">
+        The "Ans" column below shows each question exactly as written — this is reference data for editing, not what a candidate sees. On the actual quiz, option order is shuffled fresh for every attempt, so this column will often show the same letter repeatedly even though no two candidates see it in that position.
+      </div>
+    </div>
     <div style="background:var(--white);border-radius:var(--r-xl);margin:0 var(--pad);border:1px solid var(--border)">
       <div id="editor-questions-list"></div>
     </div>
@@ -99,9 +104,18 @@
     </div>
     <div style="padding:0 var(--pad);display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:16px">
       <div><label style="font-size:.78rem;font-weight:600;color:var(--ink-900);display:block;margin-bottom:3px">Quiz</label><select id="codes-quiz-select" class="fi" style="padding:8px 12px;font-size:.86rem;width:auto"></select></div>
-      <div><label style="font-size:.78rem;font-weight:600;color:var(--ink-900);display:block;margin-bottom:3px">How many</label><input id="codes-count" type="number" min="1" max="500" value="20" class="fi" style="padding:8px 12px;font-size:.86rem;width:90px"></div>
+      <div><label style="font-size:.78rem;font-weight:600;color:var(--ink-900);display:block;margin-bottom:3px">How many</label><input id="codes-count" type="number" min="1" max="1000" value="20" class="fi" style="padding:8px 12px;font-size:.86rem;width:90px"></div>
       <div><label style="font-size:.78rem;font-weight:600;color:var(--ink-900);display:block;margin-bottom:3px">Batch label (optional)</label><input id="codes-label" type="text" placeholder="e.g. August 2026 Tech Cohort" class="fi" style="padding:8px 12px;font-size:.86rem;width:220px"></div>
       <button class="btn btn-primary btn-sm" onclick="generateCodes()">Generate Codes</button>
+    </div>
+    <div style="padding:0 var(--pad);margin-bottom:20px">
+      <details>
+        <summary style="cursor:pointer;font-size:.82rem;color:var(--ink-300);font-weight:600">Start a new season/year — clear old codes</summary>
+        <div style="margin-top:10px;padding:14px;background:var(--red-100);border-radius:var(--r-lg);display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <p style="font-size:.82rem;color:var(--red-600);flex:1;min-width:220px">Permanently deletes every code (used and unused) for the quiz selected above — used when starting a new season so you're not stuck bumping the count every year. This cannot be undone.</p>
+          <button class="btn btn-sm" style="background:var(--red-600);color:#fff" onclick="resetCodes()">Clear codes for this quiz</button>
+        </div>
+      </details>
     </div>
     <div id="codes-generated-block" style="display:none;padding:0 var(--pad);margin-bottom:20px">
       <div style="background:var(--teal-100);border-radius:var(--r-lg);padding:16px">
@@ -163,8 +177,8 @@
 </div>
 
 <!-- Pre-quiz: name + access code -->
-<div id="start-modal" style="position:fixed;inset:0;z-index:2000;background:rgba(15,25,35,.5);display:none;align-items:center;justify-content:center;padding:20px" role="dialog" aria-modal="true" aria-labelledby="start-modal-heading">
-  <div style="background:var(--white);border-radius:var(--r-2xl);padding:28px;width:100%;max-width:420px;box-shadow:var(--sh-lg)">
+<div id="start-modal" style="position:fixed;inset:0;z-index:2000;background:rgba(10,15,20,.75);display:none;align-items:center;justify-content:center;padding:20px" role="dialog" aria-modal="true" aria-labelledby="start-modal-heading">
+  <div style="background:var(--white);border-radius:var(--r-2xl);padding:32px;width:100%;max-width:460px;box-shadow:var(--sh-lg)">
     <h3 id="start-modal-heading" style="margin-bottom:4px;font-size:1.05rem">Starting: <span id="start-modal-quiz-title"></span></h3>
     <p style="font-size:.85rem;color:var(--ink-300);margin-bottom:16px">Enter your name and the one-time access code you were given.</p>
     <div id="start-modal-err" role="alert" style="display:none;background:var(--red-100);border:1px solid var(--red-600);border-radius:var(--r-sm);padding:9px 12px;font-size:.83rem;color:var(--red-600);margin-bottom:12px"></div>
@@ -361,6 +375,29 @@ async function generateCodes() {
   }
 }
 window.generateCodes = generateCodes;
+
+async function resetCodes() {
+  const quizId = document.getElementById('codes-quiz-select').value;
+  if (!quizId) return showToast('Choose a quiz first', 'err');
+  const quizTitle = quizzes.find(q => q.id === quizId)?.title || quizId;
+  if (!confirm(`Permanently delete ALL codes (used and unused) for "${quizTitle}"? This cannot be undone.`)) return;
+
+  const pin = sessionStorage.getItem(window.AdminAuth?._pk || 'thrive_admin_pin_v1') || '';
+  try {
+    const res = await fetch('/.netlify/functions/quiz-code', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'reset', quizId, pin }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) return showToast(data.error || 'Could not reset codes', 'err');
+    showToast(`✓ Cleared ${data.removed} code(s) for ${quizTitle}`, 'ok');
+    document.getElementById('codes-generated-block').style.display = 'none';
+    loadCodesList();
+  } catch {
+    showToast('Could not reach the access code service', 'err');
+  }
+}
+window.resetCodes = resetCodes;
 
 function copyGeneratedCodes() {
   const el = document.getElementById('codes-generated-text');

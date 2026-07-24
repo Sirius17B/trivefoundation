@@ -209,14 +209,23 @@
     </div>
     <div class="grid-2" style="margin-top:1.2rem;align-items:start">
       <div class="res-panel fade-up" style="background:var(--c-cream)">
-        <h3 style="margin-bottom:10px">Quiz Rankings (Top 10)</h3>
-        <div id="hub-quiz-rankings" style="font-size:.88rem;color:var(--c-muted)">Loading…</div>
+        <h3 style="margin-bottom:10px">Tech Quiz Rankings (Top 10)</h3>
+        <div id="hub-quiz-tech" style="font-size:.88rem;color:var(--c-muted)">Loading…</div>
       </div>
       <div class="res-panel fade-up" style="background:var(--c-cream)">
-        <h3 style="margin-bottom:10px">Football League Rankings</h3>
-        <div id="hub-football-rankings" style="font-size:.88rem;color:var(--c-muted)">Loading…</div>
+        <h3 style="margin-bottom:10px">Football Quiz Rankings (Top 10)</h3>
+        <div id="hub-quiz-football" style="font-size:.88rem;color:var(--c-muted)">Loading…</div>
+      </div>
+      <div class="res-panel fade-up" style="background:var(--c-cream)">
+        <h3 style="margin-bottom:10px">Boys League Rankings</h3>
+        <div id="hub-football-boys" style="font-size:.88rem;color:var(--c-muted)">Loading…</div>
+      </div>
+      <div class="res-panel fade-up" style="background:var(--c-cream)">
+        <h3 style="margin-bottom:10px">Girls League Rankings</h3>
+        <div id="hub-football-girls" style="font-size:.88rem;color:var(--c-muted)">Loading…</div>
       </div>
     </div>
+    <p class="fade-up" style="margin-top:1.1rem;font-size:.85rem;color:var(--c-muted)">Looking for capstone tech project rankings? <a href="league.html#tech" style="color:var(--c-teal);font-weight:600">See Capstone Project Rankings →</a></p>
   </div>
 </section>
 
@@ -486,34 +495,36 @@ window.deleteStory = function() {
 // Init
 
 
-async function renderHubLeaderboards(){
-  const quizEl=document.getElementById('hub-quiz-rankings');
-  const footEl=document.getElementById('hub-football-rankings');
-  if(!quizEl||!footEl) return;
+function renderQuizList(el,rows){
+  el.innerHTML=!rows.length
+    ? '<p>No attempts yet.</p>'
+    : `<ol style="padding-left:18px;margin:0;display:grid;gap:6px">${rows.map(e=>`<li><strong>${sanitize(e.name||'Candidate')}</strong> — ${e.pct}%</li>`).join('')}</ol>`;
+}
+function renderLeagueList(el,rows){
+  el.innerHTML=!rows.length
+    ? '<p>No data yet.</p>'
+    : `<ol style="padding-left:18px;margin:0;display:grid;gap:4px">${rows.map(t=>`<li>${sanitize(t.name)} — ${t.pts} pts</li>`).join('')}</ol>`;
+}
 
-  // Quiz leaderboard summary
+async function renderHubLeaderboards(){
+  const quizTechEl=document.getElementById('hub-quiz-tech');
+  const quizFootballEl=document.getElementById('hub-quiz-football');
+  const boysEl=document.getElementById('hub-football-boys');
+  const girlsEl=document.getElementById('hub-football-girls');
+  if(!quizTechEl||!quizFootballEl||!boysEl||!girlsEl) return;
+
   let scores={};
   try{
     const r=await window.storage?.get('thrive_v5_quiz_lb');
     scores=r?JSON.parse(r.value):{};
   }catch{}
-  const rows=[];
-  Object.entries(scores).forEach(([quizId,entries])=>{
-    (entries||[]).forEach(e=>rows.push({quizId,...e}));
-  });
-  rows.sort((a,b)=>b.pct-a.pct||a.timeTaken-b.timeTaken);
-  const top=rows.slice(0,10);
-  quizEl.innerHTML=!top.length
-    ? '<p>No quiz attempts yet.</p>'
-    : `<ol style="padding-left:18px;margin:0;display:grid;gap:6px">${top.map(e=>`<li><strong>${sanitize(e.name||'Candidate')}</strong> — ${e.pct}% <span style="color:var(--c-muted)">(${sanitize(e.quizId)})</span></li>`).join('')}</ol>`;
+  renderQuizList(quizTechEl,(scores['tech-challenge']||[]).slice(0,10));
+  renderQuizList(quizFootballEl,(scores['football-arena']||[]).slice(0,10));
 
-  // Football rankings summary
   await LeagueEngine.load('boys');
   await LeagueEngine.load('girls');
-  const boys=LeagueEngine.buildTable('boys').slice(0,5);
-  const girls=LeagueEngine.buildTable('girls').slice(0,5);
-  const mk=(title,arr)=>`<div style="margin-bottom:10px"><div style="font-weight:700;margin-bottom:6px">${title}</div>${arr.length?`<ol style="padding-left:18px;margin:0;display:grid;gap:4px">${arr.map(t=>`<li>${sanitize(t.name)} — ${t.pts} pts</li>`).join('')}</ol>`:'<p>No data yet.</p>'}</div>`;
-  footEl.innerHTML=mk('Boys Top 5',boys)+mk('Girls Top 5',girls);
+  renderLeagueList(boysEl,LeagueEngine.buildTable('boys').slice(0,10));
+  renderLeagueList(girlsEl,LeagueEngine.buildTable('girls').slice(0,10));
 }
 
 renderHubLeaderboards();

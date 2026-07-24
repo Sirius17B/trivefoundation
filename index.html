@@ -152,16 +152,18 @@
       <a href="activities.html#league-hub" class="btn btn-teal btn-sm">Open League & Quiz hubs →</a>
     </div>
     <div class="lb-tabs" role="tablist">
-      <button class="lb-tab active" role="tab" aria-selected="true" onclick="lbGo(0,this)">⚽ Boys League</button>
-      <button class="lb-tab" role="tab" aria-selected="false" onclick="lbGo(1,this)">⚽ Girls League</button>
-      <button class="lb-tab" role="tab" aria-selected="false" onclick="lbGo(2,this)">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>Tech Rankings
+      <button class="lb-tab active" role="tab" aria-selected="true" onclick="lbGo(0,this)">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>Quiz — Tech
       </button>
+      <button class="lb-tab" role="tab" aria-selected="false" onclick="lbGo(1,this)">⚽ Quiz — Football</button>
+      <button class="lb-tab" role="tab" aria-selected="false" onclick="lbGo(2,this)">⚽ Boys League</button>
+      <button class="lb-tab" role="tab" aria-selected="false" onclick="lbGo(3,this)">⚽ Girls League</button>
     </div>
     <div class="lb-viewport"><div class="lb-track" id="lb-track">
+      <div class="lb-slide"><div class="lb-card"><div class="lb-head"><span class="lb-head-title">Tech Quiz — Top 5</span><a href="quiz.html" style="font-size:.75rem;color:var(--c-green-lt)">Full →</a></div><div id="lb-quiz-tech"></div></div></div>
+      <div class="lb-slide"><div class="lb-card"><div class="lb-head"><span class="lb-head-title">Football Quiz — Top 5</span><a href="quiz.html" style="font-size:.75rem;color:var(--c-green-lt)">Full →</a></div><div id="lb-quiz-football"></div></div></div>
       <div class="lb-slide"><div class="lb-card"><div class="lb-head"><span class="lb-head-title">Boys League — Top 5</span><a href="activities.html#league-hub" style="font-size:.75rem;color:var(--c-green-lt)">Full →</a></div><div id="lb-boys"></div></div></div>
       <div class="lb-slide"><div class="lb-card"><div class="lb-head"><span class="lb-head-title">Girls League — Top 5</span><a href="activities.html#league-hub" style="font-size:.75rem;color:var(--c-green-lt)">Full →</a></div><div id="lb-girls"></div></div></div>
-      <div class="lb-slide"><div class="lb-card"><div class="lb-head"><span class="lb-head-title">Tech Rankings — Top 5</span><a href="activities.html#league-hub" style="font-size:.75rem;color:var(--c-green-lt)">Full →</a></div><div id="lb-tech"></div></div></div>
     </div></div>
   </div>
 </section>
@@ -320,17 +322,26 @@ function renderLB(rows,elId,scoreKey,scoreSuffix,extraFn){
 /* ── Stats counter ── */
 initCounters();
 
+/* ── Quiz leaderboard (top 5 per quiz) ── */
+async function loadQuizTop(quizId,n=5){
+  try{
+    const r=await window.storage?.get('thrive_v5_quiz_lb');
+    const scores=r?JSON.parse(r.value):{};
+    return (scores[quizId]||[]).slice(0,n);
+  }catch{return [];}
+}
+
 /* ── Load data ── */
 async function init(){
   await LeagueEngine.load('boys');
   await LeagueEngine.load('girls');
-  await TechEngine.load();
   await CMS.load();
   CMS.apply();
   buildTiers('desktop-tiers');buildTiers('mobile-tiers');
   renderLB(LeagueEngine.buildTable('boys').slice(0,5),'lb-boys','pts',' pts',r=>`<span class="lb-detail">${r.p}P</span>`);
   renderLB(LeagueEngine.buildTable('girls').slice(0,5),'lb-girls','pts',' pts',r=>`<span class="lb-detail">${r.p}P</span>`);
-  renderLB(TechEngine.getTop(5),'lb-tech','score','/100',r=>`<span class="lb-detail" style="font-size:.72rem">${sanitize(r.class)}</span>`);
+  renderLB(await loadQuizTop('tech-challenge'),'lb-quiz-tech','pct','%');
+  renderLB(await loadQuizTop('football-arena'),'lb-quiz-football','pct','%');
 }
 init();
 </script>

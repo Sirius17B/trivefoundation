@@ -10,6 +10,9 @@
  *     Validates the code is real, matches quizId, and unused; marks it used.
  *   { action:'list', pin }                           -> admin only (PIN)
  *     Returns every code and its used/unused status, for review.
+ *   { action:'reset', quizId, pin }                  -> admin only (PIN)
+ *     Deletes every code (used and unused) for `quizId` — for starting a
+ *     new season/year clean instead of accumulating codes indefinitely.
  *
  * Stored as one flat map in Netlify Blobs under key thrive_quiz_codes_v1:
  *   { "THRV-7F3K": { quizId, used, usedBy, usedAt, batchLabel }, ... }
@@ -25,7 +28,7 @@ const crypto = require('node:crypto');
 
 const CODES_KEY = 'thrive_quiz_codes_v1';
 const JSON_HEADERS = { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' };
-const MAX_GENERATE = 500;
+const MAX_GENERATE = 1000;
 // Unambiguous charset — no 0/O, 1/I/L, to stay readable off a printed sheet.
 const CODE_CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 
@@ -155,6 +158,27 @@ exports.handler = async (event) => {
       const list = Object.entries(codes).map(([code, v]) => ({ code, ...v }));
       list.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
       return response(200, { ok: true, codes: list });
+    } catch (e) {
+      return blobsErrorResponse(e);
+    }
+  }
+
+  if (action === 'reset') {
+    const expectedPin = process.env.ADMIN_PIN;
+    if (!expectedPin) return response(503, { error: 'Admin backend is not configured — set ADMIN_PIN in Netlify environment variables' });
+    if (!pinMatches(payload.pin, expectedPin)) return response(401, { error: 'Invalid PIN' });
+
+    const quizId = String(payload.quizId || '').trim();
+    if (!quizId) return response(400, { error: 'quizId is required' });
+
+    try {
+      const codes = await loadCodes(store);
+      let removed = 0;
+      for (const code of Object.keys(codes)) {
+        if (codes[code].quizId === quizId) { delete codes[code]; removed++; }
+      }
+      await store.set(CODES_KEY, JSON.stringify(codes));
+      return response(200, { ok: true, removed, quizId });
     } catch (e) {
       return blobsErrorResponse(e);
     }

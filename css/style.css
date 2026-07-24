@@ -56,6 +56,43 @@
   --sh-lg:0 12px 40px rgba(26,61,43,.18);
   --t:.22s cubic-bezier(.4,0,.2,1);
   --pad:clamp(16px,5vw,60px);
+
+  /* ── Compat aliases ──────────────────────────────────────────
+     quiz.html / quiz-play.html were written against a different
+     numeric-scale naming convention (--ink-900, --green-600, etc.)
+     that never matched this file's --c-* tokens — every declaration
+     using one of these silently failed (undefined var = whole value
+     dropped), which is why the quiz pages' backgrounds/text looked
+     broken. Aliasing them here fixes every reference at once without
+     rewriting two pages of inline styles. Reuse an existing --c-*
+     token wherever one fits; only define a new literal where the
+     palette genuinely has no equivalent (reds, xs shadow, 2xl radius,
+     fast transition, light tint backgrounds). */
+  --border:var(--c-border);
+  --font-head:var(--fd);
+  --white:var(--c-white);
+  --off-white:var(--c-cream);
+  --surface:var(--c-white);
+  --surface-2:var(--c-sand);
+  --ink-900:var(--c-dark);
+  --ink-700:var(--c-text);
+  --ink-500:var(--c-muted);
+  --ink-300:var(--c-muted);
+  --green-50:var(--c-green-xl);
+  --green-500:var(--c-green-lt);
+  --green-600:var(--c-green);
+  --green-900:var(--c-forest);
+  --teal-100:rgba(27,123,120,.12);
+  --teal-600:var(--c-teal);
+  --teal-700:#155E5C;
+  --orange-100:rgba(232,98,26,.12);
+  --orange-600:var(--c-orange);
+  --red-100:#FEE2E2;
+  --red-600:#DC2626;
+  --r-2xl:34px;
+  --sh-xs:0 1px 2px rgba(26,61,43,.06);
+  --t-base:var(--t);
+  --t-fast:.15s cubic-bezier(.4,0,.2,1);
 }
 
 /* ── RESET ── */
