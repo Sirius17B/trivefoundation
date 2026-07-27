@@ -163,11 +163,15 @@
       <div><label style="font-size:.78rem;font-weight:600;color:var(--ink-900);display:block;margin-bottom:3px">Option C *</label><input id="qm-o2" type="text" class="fi" placeholder="Option C"></div>
       <div><label style="font-size:.78rem;font-weight:600;color:var(--ink-900);display:block;margin-bottom:3px">Option D *</label><input id="qm-o3" type="text" class="fi" placeholder="Option D"></div>
     </div>
-    <div class="fg"><label>Correct Answer *</label>
-      <select id="qm-answer" class="fi" style="padding:9px 12px">
-        <option value="0">A</option><option value="1">B</option><option value="2">C</option><option value="3">D</option>
-      </select>
+    <div class="fg"><label>Correct Answer(s) * <span style="font-weight:400;color:var(--ink-300);font-size:.78rem">— check one for a normal question, or more than one for a multi-select question</span></label>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;padding:8px 0">
+        <label style="display:flex;align-items:center;gap:5px;font-size:.85rem;cursor:pointer"><input type="checkbox" id="qm-ans0"> A</label>
+        <label style="display:flex;align-items:center;gap:5px;font-size:.85rem;cursor:pointer"><input type="checkbox" id="qm-ans1"> B</label>
+        <label style="display:flex;align-items:center;gap:5px;font-size:.85rem;cursor:pointer"><input type="checkbox" id="qm-ans2"> C</label>
+        <label style="display:flex;align-items:center;gap:5px;font-size:.85rem;cursor:pointer"><input type="checkbox" id="qm-ans3"> D</label>
+      </div>
     </div>
+    <div class="fg"><label>Topic</label><input id="qm-topic" type="text" class="fi" placeholder="e.g. AI Foundations, Robotics, Laws & Officiating…"></div>
     <div class="fg" style="margin-bottom:18px"><label>Explanation (optional)</label><input id="qm-explanation" type="text" class="fi" placeholder="Brief explanation for the correct answer…"></div>
     <div style="display:flex;gap:10px">
       <button class="btn btn-green" onclick="saveQuestion()">Save Question</button>
@@ -520,7 +524,7 @@ function renderEditorQuestions() {
     <div class="q-edit-row">
       <span class="q-edit-row-text">${i+1}. ${sanitize(q.q)}</span>
       ${q.topic ? `<span style="font-size:.7rem;color:var(--teal-700);background:var(--teal-100);padding:2px 8px;border-radius:99px;flex-shrink:0">${sanitize(q.topic)}</span>` : ''}
-      <span style="font-size:.75rem;color:var(--ink-300);flex-shrink:0">Ans: ${['A','B','C','D'][q.answer]}</span>
+      <span style="font-size:.75rem;color:var(--ink-300);flex-shrink:0">Ans: ${(Array.isArray(q.answer)?q.answer:[q.answer]).map(i=>['A','B','C','D'][i]).join(', ')}</span>
       <button class="btn btn-ghost btn-sm" style="flex-shrink:0;font-size:.75rem" onclick="openEditQuestion(${idx},${i})">Edit</button>
       <button class="btn btn-sm" style="background:var(--red-100);color:var(--red-600);flex-shrink:0;font-size:.75rem" onclick="deleteQuestion(${idx},${i})">Delete</button>
     </div>`).join('');
@@ -529,8 +533,8 @@ function renderEditorQuestions() {
 window.openAddQuestion = function () {
   editingQIdx = null;
   document.getElementById('qm-heading').textContent = 'Add Question';
-  ['qm-q','qm-o0','qm-o1','qm-o2','qm-o3','qm-explanation'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('qm-answer').value = '0';
+  ['qm-q','qm-o0','qm-o1','qm-o2','qm-o3','qm-explanation','qm-topic'].forEach(id => document.getElementById(id).value = '');
+  [0,1,2,3].forEach(i => document.getElementById('qm-ans'+i).checked = i === 0);
   document.getElementById('qm-quiz').value   = document.getElementById('editor-quiz-select')?.value || '0';
   document.getElementById('question-modal').style.display = 'flex';
   document.body.style.overflow = 'hidden';
@@ -538,11 +542,13 @@ window.openAddQuestion = function () {
 window.openEditQuestion = function (quizIdx, qIdx) {
   editingQIdx = { quizIdx, qIdx };
   const q = quizzes[quizIdx].questions[qIdx];
+  const correctSet = new Set(Array.isArray(q.answer) ? q.answer : [q.answer]);
   document.getElementById('qm-heading').textContent = 'Edit Question';
   document.getElementById('qm-quiz').value          = quizIdx;
   document.getElementById('qm-q').value             = q.q;
   q.options.forEach((o, i) => document.getElementById('qm-o' + i).value = o);
-  document.getElementById('qm-answer').value      = q.answer;
+  [0,1,2,3].forEach(i => document.getElementById('qm-ans'+i).checked = correctSet.has(i));
+  document.getElementById('qm-topic').value       = q.topic || '';
   document.getElementById('qm-explanation').value = q.explanation || '';
   document.getElementById('question-modal').style.display = 'flex';
   document.body.style.overflow = 'hidden';
@@ -555,13 +561,21 @@ window.saveQuestion = function () {
   const quizIdx = +document.getElementById('qm-quiz').value;
   const qText   = document.getElementById('qm-q').value.trim();
   const opts    = [0,1,2,3].map(i => document.getElementById('qm-o' + i).value.trim());
-  const answer  = +document.getElementById('qm-answer').value;
+  const correct = [0,1,2,3].filter(i => document.getElementById('qm-ans'+i).checked);
+  const topic   = document.getElementById('qm-topic').value.trim();
   const exp     = document.getElementById('qm-explanation').value.trim();
   if (!qText)           return showToast('Please enter a question', 'err');
   if (opts.some(o=>!o)) return showToast('Please fill in all four options', 'err');
+  if (!correct.length)  return showToast('Check at least one correct answer', 'err');
   const uniq = new Set(opts.map(o => o.toLowerCase().replace(/\s+/g,'')));
   if (uniq.size !== 4) return showToast('Options must be distinct', 'err');
-  const newQ = { q:qText, options:opts, answer, ...(exp ? { explanation:exp } : {}) };
+  const answer = correct.length > 1 ? correct : correct[0];
+  const newQ = {
+    ...(topic ? { topic } : {}),
+    q:qText, options:opts, answer,
+    ...(correct.length > 1 ? { multi:true } : {}),
+    ...(exp ? { explanation:exp } : {}),
+  };
   if (editingQIdx) { quizzes[editingQIdx.quizIdx].questions[editingQIdx.qIdx] = newQ; }
   else             { quizzes[quizIdx].questions.push(newQ); }
   saveQuizzes(); closeQuestionModal(); renderEditorQuestions(); renderQuizCards();

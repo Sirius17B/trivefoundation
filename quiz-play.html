@@ -21,7 +21,8 @@
     @keyframes pulse-warn{0%,100%{opacity:1}50%{opacity:.6}}
     .q-body{max-width:680px;margin:0 auto;padding:clamp(28px,5vw,52px) var(--pad)}
     .q-number{font-size:.74rem;font-weight:600;color:var(--ink-300);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}
-    .q-text{font-family:var(--font-head);font-size:clamp(1.05rem,2.5vw,1.3rem);font-weight:700;color:var(--ink-900);line-height:1.4;margin-bottom:26px}
+    .q-text{font-family:var(--font-head);font-size:clamp(1.05rem,2.5vw,1.3rem);font-weight:700;color:var(--ink-900);line-height:1.4;margin-bottom:8px}
+    .q-hint{font-size:.8rem;color:var(--teal-700);font-style:italic;margin-bottom:18px}
     .q-options{display:flex;flex-direction:column;gap:10px}
     .q-option{display:flex;align-items:flex-start;gap:13px;padding:15px 18px;border:2px solid var(--border);border-radius:var(--r-xl);background:var(--white);cursor:pointer;transition:all var(--t-fast);text-align:left;font-size:.95rem;color:var(--ink-700);line-height:1.5;width:100%}
     .q-option:hover:not(:disabled){border-color:var(--green-500);background:var(--green-50)}
@@ -132,14 +133,29 @@ let timerInterval = null;
 /* ── Option shuffle — fixes the "always answer B" integrity bug and gives
    every candidate (and every attempt) a different option order. Shuffled
    once when the session's question set is built; cached in state.questions
-   so revisiting a question via Back shows the same order, not a re-shuffle. */
+   so revisiting a question via Back shows the same order, not a re-shuffle.
+   Questions may be single-answer (q.answer is a number) or multi-answer
+   (q.multi:true, q.answer is an array of correct indices) — both remap
+   through the same shuffle. */
 function shuffleQuestionOptions(q) {
   const idx = [0, 1, 2, 3];
   for (let i = idx.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [idx[i], idx[j]] = [idx[j], idx[i]];
   }
-  return { ...q, options: idx.map(i => q.options[i]), answer: idx.indexOf(q.answer) };
+  const remap = orig => idx.indexOf(orig);
+  const newAnswer = Array.isArray(q.answer) ? q.answer.map(remap).sort((a, b) => a - b) : remap(q.answer);
+  return { ...q, options: idx.map(i => q.options[i]), answer: newAnswer };
+}
+
+/* All-or-nothing correctness check — works for both single answers (number)
+   and multi-select answers (array of indices, order-independent). */
+function isCorrectAnswer(q, given) {
+  if (!q.multi) return given === q.answer;
+  if (!Array.isArray(given)) return false;
+  const a = [...given].sort((x, y) => x - y);
+  const b = [...q.answer].sort((x, y) => x - y);
+  return a.length === b.length && a.every((v, i) => v === b[i]);
 }
 
 function shuffle(arr) { return [...arr].sort(() => Math.random() - .5); }
@@ -203,7 +219,8 @@ function buildRunnerHTML() {
   return `<div class="q-body" id="q-body">
     <div class="q-number" id="q-number"></div>
     <p class="q-text" id="q-text"></p>
-    <div class="q-options" id="q-options" role="radiogroup" aria-labelledby="q-text"></div>
+    <p class="q-hint" id="q-hint" style="display:none">Select all that apply.</p>
+    <div class="q-options" id="q-options" role="group" aria-labelledby="q-text"></div>
     <div class="q-nav">
       <button class="btn btn-ghost btn-sm btn-no-print" id="q-prev" onclick="prevQ()">← Back</button>
       <button class="btn btn-primary btn-sm btn-no-print" id="q-next" onclick="nextQ()">Next →</button>
@@ -214,24 +231,29 @@ function buildRunnerHTML() {
 /* Exam mode: selecting an option only records the choice — no correct/wrong
    reveal and no explanation until the whole quiz is submitted (see
    finishQuiz() and showCorrections()). Candidates can change their answer
-   freely until they move on. */
+   freely until they move on. Multi-select questions (q.multi:true) let the
+   candidate toggle any number of options; state.answers[i] holds an array
+   of picked indices instead of a single number. */
 function renderQuestion() {
   const { questions, current, answers, answered } = state;
   const q       = questions[current];
   const total   = questions.length;
   const pct     = Math.round((current / total) * 100);
   const LETTERS = ['A','B','C','D'];
+  const picked  = Array.isArray(answers[current]) ? answers[current] : [];
 
   document.getElementById('q-number').textContent = `Question ${current + 1} of ${total}`;
   document.getElementById('q-text').textContent   = q.q;
   document.getElementById('q-counter').textContent = `${current + 1} / ${total}`;
   document.getElementById('q-progress').style.width = pct + '%';
   document.getElementById('q-progress').parentElement.setAttribute('aria-valuenow', pct);
+  document.getElementById('q-hint').style.display = q.multi ? 'block' : 'none';
 
   document.getElementById('q-options').innerHTML = q.options.map((opt, i) => {
-    const cls = i === answers[current] ? 'selected' : '';
+    const isSel = q.multi ? picked.includes(i) : i === answers[current];
+    const cls = isSel ? 'selected' : '';
     return `<button class="q-option ${cls}"
-      onclick="selectOption(${i})" role="radio" aria-checked="${i === answers[current]}"
+      onclick="selectOption(${i})" role="${q.multi ? 'checkbox' : 'radio'}" aria-checked="${isSel}"
       aria-label="Option ${LETTERS[i]}: ${sanitize(opt)}">
       <span class="q-opt-letter" aria-hidden="true">${LETTERS[i]}</span>
       <span>${sanitize(opt)}</span>
@@ -248,8 +270,17 @@ function renderQuestion() {
 }
 
 function selectOption(i) {
-  state.answers[state.current]  = i;
-  state.answered[state.current] = true;
+  const q = state.questions[state.current];
+  if (q.multi) {
+    const picked = Array.isArray(state.answers[state.current]) ? [...state.answers[state.current]] : [];
+    const pos = picked.indexOf(i);
+    if (pos === -1) picked.push(i); else picked.splice(pos, 1);
+    state.answers[state.current]  = picked;
+    state.answered[state.current] = picked.length > 0;
+  } else {
+    state.answers[state.current]  = i;
+    state.answered[state.current] = true;
+  }
   renderQuestion();
 }
 function nextQ() {
@@ -300,7 +331,7 @@ async function finishQuiz(timeout = false) {
   clearInterval(timerInterval);
   state.finished = true;
   const { questions, answers, answered, quiz, playerName } = state;
-  const correct   = questions.filter((q, i) => answered[i] && answers[i] === q.answer).length;
+  const correct   = questions.filter((q, i) => answered[i] && isCorrectAnswer(q, answers[i])).length;
   const total     = questions.length;
   const pct       = Math.round((correct / total) * 100);
   const passed    = pct >= (window.SITE_CONFIG?.QUIZ_SETTINGS?.passMark || 50);
@@ -360,7 +391,7 @@ function buildTopicBreakdownHTML() {
     const t = q.topic || 'General';
     if (!stats[t]) stats[t] = { correct: 0, total: 0 };
     stats[t].total++;
-    if (answered[i] && answers[i] === q.answer) stats[t].correct++;
+    if (answered[i] && isCorrectAnswer(q, answers[i])) stats[t].correct++;
   });
   const topics = Object.keys(stats).sort((a, b) => stats[b].total - stats[a].total);
   if (!topics.length) return '';
@@ -388,14 +419,16 @@ function renderCorrection() {
   const q       = questions[i];
   const LETTERS = ['A','B','C','D'];
   const wasAnswered = answered[i];
-  const isCorrect    = wasAnswered && answers[i] === q.answer;
+  const isCorrect    = wasAnswered && isCorrectAnswer(q, answers[i]);
   const status = !wasAnswered ? 'skipped' : isCorrect ? 'correct' : 'wrong';
   const statusLabel = { correct: 'Correct', wrong: 'Incorrect', skipped: 'Skipped' }[status];
+  const correctSet  = new Set(Array.isArray(q.answer) ? q.answer : [q.answer]);
+  const selectedSet = new Set(Array.isArray(answers[i]) ? answers[i] : (answers[i] != null ? [answers[i]] : []));
 
   const optionsHTML = q.options.map((opt, oi) => {
     let cls = '';
-    if (oi === q.answer) cls = 'correct';
-    else if (oi === answers[i]) cls = 'wrong';
+    if (correctSet.has(oi)) cls = 'correct';
+    else if (selectedSet.has(oi)) cls = 'wrong';
     return `<div class="q-option ${cls}" style="cursor:default">
       <span class="q-opt-letter" aria-hidden="true">${LETTERS[oi]}</span>
       <span>${sanitize(opt)}</span>
