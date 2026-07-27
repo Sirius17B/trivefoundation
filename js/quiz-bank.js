@@ -578,17 +578,17 @@ window.SITE_CONFIG.QUIZZES = [
     id:          'tech-challenge',
     title:       'Tech Challenge',
     category:    'tech',
-    description: 'AI, machine learning, LLMs, robotics, cybersecurity, data science, and the future of technology. 50 questions per session.',
+    description: 'AI, machine learning, LLMs, robotics, cybersecurity, data science, and the future of technology. 30 questions per session.',
     questions:   techQ,
-    sessionSize: 50,
+    sessionSize: 30,
   },
   {
     id:          'football-arena',
     title:       'Football Arena',
     category:    'football',
-    description: 'Laws of the Game, tactics, world football history, Nigerian and African football. 25 questions per session.',
+    description: 'Laws of the Game, tactics, world football history, Nigerian and African football. 15 questions per session.',
     questions:   footballQ,
-    sessionSize: 25,
+    sessionSize: 15,
   },
 ];
 

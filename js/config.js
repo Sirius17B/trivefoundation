@@ -150,7 +150,7 @@ window.SITE_CONFIG = {
   ──────────────────────────────────────────────────── */
   QUIZ_SETTINGS: {
     passMark:          50,
-    timePerQuestion:   14,   /* seconds — 50 questions × 14s = ~12 min */
+    timePerQuestion:   14,   /* seconds — 30 tech questions × 14s = 7 min, 15 football × 14s = 3.5 min */
     showExplanations:  true,
     shuffleQuestions:  true,
     shuffleOptions:    false,
