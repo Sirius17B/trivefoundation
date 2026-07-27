@@ -52,6 +52,36 @@
 
     .q-loading{max-width:480px;margin:80px auto;text-align:center;padding:0 var(--pad);color:var(--ink-300)}
 
+    /* Submit-confirmation modal */
+    .submit-modal-backdrop{position:fixed;inset:0;background:rgba(15,23,20,.55);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px}
+    .submit-modal{background:var(--white);border-radius:var(--r-2xl);padding:28px 26px;max-width:380px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+    .submit-modal h3{font-family:var(--font-head);font-size:1.15rem;margin-bottom:10px;color:var(--ink-900)}
+    .submit-modal p{font-size:.9rem;color:var(--ink-500);line-height:1.5;margin-bottom:6px}
+    .submit-modal .warn{color:var(--orange-600);font-weight:600}
+    .submit-modal-actions{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+    .submit-modal-actions .btn{flex:1;min-width:120px}
+
+    /* Per-topic results breakdown */
+    .topic-breakdown{margin:24px 0}
+    .topic-breakdown h3{font-family:var(--font-head);font-size:.95rem;color:var(--ink-900);margin-bottom:14px;text-align:center}
+    .topic-row{margin-bottom:12px}
+    .topic-row-top{display:flex;justify-content:space-between;font-size:.82rem;color:var(--ink-700);margin-bottom:5px;gap:8px}
+    .topic-row-top strong{color:var(--ink-900)}
+    .topic-bar-track{height:8px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+    .topic-bar-fill{height:100%;border-radius:99px;background:#16A34A;transition:width .5s ease}
+    .topic-bar-fill.weak{background:var(--red-600)}
+    .topic-bar-fill.mid{background:var(--orange-600)}
+
+    /* One-by-one corrections view */
+    .corr-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:8px}
+    .corr-counter{font-size:.8rem;color:var(--ink-300)}
+    .corr-topic-badge{display:inline-block;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--teal-700);background:var(--teal-100);padding:4px 10px;border-radius:99px;margin-bottom:10px}
+    .corr-status{font-size:.76rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:4px 10px;border-radius:99px}
+    .corr-status.correct{color:#166534;background:#F0FDF4}
+    .corr-status.wrong{color:#991B1B;background:var(--red-100)}
+    .corr-status.skipped{color:#92400E;background:#FEF3C7}
+    .corr-your-answer{font-size:.78rem;color:var(--ink-300);margin-top:12px}
+
     @media print{
       .q-page-header,.q-nav,.btn-no-print{display:none!important}
       .results-screen{max-width:100%;padding:20px}
@@ -174,7 +204,6 @@ function buildRunnerHTML() {
     <div class="q-number" id="q-number"></div>
     <p class="q-text" id="q-text"></p>
     <div class="q-options" id="q-options" role="radiogroup" aria-labelledby="q-text"></div>
-    <div class="q-explanation" id="q-explanation" role="note"></div>
     <div class="q-nav">
       <button class="btn btn-ghost btn-sm btn-no-print" id="q-prev" onclick="prevQ()">← Back</button>
       <button class="btn btn-primary btn-sm btn-no-print" id="q-next" onclick="nextQ()">Next →</button>
@@ -182,6 +211,10 @@ function buildRunnerHTML() {
   </div>`;
 }
 
+/* Exam mode: selecting an option only records the choice — no correct/wrong
+   reveal and no explanation until the whole quiz is submitted (see
+   finishQuiz() and showCorrections()). Candidates can change their answer
+   freely until they move on. */
 function renderQuestion() {
   const { questions, current, answers, answered } = state;
   const q       = questions[current];
@@ -196,12 +229,8 @@ function renderQuestion() {
   document.getElementById('q-progress').parentElement.setAttribute('aria-valuenow', pct);
 
   document.getElementById('q-options').innerHTML = q.options.map((opt, i) => {
-    let cls = '';
-    if (answered[current]) {
-      if (i === q.answer) cls = 'correct';
-      else if (i === answers[current]) cls = 'wrong';
-    } else if (i === answers[current]) cls = 'selected';
-    return `<button class="q-option ${cls}" ${answered[current] ? 'disabled' : ''}
+    const cls = i === answers[current] ? 'selected' : '';
+    return `<button class="q-option ${cls}"
       onclick="selectOption(${i})" role="radio" aria-checked="${i === answers[current]}"
       aria-label="Option ${LETTERS[i]}: ${sanitize(opt)}">
       <span class="q-opt-letter" aria-hidden="true">${LETTERS[i]}</span>
@@ -209,29 +238,51 @@ function renderQuestion() {
     </button>`;
   }).join('');
 
-  const expEl = document.getElementById('q-explanation');
-  if (answered[current] && q.explanation && window.SITE_CONFIG?.QUIZ_SETTINGS?.showExplanations) {
-    expEl.textContent = q.explanation; expEl.classList.add('show');
-  } else { expEl.classList.remove('show'); }
-
   const prevBtn = document.getElementById('q-prev');
   const nextBtn = document.getElementById('q-next');
   if (prevBtn) prevBtn.style.visibility = current === 0 ? 'hidden' : 'visible';
   if (nextBtn) {
     const isLast = current === total - 1;
-    nextBtn.textContent = (isLast && answered[current]) ? 'Finish Quiz ✓' : answered[current] ? 'Next →' : 'Skip →';
+    nextBtn.textContent = isLast ? 'Finish Quiz ✓' : answered[current] ? 'Next →' : 'Skip →';
   }
 }
 
 function selectOption(i) {
-  if (state.answered[state.current]) return;
   state.answers[state.current]  = i;
   state.answered[state.current] = true;
   renderQuestion();
 }
-function nextQ() { if (state.current === state.questions.length - 1) { finishQuiz(); return; } state.current++; renderQuestion(); }
+function nextQ() {
+  if (state.current === state.questions.length - 1) { openSubmitConfirm(); return; }
+  state.current++; renderQuestion();
+}
 function prevQ() { if (state.current > 0) { state.current--; renderQuestion(); } }
 window.selectOption = selectOption; window.nextQ = nextQ; window.prevQ = prevQ;
+
+/* ── Submit confirmation — "make sure the candidate isn't sleepwalking" ── */
+function openSubmitConfirm() {
+  const total    = state.questions.length;
+  const answered = state.answered.filter(Boolean).length;
+  const skipped  = total - answered;
+  const el = document.createElement('div');
+  el.className = 'submit-modal-backdrop';
+  el.id = 'submit-modal-backdrop';
+  el.innerHTML = `<div class="submit-modal" role="dialog" aria-modal="true" aria-labelledby="submit-modal-h">
+    <h3 id="submit-modal-h">Submit your quiz?</h3>
+    <p>You've answered <strong>${answered} of ${total}</strong> questions.</p>
+    ${skipped > 0 ? `<p class="warn">${skipped} question${skipped === 1 ? '' : 's'} will be marked as skipped.</p>` : ''}
+    <p>Once submitted, you can't go back and change any answers.</p>
+    <div class="submit-modal-actions">
+      <button class="btn btn-ghost btn-sm" onclick="closeSubmitConfirm()">Review Answers</button>
+      <button class="btn btn-primary btn-sm" onclick="closeSubmitConfirm();finishQuiz()">Submit Quiz</button>
+    </div>
+  </div>`;
+  document.body.appendChild(el);
+}
+function closeSubmitConfirm() {
+  document.getElementById('submit-modal-backdrop')?.remove();
+}
+window.openSubmitConfirm = openSubmitConfirm; window.closeSubmitConfirm = closeSubmitConfirm;
 
 function startTimer() {
   clearInterval(timerInterval);
@@ -288,15 +339,98 @@ async function finishQuiz(timeout = false) {
         <div class="r-stat-l">Time taken</div>
       </div>
       ${rank ? `<div class="rank-banner"><div class="rank-number">#${rank}</div><div class="rank-label">Your ranking on the ${sanitize(quiz.title)} leaderboard</div></div>` : ''}
+      ${buildTopicBreakdownHTML()}
       <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px" class="btn-no-print">
         <a href="quiz.html" class="btn btn-primary btn-sm">← Back to Quizzes</a>
-        <button class="btn btn-teal btn-sm" onclick="window.print()">
+        <button class="btn btn-teal btn-sm" onclick="showCorrections()">See Corrections →</button>
+        <button class="btn btn-ghost btn-sm" onclick="window.print()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
           Print Result
         </button>
       </div>
     </div>`;
+  state.resultsHTML = document.getElementById('quiz-runner-content').innerHTML;
 }
+
+/* ── Per-topic breakdown — "this candidate has X% capability in area Y" ── */
+function buildTopicBreakdownHTML() {
+  const { questions, answers, answered } = state;
+  const stats = {};
+  questions.forEach((q, i) => {
+    const t = q.topic || 'General';
+    if (!stats[t]) stats[t] = { correct: 0, total: 0 };
+    stats[t].total++;
+    if (answered[i] && answers[i] === q.answer) stats[t].correct++;
+  });
+  const topics = Object.keys(stats).sort((a, b) => stats[b].total - stats[a].total);
+  if (!topics.length) return '';
+  const rows = topics.map(t => {
+    const { correct, total } = stats[t];
+    const pct = Math.round((correct / total) * 100);
+    const fillCls = pct < 50 ? 'weak' : pct < 75 ? 'mid' : '';
+    return `<div class="topic-row">
+      <div class="topic-row-top"><span>${sanitize(t)}</span><strong>${correct}/${total} · ${pct}%</strong></div>
+      <div class="topic-bar-track"><div class="topic-bar-fill ${fillCls}" style="width:${pct}%"></div></div>
+    </div>`;
+  }).join('');
+  return `<div class="topic-breakdown"><h3>Performance by Topic</h3>${rows}</div>`;
+}
+
+/* ── "See Corrections" — reveals one question at a time, for exam integrity ── */
+function showCorrections() {
+  state.correctionsIndex = 0;
+  renderCorrection();
+}
+function renderCorrection() {
+  const { questions, answers, answered } = state;
+  const i       = state.correctionsIndex;
+  const total   = questions.length;
+  const q       = questions[i];
+  const LETTERS = ['A','B','C','D'];
+  const wasAnswered = answered[i];
+  const isCorrect    = wasAnswered && answers[i] === q.answer;
+  const status = !wasAnswered ? 'skipped' : isCorrect ? 'correct' : 'wrong';
+  const statusLabel = { correct: 'Correct', wrong: 'Incorrect', skipped: 'Skipped' }[status];
+
+  const optionsHTML = q.options.map((opt, oi) => {
+    let cls = '';
+    if (oi === q.answer) cls = 'correct';
+    else if (oi === answers[i]) cls = 'wrong';
+    return `<div class="q-option ${cls}" style="cursor:default">
+      <span class="q-opt-letter" aria-hidden="true">${LETTERS[oi]}</span>
+      <span>${sanitize(opt)}</span>
+    </div>`;
+  }).join('');
+
+  document.getElementById('quiz-runner-content').innerHTML = `
+    <div class="q-body">
+      <div class="corr-header">
+        <span class="corr-counter">Question ${i + 1} of ${total}</span>
+        <span class="corr-status ${status}">${statusLabel}</span>
+      </div>
+      ${q.topic ? `<div class="corr-topic-badge">${sanitize(q.topic)}</div>` : ''}
+      <p class="q-text">${sanitize(q.q)}</p>
+      <div class="q-options">${optionsHTML}</div>
+      ${!wasAnswered ? `<p class="corr-your-answer">You did not answer this question.</p>` : ''}
+      ${q.explanation ? `<div class="q-explanation show">${sanitize(q.explanation)}</div>` : ''}
+      <div class="q-nav">
+        <button class="btn btn-ghost btn-sm btn-no-print" onclick="backToResults()">← Back to Results</button>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost btn-sm btn-no-print" id="corr-prev" onclick="corrNav(-1)" ${i === 0 ? 'disabled' : ''}>← Prev</button>
+          <button class="btn btn-primary btn-sm btn-no-print" id="corr-next" onclick="corrNav(1)" ${i === total - 1 ? 'disabled' : ''}>Next →</button>
+        </div>
+      </div>
+    </div>`;
+}
+function corrNav(delta) {
+  const total = state.questions.length;
+  state.correctionsIndex = Math.max(0, Math.min(total - 1, state.correctionsIndex + delta));
+  renderCorrection();
+}
+function backToResults() {
+  document.getElementById('quiz-runner-content').innerHTML = state.resultsHTML;
+}
+window.showCorrections = showCorrections; window.corrNav = corrNav; window.backToResults = backToResults;
 
 function exitQuiz() {
   if (state.finished) { location.href = 'quiz.html'; return; }

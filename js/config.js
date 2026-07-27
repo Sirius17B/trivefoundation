@@ -170,13 +170,4 @@ window.SITE_CONFIG = {
     { name:'Thankgod Nnajieneh', role:'Financial Partner',            color:'#1E3A5F', photo:'' },
   ],
 
-  /* ── HIGHLIGHTS CAROUSEL ────────────────────────────── */
-  HIGHLIGHTS: [
-    { img:'https://images.unsplash.com/photo-1489824904134-891ab64532f1?w=600&q=70&auto=format&fit=crop', alt:'Young African boys playing competitive football on a grass pitch', tag:'football', tagLabel:'Football', title:'Boys Final: SS3 beat JSS 4–3 in a dramatic finale',   date:'TriveFoundation 2025 Finals' },
-    { img:'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=600&q=70&auto=format&fit=crop', alt:'African students learning and working together on computers', tag:'tech',     tagLabel:'Tech',     title:'Students build real apps and websites from scratch',   date:'Tech Innovation Week' },
-    { img:'https://images.unsplash.com/photo-1529390079861-591de354faf5?w=600&q=70&auto=format&fit=crop', alt:'African girls playing football on a sunny field', tag:'football', tagLabel:'Football', title:'Girls Final: SS2 Girls win 3–1 against SS1 Girls',     date:'TriveFoundation 2025 Finals' },
-    { img:'https://images.unsplash.com/photo-1559523161-0fc0d8b814b4?w=600&q=70&auto=format&fit=crop', alt:'Speaker giving an inspiring TED-style talk on stage', tag:'community', tagLabel:'Community', title:'TED-style talks inspire hundreds of students',          date:'TriveFoundation Closing Ceremony' },
-    { img:'https://images.unsplash.com/photo-1544717297-fa95b6ee9643?w=600&q=70&auto=format&fit=crop', alt:'Diverse group of young people celebrating an award ceremony', tag:'community', tagLabel:'Community', title:'Award ceremony — celebrating every champion',           date:'TriveFoundation 2025 Closing' },
-    { img:'https://images.unsplash.com/photo-1573496358961-3c82861ab8f4?w=600&q=70&auto=format&fit=crop', alt:'Young African student focused on a laptop screen', tag:'tech',     tagLabel:'Tech',     title:'Capstone projects showcased and evaluated',             date:'Tech Showcase Day' },
-  ],
 };

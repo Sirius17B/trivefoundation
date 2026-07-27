@@ -34,7 +34,7 @@
     <div>
       <div class="hero-eyebrow">
         <span class="hero-pulse"></span>
-        <span data-cms="hero_eyebrow" data-org-name>Now Active · 2026 Season</span>
+        <span data-cms="hero_eyebrow">Now Active · 2026 Season</span>
       </div>
       <h1 id="hero-h1" class="hero-title">
         <span data-cms="hero_line1">A Time</span><br>
@@ -174,7 +174,7 @@
   <div class="pband-overlay" style="background:linear-gradient(135deg,rgba(10,61,46,.76),rgba(10,37,64,.6))"></div>
   <div class="pband-content" style="display:flex;align-items:center;height:100%;padding:0 var(--pad)">
     <blockquote style="max-width:580px">
-      <p style="font-family:var(--fd);font-size:clamp(1.25rem,3vw,2.1rem);color:#fff;font-style:italic;line-height:1.3" data-cms="hero_quote">"Every living being is designed to grow and TriveFoundation."</p>
+      <p style="font-family:var(--fd);font-size:clamp(1.25rem,3vw,2.1rem);color:#fff;font-style:italic;line-height:1.3" data-cms="hero_quote">"Every living being is designed to grow and thrive."</p>
       <cite style="color:rgba(255,255,255,.5);font-size:.86rem;margin-top:10px;display:block;font-style:normal" data-cms="hero_quote_cite">— Van Moody</cite>
     </blockquote>
   </div>
@@ -280,22 +280,38 @@ function buildTiers(containerId){
   </a>`).join('');
 }
 
-/* ── Build carousel from config ── */
-(function(){
-  const cfg=(window.SITE_CONFIG||{}).HIGHLIGHTS||[];
+/* ── Build carousel from the same Stories data activities.html edits ──
+   Highlights used to read a separate static SITE_CONFIG.HIGHLIGHTS array,
+   disconnected from the "Latest Stories" feed on activities.html — admin
+   edits there never showed up here. Now both read the same
+   thrive_stories_v1 CMS key, so editing a story updates both pages. */
+const STORIES_KEY = 'thrive_stories_v1';
+const CAROUSEL_TAG = {Tech:'tag-tech',Football:'tag-football',Event:'tag-community',Announcement:'tag-community'};
+async function buildCarousel(){
   const track=document.getElementById('carousel-track');
   if(!track)return;
-  const TC={football:'tag-football',tech:'tag-tech',community:'tag-community'};
-  track.innerHTML=cfg.map(h=>`<article class="c-card" role="listitem">
-    <img src="${sanitize(h.img)}" alt="${sanitize(h.alt||h.title)}" class="c-card-img" loading="lazy">
+  let stories=[];
+  try{
+    const r=await window.storage?.get(STORIES_KEY);
+    stories=r?JSON.parse(r.value):JSON.parse(JSON.stringify(window.SITE_CONFIG.STORIES||[]));
+  }catch{
+    stories=JSON.parse(JSON.stringify(window.SITE_CONFIG.STORIES||[]));
+  }
+  const cards=stories.slice(0,10);
+  if(!cards.length){
+    track.innerHTML=`<div style="padding:30px;color:rgba(255,255,255,.4)">No highlights yet.</div>`;
+    return;
+  }
+  track.innerHTML=cards.map(s=>`<article class="c-card" role="listitem">
+    ${s.image?`<img src="${sanitize(s.image)}" alt="${sanitize(s.imageAlt||s.headline)}" class="c-card-img" loading="lazy">`:''}
     <div class="c-card-body">
-      <span class="c-tag ${TC[h.tag]||'tag-community'}">${sanitize(h.tagLabel)}</span>
-      <div class="c-card-title">${sanitize(h.title||h['title'])}</div>
-      <div class="c-card-date">${sanitize(h.date)}</div>
+      <span class="c-tag ${CAROUSEL_TAG[s.category]||'tag-community'}">${sanitize(s.category)}</span>
+      <div class="c-card-title">${sanitize(s.headline)}</div>
+      <div class="c-card-date">${sanitize(s.date)}</div>
     </div>
   </article>`).join('');
   initCarousel('#main-carousel');
-})();
+}
 
 /* ── Leaderboard tabs ── */
 let _lbCur=0;
@@ -338,6 +354,7 @@ async function init(){
   await CMS.load();
   CMS.apply();
   buildTiers('desktop-tiers');buildTiers('mobile-tiers');
+  buildCarousel();
   renderLB(LeagueEngine.buildTable('boys').slice(0,5),'lb-boys','pts',' pts',r=>`<span class="lb-detail">${r.p}P</span>`);
   renderLB(LeagueEngine.buildTable('girls').slice(0,5),'lb-girls','pts',' pts',r=>`<span class="lb-detail">${r.p}P</span>`);
   renderLB(await loadQuizTop('tech-challenge'),'lb-quiz-tech','pct','%');
