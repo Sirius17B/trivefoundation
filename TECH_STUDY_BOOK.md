@@ -82,34 +82,34 @@ A cluster of ideas shows up repeatedly across AI Foundations questions. Know not
 
 *A voice assistant trained mostly on adult American English speakers performs noticeably worse for Nigerian-accented English and for children's voices. What's the best explanation?*
 
-A) Speech recognition is fundamentally impossible for non-American accents
-B) Unrepresentative training data produces a system that works unevenly well across the people who use it
-C) The assistant needs more computing power
-D) Users need to change how they speak
+A) Speech recognition is a technology that is fundamentally and permanently incapable of ever working for any accent outside American English, no matter how the underlying model is trained or how much data it's given
+B) Unrepresentative training data produces a system that performs unevenly across the different groups of people who actually use it, rather than reflecting any fundamental limit of the underlying technology itself
+C) The assistant simply needs a faster processor and more onboard memory, since recognising different accents is primarily a matter of raw computing power rather than what data the model happened to be trained on
+D) Users with different accents need to consciously adjust their own pronunciation toward American English patterns, since the software itself cannot reasonably be expected to adapt to the people actually using it
 
-*Walk through it:* Options A and C both misdiagnose the problem as a hardware or fundamental-capability limit — neither has anything to do with what the system was actually shown during training. Option D quietly shifts responsibility onto the user for a gap the system itself created. The strongest answer has to connect the specific symptom (worse performance for specific groups) to its specific cause (what data the model saw). That's **B**. This is exactly the pattern from section 1.4 — uneven performance traces back to uneven training data, not a fundamental technology limit.
+*Walk through it:* A and C both misdiagnose the problem as a hardware or fundamental-capability limit — neither has anything to do with what the system was actually shown during training, and nothing in the scenario suggests a processing-power bottleneck. D quietly shifts responsibility onto the user for a gap the system itself created, which doesn't hold up as an explanation of *why* the gap exists in the first place. The strongest answer has to connect the specific symptom (worse performance for specific groups) to its specific cause (what data the model saw). That's **B**. This is exactly the pattern from section 1.4 — uneven performance traces back to uneven training data, not a fundamental technology limit.
 
 **Example 2**
 
 *A robot learning to walk gets +1 for every step it stays upright and −10 if it falls. After training, it learns to stand rigidly still instead of walking anywhere. What went wrong?*
 
-A) The reward function made "not falling" more valuable than "making progress," so the agent found a loophole that technically maximises reward without ever attempting the task
-B) Reinforcement learning only works in video games, not for physical robots
-C) The robot's motors are too weak to walk
-D) The penalty needs to be even bigger
+A) Reinforcement learning is a technique that only works reliably inside simulated video-game environments, and cannot realistically be applied to control a physical robot with real motors and joints
+B) The robot's physical motors and joints must be mechanically too weak to support forward walking motion, making standing perfectly still the only stable posture actually achievable given its hardware
+C) The reward function made "not falling" more valuable than "making progress," so the agent found a loophole that technically maximises its reward without ever actually attempting the intended walking task
+D) The training process simply needs a much larger falling penalty than −10, since the current penalty is numerically too small for the robot to take the risk of falling seriously enough to avoid it
 
-*Walk through it:* B and C both invent a mechanical or technological limitation that the scenario never actually describes — nothing in the setup mentions motor strength or a video-game-only restriction. D assumes the fix is "more of the same lever" without asking *why* the current lever produced the wrong behaviour. Standing still perfectly avoids the −10 penalty while banking +1 every second — so from the reward function's point of view, that's the *optimal* strategy. The answer is **A** — this is reward hacking, from section 1.2: the agent optimised exactly what it was told to, not what was intended.
+*Walk through it:* A and B both invent a mechanical or technological limitation that the scenario never actually describes — nothing in the setup mentions motor strength or any video-game-only restriction. D assumes the fix is "more of the same lever" without asking *why* the current lever produced the wrong behaviour in the first place. Standing still perfectly avoids the −10 penalty while banking +1 every second — so from the reward function's point of view, that's the *optimal* strategy. The answer is **C** — this is reward hacking, from section 1.2: the agent optimised exactly what it was told to, not what was intended.
 
 **Example 3**
 
 *An AI system is instructed to "maximise paperclip production," and taken to an extreme, it would convert all available resources — including ones humans need — into paperclips, since nothing in its objective told it not to. This thought experiment illustrates:*
 
-A) AI alignment — the difficulty of specifying goals that capture everything we actually want
-B) A real, documented factory accident
-C) Why robots should never be used in manufacturing
-D) That AI will always be more efficient than humans at every task
+A) A real, historically documented factory accident that actually took place during the early days of industrial automation at a paperclip manufacturing plant somewhere
+B) The general principle that robots should never be trusted with any physical manufacturing task, since production lines are inherently more dangerous to automate than purely digital, software-only tasks
+C) The idea that any sufficiently advanced AI system will always be more resource-efficient than human workers at literally every conceivable task, making full automation inevitable across every industry
+D) AI alignment — the genuine difficulty of specifying a goal that captures everything we actually want, not just what was literally written down, since a system can pursue an instruction perfectly while still causing real harm
 
-*Walk through it:* B treats a deliberately extreme *thought experiment* as if it were a literal news story — a useful check is always to ask "is this framed as hypothetical, or as something that actually happened?" C and D both overgeneralise from one narrow illustration into a sweeping claim the scenario never supports. The actual point of the thought experiment, as covered in section 1.5, is narrower and more precise: a system can pursue a literal instruction with perfect competence while producing an outcome nobody wanted, because the instruction didn't capture everything we implicitly care about. That's **A**.
+*Walk through it:* A treats a deliberately extreme *thought experiment* as if it were a literal news story — a useful check is always to ask "is this framed as hypothetical, or as something that actually happened?" B and C both overgeneralise from one narrow illustration into a sweeping claim the scenario never supports. The actual point of the thought experiment, as covered in section 1.5, is narrower and more precise: a system can pursue a literal instruction with perfect competence while producing an outcome nobody wanted, because the instruction didn't capture everything we implicitly care about. That's **D**.
 
 ---
 
@@ -163,10 +163,10 @@ Even a very capable LLM can confidently give a wrong answer to a large multiplic
 
 *A company's document search tool pastes an entire 300-page manual into the prompt every time someone asks a question, and starts getting degraded answers on longer manuals. What's most likely being hit?*
 
-A) The model's context window is being exceeded or nearly exceeded
-B) The manual has too many punctuation marks for the model to process
-C) The user's internet connection is too slow
-D) Manuals about physical products can't be read by language models
+A) The model's context window — the maximum number of tokens it can consider at once — is being exceeded or nearly exceeded, so earlier parts of the manual are effectively dropping out of what it can actually use
+B) The manual contains too many punctuation marks and special formatting characters for the model to correctly process, a known technical limitation specific to punctuation-heavy reference documents
+C) The user's own internet connection is too slow to transmit a document of that length to the AI provider's servers within the request's allotted timeout window before it gets cut off
+D) Manuals specifically about physical products, as opposed to purely digital topics, are a category of content that current-generation language models are structurally unable to read at all
 
 *Walk through it:* B, C, and D all invent a limitation that has nothing to do with anything actually described in the scenario — none of them explain why *longer* manuals specifically cause the problem, which is the one detail the question is actually pointing at. The real constraint, from section 2.2, is that every model has a maximum token budget for the prompt plus conversation; once the manual plus the question exceed that, earlier parts of the manual functionally disappear from what the model can use. That's **A** — and it's exactly the kind of problem retrieval-augmented generation (section 2.3) is built to solve, by including only the relevant snippets instead of the whole document.
 
@@ -174,23 +174,23 @@ D) Manuals about physical products can't be read by language models
 
 *A team fine-tunes an LLM on their support transcripts so it replies in the company's tone. Six months later, the company changes its return policy. What's the fastest way to make the model aware of the change?*
 
-A) Update the retrieval knowledge base (or the prompt) with the new policy text
-B) Wait for the provider to detect the change automatically
-C) Nothing needs to change — a fine-tuned model automatically knows current policy
-D) Delete the model and retrain entirely from scratch
+A) Wait for the model provider to automatically detect the policy change on the company's public website and silently update the fine-tuned model, with no further action needed from the company itself
+B) Update the retrieval knowledge base (or the prompt) with the new policy text, since fine-tuning baked in a snapshot of style and tone rather than a live connection to current, regularly changing facts
+C) Nothing needs to change at all, since a model that was fine-tuned on the company's own past transcripts is assumed to automatically and continuously stay aware of the company's current policy
+D) Delete the entire existing fine-tuned model and retrain a completely new one from scratch, since a fine-tuned model is assumed to be incapable of ever being updated incrementally once training finishes
 
-*Walk through it:* B invents an automatic mechanism that doesn't exist — no model silently updates itself by watching a company's website. C confuses *style* (what fine-tuning actually changed) with *current facts* (what fine-tuning did not change) — this is the exact confusion section 2.5 warns about. D massively overcorrects: throwing away the whole model and starting over is a wildly disproportionate response to one policy update. The fastest, cheapest fix is **A** — because fine-tuning baked in a snapshot of style and tone, not a live connection to current facts, updating the retrieval source (or the prompt) is what actually reflects the change immediately.
+*Walk through it:* A invents an automatic mechanism that doesn't exist — no model silently updates itself by watching a company's website. C confuses *style* (what fine-tuning actually changed) with *current facts* (what fine-tuning did not change) — this is the exact confusion section 2.5 warns about. D massively overcorrects: throwing away the whole model and starting over is a wildly disproportionate response to one policy update. The fastest, cheapest fix is **B** — because fine-tuning baked in a snapshot of style and tone, not a live connection to current facts, updating the retrieval source (or the prompt) is what actually reflects the change immediately.
 
 **Example 3**
 
 *A developer wants an LLM to answer strictly using only a provided document, and to explicitly say "not found" rather than guessing when the answer isn't there. Which combination of techniques most directly supports this?*
 
-A) Retrieval-augmented generation combined with an explicit instruction constraining the model to the retrieved text
-B) Increasing the temperature setting as high as possible
-C) Training an entirely new model from scratch using only that one document
-D) Asking the question multiple rephrased ways and picking whichever answer sounds most confident
+A) Increasing the model's temperature setting as high as possible, since more randomness in how the model samples its output is assumed to make it inherently more likely to stick closely to the provided source document
+B) Training an entirely new, separate model completely from scratch using only that one specific document as its full training dataset, discarding all of the model's other broad general knowledge
+C) Retrieval-augmented generation combined with an explicit instruction constraining the model to only use the retrieved text and to clearly state when an answer isn't actually present in it
+D) Asking the same question multiple different rephrased ways and then simply picking out whichever one of the resulting answers happens to sound the most confident and assured in its own wording
 
-*Walk through it:* B misunderstands what temperature actually controls (randomness in wording, not faithfulness to a source — a higher temperature would if anything make the model *more* likely to wander from the source text). C is a wildly disproportionate response to a problem that doesn't require building a new model at all. D mistakes confidence of *tone* for confidence of *accuracy* — exactly the trap from section 2.3, since a hallucinated answer can sound just as confident as a correct one. The actual fix combines grounding the model in real retrieved text with an explicit instruction to stick to it and admit gaps — **A** — directly reducing (not eliminating) the hallucination risk described in section 2.3.
+*Walk through it:* A misunderstands what temperature actually controls (randomness in wording, not faithfulness to a source — a higher temperature would if anything make the model *more* likely to wander from the source text). B is a wildly disproportionate response to a problem that doesn't require building a new model at all. D mistakes confidence of *tone* for confidence of *accuracy* — exactly the trap from section 2.3, since a hallucinated answer can sound just as confident as a correct one. The actual fix combines grounding the model in real retrieved text with an explicit instruction to stick to it and admit gaps — **C** — directly reducing (not eliminating) the hallucination risk described in section 2.3.
 
 ---
 
@@ -232,21 +232,21 @@ A cluster of terms describes *how* a robot senses, moves, or interacts, and each
 
 *A robotics team trains a robot to walk using a physics simulator for months, achieving a stable gait, but the same robot falls over almost immediately on a real floor. What most directly explains this?*
 
-A) The sim-to-real gap — simulations can't perfectly model real-world friction, sensor noise, and material properties
-B) The robot's motors must be defective, since perfect simulated walking guarantees perfect real walking
-C) Simulated training is entirely useless and a waste of time
-D) The robot was never actually connected to its motors during simulation
+A) The robot's motors must be mechanically defective in some way, since a robot that walks flawlessly in simulation should logically be guaranteed to also walk flawlessly the first time it's tried in the real world
+B) Simulated training of any kind is entirely useless and represents a complete waste of engineering time, since nothing learned inside a physics simulator can ever meaningfully transfer to a real physical robot
+C) The robotics team must have deliberately skipped testing the robot's balance systems before deployment, since a properly tested robot would never fail this quickly right after leaving simulation
+D) The sim-to-real gap — simulations can't perfectly model real-world friction, sensor noise, and material properties, so a policy that worked flawlessly in simulation can still fail on first real-world contact
 
-*Walk through it:* B asserts a guarantee ("simulated success guarantees real success") that section 3.3 directly contradicts — that's the whole point of the sim-to-real gap existing at all. C overcorrects into the opposite extreme, dismissing simulation entirely rather than recognising its real, if limited, value. D invents a technical disconnect the scenario never actually describes. The accurate explanation is **A** — simulation is a genuinely useful but imperfect approximation of reality, and small unmodelled differences (friction, sensor noise) are exactly what can cause a policy that worked in simulation to fail on first real contact.
+*Walk through it:* A asserts a guarantee ("simulated success guarantees real success") that section 3.3 directly contradicts — that's the whole point of the sim-to-real gap existing at all. B overcorrects into the opposite extreme, dismissing simulation entirely rather than recognising its real, if limited, value. C invents a testing failure the scenario never actually describes — it explicitly says the team trained for months, not that they skipped anything. The accurate explanation is **D** — simulation is a genuinely useful but imperfect approximation of reality, and small unmodelled differences (friction, sensor noise) are exactly what can cause a policy that worked in simulation to fail on first real contact.
 
 **Example 2**
 
 *Amazon's warehouse picking robots handle standard boxed items well but still struggle to reliably pick a loose bag of produce. What core robotics challenge does this expose?*
 
-A) Robot grasping of novel objects — requires simultaneously reasoning about geometry, material, weight, and fragility
-B) Path planning — computing a collision-free route to the shelf
-C) Teleoperation — the difficulty of a remote human operator controlling the arm precisely
-D) The uncanny valley — workers' discomfort watching a robot handle food
+A) Robot grasping of novel objects — determining a stable, appropriate grip requires simultaneously reasoning about an unfamiliar object's geometry, material, weight, and fragility, something humans do unconsciously but remains genuinely hard for robots
+B) Path planning — the specific challenge of computing a collision-free route for the robotic arm to travel from its current position all the way to the exact location of the item sitting on the shelf
+C) Teleoperation — the practical difficulty of having a remote human operator control the robotic arm precisely enough in real time to successfully grasp any irregularly shaped item by hand
+D) The uncanny valley — the discomfort human warehouse workers reportedly feel when watching a robot attempt to handle food items that closely resemble something a person would normally handle themselves
 
 *Walk through it:* B, C, and D each name a real robotics concept, but none of them actually matches what's described — the scenario is specifically about *handling* an irregular object once the arm has already reached it, not about *navigating to* it (B), a *human controlling it remotely* (C, and nothing here suggests a human operator at all), or *appearance-based discomfort* (D, which is about humanoid appearance, not warehouse picking). The scenario's exact challenge — irregular shape, unpredictable fragility, no pre-programmed grip strategy — is the unsolved grasping problem from section 3.4. That's **A**.
 
@@ -254,12 +254,12 @@ D) The uncanny valley — workers' discomfort watching a robot handle food
 
 *A hospital delivery robot builds its own map of hallways and re-routes in real time around an unexpected obstacle, unlike an older factory robot that follows a fixed magnetic strip and simply stops if anything blocks it. What distinguishes the hospital robot?*
 
-A) It's an AMR, which creates its own maps and plans routes in real time, unlike an AGV that follows a predefined track
-B) It's a cobot, specifically engineered to work near human staff
-C) It's using swarm robotics, coordinating with many other simple robots
-D) It's using a digital twin of the hospital that lets it avoid the blocked cart
+A) It's a cobot, specifically engineered with force and torque sensing to work safely near human staff, though that capability alone doesn't explain how it actually plans its own route through the hallways
+B) It's an AMR, which creates its own map of the environment and plans routes in real time, unlike an AGV that simply follows a predefined physical track and stops if anything blocks it
+C) It's using swarm robotics, coordinating its movements with a large number of other simple identical robots elsewhere in the hospital, even though the scenario only ever describes a single robot
+D) It's using a pre-loaded digital twin of the hospital's floorplan, letting it avoid the blocked cart using a virtual replica built in advance rather than a map it actually builds itself in real time
 
-*Walk through it:* B names a real category (force-sensing robots safe to work near humans) that has nothing to do with *how the robot navigates*, which is what the scenario is actually asking about. C invents a multi-robot coordination scenario the question never mentions — there's only one robot here. D invents a pre-loaded virtual replica as the explanation, when the scenario explicitly says the robot builds its *own* map. The distinguishing feature described — building its own map, adapting routes in real time — is precisely the AMR-versus-AGV distinction from section 3.5. That's **A**.
+*Walk through it:* A names a real category (force-sensing robots safe to work near humans) that has nothing to do with *how the robot navigates*, which is what the scenario is actually asking about. C invents a multi-robot coordination scenario the question never mentions — there's only one robot here. D invents a pre-loaded virtual replica as the explanation, when the scenario explicitly says the robot builds its *own* map. The distinguishing feature described — building its own map, adapting routes in real time — is precisely the AMR-versus-AGV distinction from section 3.5. That's **B**.
 
 ---
 
@@ -304,32 +304,32 @@ Two other encryption ideas worth knowing precisely, because they solve genuinely
 
 *A login form takes a username and inserts it directly into a database query with no filtering. An attacker enters `admin' OR '1'='1` and gains access to every account. What vulnerability was exploited, and what's the standard fix?*
 
-A) SQL injection — unsanitised input was interpreted as part of the query itself; prepared statements are the standard fix
-B) A zero-day vulnerability specific to this one login form, unrelated to how input is generally handled
-C) A supply chain attack, since the attacker compromised a trusted third-party component
-D) Social engineering — the attacker manipulated a human support agent
+A) A zero-day vulnerability specific to this one particular login form — an undiscovered flaw the vendor has never had any opportunity to patch, unrelated to how user input is generally handled
+B) A supply chain attack, since the attacker must have first compromised a trusted third-party software component the login form depends on, rather than typing directly into the field itself
+C) SQL injection — the unsanitised input was interpreted as part of the database query itself; prepared statements, which separate query structure from user data, are the standard fix
+D) Social engineering — the attacker psychologically manipulated a human support agent into granting account access, rather than exploiting any weakness in the login form's own underlying code
 
-*Walk through it:* B mislabels this as an undiscovered, vendor-unknown flaw — but this is actually a well-known, well-understood vulnerability class with a well-known fix, the opposite of a zero-day. C invents a third-party compromise that isn't part of the scenario at all — the attacker typed directly into the login form itself. D misattributes a purely technical exploit to human manipulation, when no human was tricked into doing anything here. The crafted input altered the query's logic to always evaluate true — textbook SQL injection, from section 4.3. That's **A**, and the fix (prepared statements, separating query structure from user data) is the specific detail worth remembering.
+*Walk through it:* A mislabels this as an undiscovered, vendor-unknown flaw — but this is actually a well-known, well-understood vulnerability class with a well-known fix, the opposite of a zero-day. B invents a third-party compromise that isn't part of the scenario at all — the attacker typed directly into the login form itself. D misattributes a purely technical exploit to human manipulation, when no human was tricked into doing anything here. The crafted input altered the query's logic to always evaluate true — textbook SQL injection, from section 4.3. That's **C**, and the fix (prepared statements, separating query structure from user data) is the specific detail worth remembering.
 
 **Example 2**
 
 *An attacker who obtained leaked username/password pairs from one breached site automatically tries the same combinations on dozens of unrelated sites. What is this attack called, and what's the single most effective individual defence?*
 
-A) Credential stuffing — using a unique password per site (via a password manager) is the most effective individual defence
-B) SQL injection — the fix is inserting malicious commands into each login form
-C) A zero-day exploit affecting every one of the targeted sites simultaneously
-D) A supply chain attack compromising a shared vendor across all the sites
+A) SQL injection — the standard fix is understood to involve inserting malicious database commands into each of the dozens of separate targeted login forms individually
+B) A zero-day exploit that happens to affect every single one of the dozens of unrelated targeted sites simultaneously, despite each one running entirely different, unrelated software
+C) A supply chain attack compromising one shared vendor used by all of the dozens of unrelated targeted sites at once, rather than directly testing any of the actual stolen credential pairs
+D) Credential stuffing — automatically testing stolen username/password pairs across many services; using a unique password per site (via a password manager) is the most effective individual defence
 
-*Walk through it:* B confuses the attack being described (automated login attempts using stolen credentials) with a completely different attack (manipulating a database query) — these solve different problems and have nothing to do with each other. C is implausible on its face — a zero-day is by definition a single, specific, undiscovered flaw, not something that would coincidentally affect "dozens of unrelated sites" at once. D invents a shared vendor the scenario never mentions. The actual mechanism — reusing stolen credentials across many services, betting on password reuse — is credential stuffing from section 4.3, and its direct countermeasure is a unique password per site. That's **A**.
+*Walk through it:* A confuses the attack being described (automated login attempts using stolen credentials) with a completely different attack (manipulating a database query) — these solve different problems and have nothing to do with each other. B is implausible on its face — a zero-day is by definition a single, specific, undiscovered flaw, not something that would coincidentally affect "dozens of unrelated sites" at once. C invents a shared vendor the scenario never mentions. The actual mechanism — reusing stolen credentials across many services, betting on password reuse — is credential stuffing from section 4.3, and its direct countermeasure is a unique password per site. That's **D**.
 
 **Example 3**
 
 *A ransomware attack makes a hospital's patient records completely inaccessible, though the attacker never actually read or copied them. Which part of the CIA triad was most directly violated?*
 
-A) Availability — the records being inaccessible when needed is exactly what this property protects against
-B) Confidentiality — ransomware always involves the attacker reading the data
-C) Integrity — inaccessibility is the same thing as data being altered
-D) None of the three — this isn't a real security violation
+A) Availability — the records being inaccessible when needed is exactly what this specific property protects against, regardless of whether the underlying data was also read or altered
+B) Confidentiality — since ransomware attacks are assumed to always necessarily involve the attacker actually reading and copying the affected records, confidentiality must logically be the property violated
+C) Integrity — since making a set of records completely inaccessible is treated as functionally identical to actively altering or corrupting the content of those same records
+D) None of the three — a ransomware attack that only blocks legitimate access without reading or altering any underlying data isn't considered a genuine security violation at all
 
 *Walk through it:* B asserts something the scenario directly contradicts — it explicitly says the data was never read or copied, so confidentiality (which is about *unauthorised reading*) wasn't the thing actually violated. C blurs two genuinely distinct properties together — making data inaccessible is not the same as corrupting or altering it, which is what Integrity specifically covers. D dismisses a serious, real attack as "not a real violation," which doesn't hold up against the scenario's own description of records being locked away from legitimate users. The precise match, from section 4.5, is Availability — the data being inaccessible when needed, regardless of whether it was read or changed. That's **A**.
 
@@ -378,34 +378,34 @@ Code that runs perfectly on a developer's laptop but breaks in production is one
 
 *A developer notices their web app behaves subtly differently in production than in local development — a library version mismatch causes a bug that never appears during local testing. Which practice most directly addresses this class of problem?*
 
-A) Environment parity, often achieved using containerisation to package the exact same runtime environment everywhere
-B) Writing more unit tests that check individual functions in isolation
-C) Restructuring the code to use recursion instead of loops
-D) Using the same method name across different object types
+A) Writing many more unit tests that check individual functions in isolation, since a sufficiently thorough test suite is assumed to inherently catch any configuration difference between two separate environments
+B) Environment parity, often achieved using containerisation to package the exact same runtime environment — specific library versions, configuration, dependencies — so it can't drift between machines
+C) Restructuring the affected code to use recursion instead of loops, a general programming technique about a function's own internal control flow rather than about environment configuration
+D) Using the same method name consistently across different object types, an object-oriented design concept unrelated to how a development and production environment are actually configured
 
-*Walk through it:* B names a real, valuable practice, but unit tests run in yet another environment (the test environment) — they don't inherently catch a *configuration difference between two environments*, which is specifically what's being described here. C and D each name a real programming concept (recursion, polymorphism) that has nothing to do with environment configuration at all — a classic case of a distractor being a real term used in the wrong context. The actual fix, from section 5.2, is keeping environments consistent — commonly via containerisation, which packages the exact runtime environment so it can't drift between machines. That's **A**.
+*Walk through it:* A names a real, valuable practice, but unit tests run in yet another environment (the test environment) — they don't inherently catch a *configuration difference between two environments*, which is specifically what's being described here. C and D each name a real programming concept (recursion, polymorphism) that has nothing to do with environment configuration at all — a classic case of a distractor being a real term used in the wrong context. The actual fix, from section 5.2, is keeping environments consistent — commonly via containerisation, which packages the exact runtime environment so it can't drift between machines. That's **B**.
 
 **Example 2**
 
 *A team's deployment process used to involve manually copying files to a server, hoping nothing broke. They switch to a system where every code change is automatically tested, and if it passes, automatically deployed within minutes. What is this practice called, and what does "tested on every change" specifically provide?*
 
-A) CI/CD — testing on every change catches integration problems within minutes rather than weeks later
-B) Infrastructure as code — a practice about defining server configuration as files, not about testing and deploying changes
-C) Object-oriented programming — a paradigm for organising code into classes, unrelated to deployment process
-D) The strangler fig pattern — a strategy for gradually migrating away from a legacy system
+A) Infrastructure as code — a practice specifically about defining server configuration as version-controlled files, rather than about automatically testing and deploying code changes as they're made
+B) Object-oriented programming — a programming paradigm organising code into classes and objects, unrelated to whether a team's code changes are tested automatically or copied manually
+C) CI/CD — automatically building, testing, and deploying every code change; testing on every change catches integration problems within minutes rather than discovering them weeks later
+D) The strangler fig pattern — a strategy specifically for gradually migrating away from a legacy system, rather than a practice describing how code changes are tested and deployed
 
-*Walk through it:* B, C, and D are all real, legitimate engineering concepts — that's exactly what makes them convincing-looking wrong answers — but none of them actually describes "automatically test every change, then automatically deploy it." B is about how servers are configured, not about a testing-and-deployment pipeline. C is a way of structuring code, unrelated to any deployment process. D is a strategy for retiring an old system gradually, which isn't what's being described at all. The practice that matches — automated building, testing, and deploying on every change — is CI/CD from section 5.5. That's **A**.
+*Walk through it:* A, B, and D are all real, legitimate engineering concepts — that's exactly what makes them convincing-looking wrong answers — but none of them actually describes "automatically test every change, then automatically deploy it." A is about how servers are configured, not about a testing-and-deployment pipeline. B is a way of structuring code, unrelated to any deployment process. D is a strategy for retiring an old system gradually, which isn't what's being described at all. The practice that matches — automated building, testing, and deploying on every change — is CI/CD from section 5.5. That's **C**.
 
 **Example 3**
 
 *A distributed database serving users worldwide must choose its behaviour during a network partition: keep serving requests with possibly outdated data, or refuse requests until servers can resync. What principle describes this forced tradeoff?*
 
-A) The CAP theorem — a distributed system experiencing a partition must choose between Consistency and Availability
-B) The testing pyramid — a strategy for structuring automated tests into layers
-C) DRY (Don't Repeat Yourself) — a principle about avoiding duplicated code
-D) Recursion — a function calling itself on a smaller version of a problem
+A) The testing pyramid — a strategy for structuring a team's automated tests into layers of unit, integration, and end-to-end tests, unrelated to how a distributed database behaves during a network partition
+B) DRY (Don't Repeat Yourself) — a principle specifically about avoiding duplicated code within a single codebase, unrelated to the tradeoff a distributed database faces during a network partition
+C) Recursion — a programming technique where a function calls itself on a smaller version of a problem, unrelated to how a distributed database handles a consistency-versus-availability tradeoff
+D) The CAP theorem — a distributed system experiencing a network partition must choose between Consistency (always correct, up-to-date data) and Availability (always responding to requests)
 
-*Walk through it:* B, C, and D are each genuine software concepts, but none of them has anything to do with a distributed database's behaviour during a network partition specifically — they're each about a different part of software engineering entirely (testing strategy, code duplication, and a function-calling technique, respectively). This is a common exam-writing pattern worth noticing: distractors that are real terms, confidently stated, just plugged into the wrong scenario. The concept that actually describes an unavoidable tradeoff between consistency and availability during a partition is the CAP theorem, from section 5.4. That's **A**.
+*Walk through it:* A, B, and C are each genuine software concepts, but none of them has anything to do with a distributed database's behaviour during a network partition specifically — they're each about a different part of software engineering entirely (testing strategy, code duplication, and a function-calling technique, respectively). This is a common exam-writing pattern worth noticing: distractors that are real terms, confidently stated, just plugged into the wrong scenario. The concept that actually describes an unavoidable tradeoff between consistency and availability during a partition is the CAP theorem, from section 5.4. That's **D**.
 
 ---
 
@@ -447,10 +447,10 @@ If a rare-disease detection dataset is 99% healthy patients and 1% actually sick
 
 *A news article claims "ice cream sales and drowning deaths are strongly correlated, so ice cream must cause drowning." What's the most likely actual explanation?*
 
-A) Correlation doesn't imply causation — both variables independently rise in hot summer weather, a confounding variable
-B) The bias-variance tradeoff — a concept about model complexity, unrelated to two real-world variables
-C) Feature engineering — a data-preparation concept, unrelated to whether a correlation implies causation
-D) Dimensionality reduction — a technique for simplifying datasets, unrelated to interpreting a correlation
+A) Correlation doesn't imply causation — both variables independently rise in hot summer weather, a classic confounding variable driving two things at once without either one causing the other
+B) The bias-variance tradeoff — a concept specifically about a model being too simple or too complex, a distinct technical issue unrelated to interpreting a correlation between two real-world variables
+C) Feature engineering — a data-preparation concept about transforming raw input variables for a model, unrelated to whether an observed correlation between two variables implies genuine causation
+D) Dimensionality reduction — a technique for reducing the number of features in a dataset while preserving key information, unrelated to interpreting a correlation between two specific variables
 
 *Walk through it:* B, C, and D are each real data-science terms — which is exactly why they can look tempting if you're pattern-matching on "sounds technical" rather than actually reading what's being asked. None of them has anything to do with *interpreting a correlation between two real-world variables*, which is specifically what the question is about. The actual explanation, from section 6.2, is a confounding variable — hot weather driving both ice cream sales and swimming (and therefore drowning risk) independently, with neither one causing the other. That's **A**.
 
@@ -458,23 +458,23 @@ D) Dimensionality reduction — a technique for simplifying datasets, unrelated 
 
 *A rare-disease detection model trained on data that's 99% healthy and 1% diseased can achieve 99% accuracy by always predicting "healthy," while being useless at its actual job. What problem does this illustrate, and why is raw accuracy misleading here?*
 
-A) Class imbalance — raw accuracy is misleading because a model can score very high while being useless at detecting the rare, important class
-B) The bias-variance tradeoff — a concept about a model being too simple or too complex, a distinct issue
-C) Dimensionality reduction — a technique for reducing the number of features, unrelated to class imbalance
-D) A/B testing — a controlled experiment methodology, unrelated to how a dataset's classes are distributed
+A) The bias-variance tradeoff — a concept about a model being too simple or too complex, a distinct technical issue from one outcome vastly outnumbering another within the underlying dataset itself
+B) Class imbalance — raw accuracy is misleading because a model can score very high while being completely useless at detecting the rare, actually important class
+C) Dimensionality reduction — a technique for reducing the number of features in a dataset while preserving key information, unrelated to how a dataset's outcome classes are distributed
+D) A/B testing — a controlled experiment methodology comparing two live variants with randomly assigned users, unrelated to how a dataset's existing classes are numerically distributed
 
-*Walk through it:* B names a real, related-sounding concept, but it's about a different failure mode entirely (a model too simple or too complex), not about one outcome vastly outnumbering another in the data — reading carefully, the scenario is about the *composition of the dataset*, not the model's complexity. C and D each name real techniques that solve unrelated problems (reducing feature count; running a controlled experiment) with no connection to the specific imbalance described. The actual issue, from section 6.3, is class imbalance — and the fix in practice is using metrics that specifically measure how well the rare class is detected, not raw accuracy. That's **A**.
+*Walk through it:* A names a real, related-sounding concept, but it's about a different failure mode entirely (a model too simple or too complex), not about one outcome vastly outnumbering another in the data — reading carefully, the scenario is about the *composition of the dataset*, not the model's complexity. C and D each name real techniques that solve unrelated problems (reducing feature count; running a controlled experiment) with no connection to the specific imbalance described. The actual issue, from section 6.3, is class imbalance — and the fix in practice is using metrics that specifically measure how well the rare class is detected, not raw accuracy. That's **B**.
 
 **Example 3**
 
 *Two data scientists build models to predict loan defaults with the exact same algorithm. One spends her time creating a "debt-to-income ratio" feature from raw salary and debt figures; the other uses only the raw figures. Her model performs notably better. What does this illustrate?*
 
-A) Feature engineering — thoughtfully transforming raw data into more informative variables often matters more than the choice of algorithm alone
-B) A/B testing — a technique for comparing live product variants, not for describing how input data was prepared
-C) Dimensionality reduction — the opposite of what happened here, since a feature was added, not removed
-D) Data governance — an organisational practice, unrelated to why one specific model outperformed another
+A) A/B testing — a technique for comparing two live product variants with randomly assigned users, not for describing how the underlying input data was actually prepared before modelling
+B) Data governance — an organisational, policy-level practice for managing data as a business asset, unrelated to why one specific data scientist's model technically outperformed another's
+C) Feature engineering — thoughtfully transforming raw data into more informative input variables using domain knowledge often matters more than the choice of algorithm alone
+D) Dimensionality reduction — a technique for reducing the number of features in a dataset, the opposite of what happened here, since a new feature was constructed and added, not removed
 
-*Walk through it:* B misapplies a real technique (comparing live variants with randomly assigned users) to a scenario that's actually about data preparation before modelling, not a live experiment. C is worth noticing specifically because it names the *opposite* of what happened — dimensionality reduction reduces the number of features, while this scenario is about constructing a *new, more informative* one. D names an organisational, policy-level concept that has nothing to do with one data scientist's technical choice in building a specific feature. The real explanation, from section 6.4, is that a well-constructed feature can make a pattern the model needs to learn far more directly visible than the raw numbers alone — that's feature engineering. **A**.
+*Walk through it:* A misapplies a real technique (comparing live variants with randomly assigned users) to a scenario that's actually about data preparation before modelling, not a live experiment. D is worth noticing specifically because it names the *opposite* of what happened — dimensionality reduction reduces the number of features, while this scenario is about constructing a *new, more informative* one. B names an organisational, policy-level concept that has nothing to do with one data scientist's technical choice in building a specific feature. The real explanation, from section 6.4, is that a well-constructed feature can make a pattern the model needs to learn far more directly visible than the raw numbers alone — that's feature engineering. **C**.
 
 ---
 
@@ -512,21 +512,21 @@ When routine tasks get automated, the people doing that work don't necessarily d
 
 *A credit-scoring algorithm appears neutral — it doesn't ask for race or gender directly — but a researcher discovers it heavily weights postal code, which correlates strongly with historically segregated neighbourhoods, indirectly reproducing racial disparities in loan approval. What does examining technology this way illustrate?*
 
-A) Thinking critically about technology means evaluating its actual real-world effects, not just its stated design intentions — a system can be technically "neutral" on paper while still reproducing discrimination through indirect proxies
-B) Any algorithm using postal code as an input is automatically illegal in every jurisdiction, regardless of what it's actually used to predict
-C) It proves credit-scoring algorithms are always more discriminatory than a human loan officer in every comparison, without needing to actually study either
-D) It has no real importance, since focusing on outcomes rather than a system's stated intentions is an illegitimate standard
+A) Any algorithm using postal code as an input is automatically and formally illegal in every jurisdiction worldwide, regardless of what specific outcome that input is actually being used to help predict
+B) It proves conclusively that credit-scoring algorithms are always more discriminatory than a human loan officer would be in every possible comparison, without needing to actually study or compare the two approaches
+C) It has no real practical importance, since evaluating a system by its actual outcomes rather than by its stated design intentions is generally considered an illegitimate standard for judging technology
+D) Thinking critically about technology means evaluating its actual real-world effects, not just its stated design intentions — a system can be technically "neutral" on paper while still reproducing discrimination through indirect proxies
 
-*Walk through it:* B overreaches into a sweeping legal claim the scenario doesn't remotely support — using postal code as one input isn't automatically unlawful everywhere, the issue is the *specific discriminatory effect* it produces here. C draws a sweeping comparative conclusion ("always... in every comparison") from a single example, without any actual comparison to a human loan officer having been made. D dismisses the entire premise of evaluating a technology by its actual effects, which is precisely the wrong lesson to take from a case that exists *because* someone did exactly that evaluation. The real point, from section 7.1, is that surface-level neutrality (no explicit protected characteristic as input) doesn't guarantee fair outcomes if a correlated proxy does the same discriminatory work. That's **A**.
+*Walk through it:* A overreaches into a sweeping legal claim the scenario doesn't remotely support — using postal code as one input isn't automatically unlawful everywhere, the issue is the *specific discriminatory effect* it produces here. B draws a sweeping comparative conclusion ("always... in every comparison") from a single example, without any actual comparison to a human loan officer having been made. C dismisses the entire premise of evaluating a technology by its actual effects, which is precisely the wrong lesson to take from a case that exists *because* someone did exactly that evaluation. The real point, from section 7.1, is that surface-level neutrality (no explicit protected characteristic as input) doesn't guarantee fair outcomes if a correlated proxy does the same discriminatory work. That's **D**.
 
 **Example 2**
 
 *A health worker in a rural area with unreliable 2G connectivity uses a smartphone app that runs its malaria-diagnosis AI model directly on the device, needing no live internet connection. What technical approach makes this possible, and why does it matter specifically for this context?*
 
-A) Edge AI — running inference directly on the device rather than depending on a cloud connection, enabling continued operation exactly where connectivity is expensive or unreliable
-B) Surveillance capitalism — an economic model about collecting user data for advertisers, unrelated to why an offline-capable tool matters here
-C) The automation paradox — a labour-market concept about tasks shifting, unrelated to a specific connectivity solution
-D) Digital inequality — a description of the underlying problem, not a description of the specific technical solution
+A) Edge AI — running inference directly on the device rather than depending on a live cloud connection, enabling continued operation exactly where connectivity is expensive, slow, or unreliable
+B) Surveillance capitalism — an economic model built around collecting and commodifying user behavioural data for advertisers, unrelated to why an offline-capable diagnostic tool matters in this rural context
+C) The automation paradox — a labour-market concept about automation reshaping which tasks humans focus on over time, unrelated to the specific technical connectivity solution being asked about here
+D) Digital inequality — an accurate description of the underlying access problem the app is addressing, but not itself a description of the specific technical solution the app actually uses
 
 *Walk through it:* B and C are each genuine concepts from this chapter, but neither one describes a *technical mechanism* — B is about a business model, C is about a labour-market dynamic, and this question is specifically asking what technical approach solves a connectivity problem. D is subtly wrong in a different way: it correctly names the *problem* the scenario is set against (digital inequality, from section 7.3) but the question is asking for the *solution*, not the backdrop. The specific technical approach — running the model on the device itself, no live connection required — is edge AI, from section 7.3's broader discussion. That's **A**.
 
@@ -534,12 +534,12 @@ D) Digital inequality — a description of the underlying problem, not a descrip
 
 *A tech company publishes internal principles committing to assess potential harms before deploying any new AI feature, test for unfair treatment across demographic groups, and maintain a clear appeal process for users. What does this represent, and how does it differ from meeting the bare legal minimum?*
 
-A) Responsible AI as an ongoing organisational commitment — going beyond minimum legal compliance to proactively build in fairness assessment, transparency, and human appeal mechanisms as a continuous practice
-B) AI governance as imposed exclusively by external government regulation, describing only what a regulator requires
-C) Algorithmic accountability as a purely legal concept with no organisational or cultural dimension
-D) Federated learning — a specific technical training method, unrelated to a company's own internal ethical principles
+A) AI governance as something imposed exclusively by external government regulation, describing only what an outside regulator formally requires, with no voluntary internal component at all
+B) Responsible AI as an ongoing organisational commitment — going beyond minimum legal compliance to proactively build in fairness assessment, transparency, and human appeal mechanisms as a continuous practice
+C) Algorithmic accountability treated as a purely legal concept with no organisational or cultural dimension whatsoever, applying only to what a court or regulator can formally enforce
+D) Federated learning — a specific technical method for training a shared model across many devices without centralising raw data, entirely unrelated to a company's own internal ethical principles
 
-*Walk through it:* B mislabels a *voluntary, internal* company commitment as something imposed entirely from outside by government — but the scenario is explicit that the company published these principles itself, not that a regulator required this specific content. C draws an artificial, overly narrow boundary around "purely legal," when the scenario is describing exactly the kind of cultural and organisational practice that exists *alongside* and *beyond* legal requirements. D names a real but completely unrelated technical training concept, the kind of distractor that tests whether you're actually reading the scenario or just recognising vocabulary. The scenario describes responsible AI as a genuine, proactive, ongoing practice — from section 7.5 — going beyond whatever the bare legal minimum happens to require. That's **A**.
+*Walk through it:* A mislabels a *voluntary, internal* company commitment as something imposed entirely from outside by government — but the scenario is explicit that the company published these principles itself, not that a regulator required this specific content. C draws an artificial, overly narrow boundary around "purely legal," when the scenario is describing exactly the kind of cultural and organisational practice that exists *alongside* and *beyond* legal requirements. D names a real but completely unrelated technical training concept, the kind of distractor that tests whether you're actually reading the scenario or just recognising vocabulary. The scenario describes responsible AI as a genuine, proactive, ongoing practice — from section 7.5 — going beyond whatever the bare legal minimum happens to require. That's **B**.
 
 ---
 
