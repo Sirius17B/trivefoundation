@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="description" content="Study books, guides, and videos to help TriveFoundation candidates prepare — free to read or download.">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+  <link rel="canonical" href="https://trivefoundation.netlify.app/resources.html">
+  <title>Resources — TriveFoundation</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <style>
+    .res-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:clamp(13px,2.5vw,20px)}
+    .res-card{background:var(--c-white);border:1px solid var(--c-border);border-radius:var(--r-lg);overflow:hidden;display:flex;flex-direction:column;position:relative;transition:box-shadow var(--t),transform var(--t)}
+    .res-card:hover{box-shadow:var(--sh-lg);transform:translateY(-2px)}
+    .res-thumb{position:relative;width:100%;aspect-ratio:16/9;background:var(--c-sand);cursor:pointer;overflow:hidden}
+    .res-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+    .res-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+    .res-play span{width:52px;height:52px;border-radius:50%;background:rgba(10,37,64,.72);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+    .res-doc-icon{width:100%;aspect-ratio:16/9;background:var(--c-sand);display:flex;align-items:center;justify-content:center;font-size:2.4rem}
+    .res-body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
+    .res-title{font-weight:700;font-size:.98rem;color:var(--c-ink);line-height:1.35}
+    .res-desc{font-size:.83rem;color:var(--c-muted);line-height:1.5;flex:1}
+    .res-meta{font-size:.72rem;color:var(--c-muted);text-transform:uppercase;letter-spacing:.05em}
+    .res-del{position:absolute;top:8px;right:8px;background:rgba(220,38,38,.85);color:#fff;border:none;border-radius:50%;width:26px;height:26px;font-size:.85rem;cursor:pointer;line-height:26px;text-align:center;z-index:2}
+    #video-modal .modal-box{max-width:800px;padding:0;background:#000}
+    #video-modal iframe{display:block;width:100%;aspect-ratio:16/9;border:0}
+    #video-modal-close{position:absolute;top:-40px;right:0;background:none;border:none;color:#fff;font-size:1.6rem;cursor:pointer;line-height:1}
+    .res-section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+  </style>
+</head>
+<body>
+<header class="nav" role="banner"></header>
+<main id="main">
+
+<section class="page-hdr">
+  <span class="eyebrow" style="color:var(--c-green-lt);display:block;margin-bottom:.4rem">Get Ready</span>
+  <h1 data-cms="resources_title">Resources</h1>
+  <p class="lead" style="margin-top:.5rem;max-width:560px" data-cms="resources_sub">Study books, guides, and videos to help you prepare — free to read, watch, or download.</p>
+</section>
+
+<section class="section" style="background:var(--c-cream)">
+  <div class="container">
+
+    <!-- Admin: add video -->
+    <div class="admin-only" id="res-add-video" style="background:var(--c-sand);border-radius:var(--r-lg);padding:18px;margin-bottom:16px;border:1px solid var(--c-border)">
+      <h3 style="font-size:.95rem;margin-bottom:12px">Add Video</h3>
+      <div class="grid-2" style="margin-bottom:10px">
+        <div class="fg"><label>Title</label><input id="rv-title" type="text" placeholder="e.g. How the Tech Challenge Works" maxlength="150"></div>
+        <div class="fg"><label>YouTube or Vimeo link</label><input id="rv-url" type="url" placeholder="https://youtube.com/watch?v=…"></div>
+        <div class="fg" style="grid-column:1/-1"><label>Description (optional)</label><input id="rv-desc" type="text" placeholder="Short description…" maxlength="500"></div>
+      </div>
+      <button class="btn btn-green btn-sm" onclick="addVideo()">Add Video</button>
+    </div>
+
+    <!-- Admin: upload document -->
+    <div class="admin-only" id="res-add-doc" style="background:var(--c-sand);border-radius:var(--r-lg);padding:18px;margin-bottom:28px;border:1px solid var(--c-border)">
+      <h3 style="font-size:.95rem;margin-bottom:4px">Upload Document</h3>
+      <p style="font-size:.78rem;color:var(--c-muted);margin-bottom:12px">PDF, Word, or PowerPoint only — max 4MB.</p>
+      <div class="grid-2" style="margin-bottom:10px">
+        <div class="fg"><label>Title</label><input id="rd-title" type="text" placeholder="e.g. Tech Study Book" maxlength="150"></div>
+        <div class="fg"><label>File</label><input id="rd-file" type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation"></div>
+        <div class="fg" style="grid-column:1/-1"><label>Description (optional)</label><input id="rd-desc" type="text" placeholder="Short description…" maxlength="500"></div>
+      </div>
+      <button class="btn btn-green btn-sm" id="rd-submit" onclick="uploadDocument()">Upload Document</button>
+    </div>
+
+    <div id="res-empty" style="display:none;text-align:center;padding:40px;color:var(--c-muted)">No resources yet. Check back soon.</div>
+    <div class="res-grid" id="res-grid" role="list"></div>
+
+  </div>
+</section>
+
+<!-- Video lightbox -->
+<div id="video-modal" class="modal-bg" role="dialog" aria-modal="true" aria-label="Video player" style="display:none">
+  <div style="position:relative;width:100%;max-width:800px">
+    <button id="video-modal-close" aria-label="Close video" onclick="closeVideo()">×</button>
+    <div class="modal-box"><iframe id="video-modal-frame" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen title="Video player"></iframe></div>
+  </div>
+</div>
+
+</main>
+<div class="site-footer"></div>
+<div class="toast" role="alert" aria-live="polite"></div>
+<script src="js/config.js"></script>
+<script src="js/components.js"></script>
+<script src="js/main.js"></script>
+<script>
+'use strict';
+injectNav();
+injectAdminUI();injectFooter();
+
+const DOC_ICONS = {
+  'application/pdf': '📄',
+  'application/msword': '📝',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '📝',
+  'application/vnd.ms-powerpoint': '📊',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation': '📊',
+};
+
+let _resources = [];
+
+async function loadResources() {
+  try {
+    const res = await fetch('/.netlify/functions/resources?action=list');
+    if (!res.ok) { _resources = []; return; }
+    const data = await res.json();
+    _resources = data.resources || [];
+  } catch { _resources = []; }
+}
+
+function fmtSize(bytes) {
+  if (!bytes) return '';
+  const mb = bytes / (1024 * 1024);
+  return mb >= 1 ? mb.toFixed(1) + ' MB' : Math.round(bytes / 1024) + ' KB';
+}
+
+function youtubeThumb(videoId) {
+  return `https://img.youtube.com/vi/${encodeURIComponent(videoId)}/hqdefault.jpg`;
+}
+
+function renderResources() {
+  const grid = document.getElementById('res-grid');
+  const empty = document.getElementById('res-empty');
+  if (!_resources.length) { grid.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+
+  grid.innerHTML = _resources.map((r) => {
+    const delBtn = window.AdminAuth?.isLoggedIn()
+      ? `<button class="res-del" onclick="deleteResource('${sanitize(r.id)}')" aria-label="Delete">×</button>` : '';
+    if (r.type === 'video') {
+      const thumb = r.provider === 'youtube' ? youtubeThumb(r.videoId) : '';
+      return `<div class="res-card" role="listitem">
+        ${delBtn}
+        <div class="res-thumb" onclick="openVideo('${sanitize(r.provider)}','${sanitize(r.videoId)}')">
+          ${thumb ? `<img src="${thumb}" alt="${sanitize(r.title)}" loading="lazy">` : ''}
+          <div class="res-play"><span>▶</span></div>
+        </div>
+        <div class="res-body">
+          <div class="res-meta">Video</div>
+          <div class="res-title">${sanitize(r.title)}</div>
+          ${r.description ? `<div class="res-desc">${sanitize(r.description)}</div>` : ''}
+        </div>
+      </div>`;
+    }
+    const icon = DOC_ICONS[r.mimeType] || '📄';
+    return `<div class="res-card" role="listitem">
+      ${delBtn}
+      <div class="res-doc-icon">${icon}</div>
+      <div class="res-body">
+        <div class="res-meta">Document · ${fmtSize(r.sizeBytes)}</div>
+        <div class="res-title">${sanitize(r.title)}</div>
+        ${r.description ? `<div class="res-desc">${sanitize(r.description)}</div>` : ''}
+        <a class="btn btn-outline btn-sm" style="margin-top:6px;align-self:flex-start" href="/.netlify/functions/resources?action=download&id=${encodeURIComponent(r.id)}">Download →</a>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openVideo(provider, videoId) {
+  const frame = document.getElementById('video-modal-frame');
+  frame.src = provider === 'youtube'
+    ? `https://www.youtube.com/embed/${encodeURIComponent(videoId)}?autoplay=1`
+    : `https://player.vimeo.com/video/${encodeURIComponent(videoId)}?autoplay=1`;
+  document.getElementById('video-modal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+window.openVideo = openVideo;
+
+function closeVideo() {
+  document.getElementById('video-modal-frame').src = '';
+  document.getElementById('video-modal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+window.closeVideo = closeVideo;
+document.getElementById('video-modal').addEventListener('click', (e) => {
+  if (e.target.id === 'video-modal') closeVideo();
+});
+
+function getPin() {
+  return sessionStorage.getItem(window.AdminAuth?._pk || 'thrive_admin_pin_v1') || '';
+}
+
+async function addVideo() {
+  const title = document.getElementById('rv-title').value.trim();
+  const url = document.getElementById('rv-url').value.trim();
+  const description = document.getElementById('rv-desc').value.trim();
+  if (!title || !url) { showToast('Title and video link are required', 'err'); return; }
+  try {
+    const res = await fetch('/.netlify/functions/resources', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'addVideo', pin: getPin(), title, url, description }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to add video');
+    ['rv-title', 'rv-url', 'rv-desc'].forEach((id) => document.getElementById(id).value = '');
+    await loadResources(); renderResources();
+    showToast('Video added', 'ok');
+  } catch (e) { showToast(e.message || 'Failed to add video', 'err'); }
+}
+window.addVideo = addVideo;
+
+function readFileAsBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result).split(',')[1] || '');
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function uploadDocument() {
+  const title = document.getElementById('rd-title').value.trim();
+  const description = document.getElementById('rd-desc').value.trim();
+  const fileInput = document.getElementById('rd-file');
+  const file = fileInput.files?.[0];
+  if (!title || !file) { showToast('Title and a file are required', 'err'); return; }
+  const MAX_BYTES = 4 * 1024 * 1024;
+  if (file.size > MAX_BYTES) { showToast('File is too large — max 4MB', 'err'); return; }
+  const btn = document.getElementById('rd-submit');
+  btn.disabled = true; btn.textContent = 'Uploading…';
+  try {
+    const base64Data = await readFileAsBase64(file);
+    const res = await fetch('/.netlify/functions/resources', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'uploadDocument', pin: getPin(), title, description,
+        filename: file.name, mimeType: file.type, base64Data,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Upload failed');
+    ['rd-title', 'rd-desc'].forEach((id) => document.getElementById(id).value = '');
+    fileInput.value = '';
+    await loadResources(); renderResources();
+    showToast('Document uploaded', 'ok');
+  } catch (e) {
+    showToast(e.message || 'Upload failed', 'err');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Upload Document';
+  }
+}
+window.uploadDocument = uploadDocument;
+
+async function deleteResource(id) {
+  if (!confirm('Delete this resource?')) return;
+  try {
+    const res = await fetch('/.netlify/functions/resources', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'delete', pin: getPin(), id }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Delete failed');
+    await loadResources(); renderResources();
+    showToast('Resource deleted');
+  } catch (e) { showToast(e.message || 'Delete failed', 'err'); }
+}
+window.deleteResource = deleteResource;
+
+async function init() {
+  await CMS.load(); CMS.apply();
+  await loadResources();
+  renderResources();
+  if (AdminAuth.isLoggedIn()) document.querySelectorAll('.admin-only').forEach((el) => el.style.display = 'block');
+}
+// components.js already toggles .admin-only visibility globally on login/logout;
+// this just re-renders the resource cards so delete buttons appear/disappear too.
+document.addEventListener('thrive:admin-state', () => { renderResources(); });
+init();
+</script>
+</body>
+</html>

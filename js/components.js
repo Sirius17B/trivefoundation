@@ -32,6 +32,7 @@ window.injectNav=function(){
       <a href="index.html" class="nav-link">Home</a>
       <a href="about.html" class="nav-link">About</a>
       <a href="activities.html" class="nav-link">Activities</a>
+      <a href="resources.html" class="nav-link">Resources</a>
       <a href="gallery.html" class="nav-link">Gallery</a>
       <a href="contact.html" class="nav-link">Contact</a>
       <a href="donate.html" class="nav-link nav-donate-btn">Donate</a>
@@ -436,6 +437,7 @@ window.injectFooter=function(){
           <li><a href="activities.html" class="footer-lnk">Activities</a></li>
           <li><a href="activities.html#league-hub" class="footer-lnk">League</a></li>
           <li><a href="activities.html#quiz-hub" class="footer-lnk">Quiz</a></li>
+          <li><a href="resources.html" class="footer-lnk">Resources</a></li>
           <li><a href="gallery.html" class="footer-lnk">Gallery</a></li>
         </ul>
       </div>
