@@ -19,6 +19,12 @@
     .res-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
     .res-play span{width:52px;height:52px;border-radius:50%;background:rgba(10,37,64,.72);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
     .res-doc-icon{width:100%;aspect-ratio:16/9;background:var(--c-sand);display:flex;align-items:center;justify-content:center;font-size:2.4rem}
+    .res-doc-thumb{position:relative;width:100%;aspect-ratio:16/9;background:var(--c-sand);overflow:hidden}
+    .res-doc-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+    .res-doc-badge{position:absolute;bottom:6px;left:6px;background:rgba(10,37,64,.78);color:#fff;font-size:.62rem;font-weight:700;letter-spacing:.04em;padding:2px 7px;border-radius:4px;text-transform:uppercase}
+    #rd-thumb-wrap{display:none;align-items:center;gap:10px;margin-top:8px}
+    #rd-thumb-wrap img{width:64px;height:44px;object-fit:cover;border-radius:6px;border:1px solid var(--c-border)}
+    #rd-thumb-wrap span{font-size:.76rem;color:var(--c-muted)}
     .res-body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
     .res-title{font-weight:700;font-size:.98rem;color:var(--c-ink);line-height:1.35}
     .res-desc{font-size:.83rem;color:var(--c-muted);line-height:1.5;flex:1}
@@ -60,10 +66,11 @@
       <p style="font-size:.78rem;color:var(--c-muted);margin-bottom:12px">PDF, Word, or PowerPoint only — max 4MB.</p>
       <div class="grid-2" style="margin-bottom:10px">
         <div class="fg"><label>Title</label><input id="rd-title" type="text" placeholder="e.g. Tech Study Book" maxlength="150"></div>
-        <div class="fg"><label>File</label><input id="rd-file" type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation"></div>
+        <div class="fg"><label>File</label><input id="rd-file" type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation" onchange="onDocFileChange()"></div>
         <div class="fg" style="grid-column:1/-1"><label>Description (optional)</label><input id="rd-desc" type="text" placeholder="Short description…" maxlength="500"></div>
       </div>
-      <button class="btn btn-green btn-sm" id="rd-submit" onclick="uploadDocument()">Upload Document</button>
+      <div id="rd-thumb-wrap"><img id="rd-thumb-img" alt=""><span id="rd-thumb-status">Generating preview…</span></div>
+      <button class="btn btn-green btn-sm" id="rd-submit" onclick="uploadDocument()" style="margin-top:10px">Upload Document</button>
     </div>
 
     <div id="res-empty" style="display:none;text-align:center;padding:40px;color:var(--c-muted)">No resources yet. Check back soon.</div>
@@ -98,8 +105,57 @@ const DOC_ICONS = {
   'application/vnd.ms-powerpoint': '📊',
   'application/vnd.openxmlformats-officedocument.presentationml.presentation': '📊',
 };
+const DOC_BADGES = {
+  'application/pdf': 'PDF',
+  'application/msword': 'DOC',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'DOCX',
+  'application/vnd.ms-powerpoint': 'PPT',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation': 'PPTX',
+};
 
 let _resources = [];
+let _pendingThumbnail = null; // base64 JPEG (no data: prefix) for the currently-selected PDF, or null
+
+// Renders page 1 of a selected PDF to a JPEG thumbnail entirely client-side —
+// this function never sends the file anywhere until the actual upload, and
+// pdf.js is only ever loaded when an admin picks a PDF, never on a normal
+// page visit. Word/PowerPoint files don't get a generated preview (no simple
+// client-side renderer for those formats); they keep the plain icon card.
+async function onDocFileChange() {
+  const wrap = document.getElementById('rd-thumb-wrap');
+  const img = document.getElementById('rd-thumb-img');
+  const status = document.getElementById('rd-thumb-status');
+  _pendingThumbnail = null;
+  const file = document.getElementById('rd-file').files?.[0];
+  if (!file || file.type !== 'application/pdf') { wrap.style.display = 'none'; return; }
+
+  wrap.style.display = 'flex';
+  img.style.display = 'none';
+  status.textContent = 'Generating preview…';
+  try {
+    const pdfjs = await import('/js/vendor/pdfjs/pdf.min.mjs');
+    pdfjs.GlobalWorkerOptions.workerSrc = '/js/vendor/pdfjs/pdf.worker.min.mjs';
+    const data = await file.arrayBuffer();
+    const doc = await pdfjs.getDocument({ data }).promise;
+    const page = await doc.getPage(1);
+    const viewport = page.getViewport({ scale: 1 });
+    const scale = 480 / viewport.width;
+    const scaledViewport = page.getViewport({ scale });
+    const canvas = document.createElement('canvas');
+    canvas.width = scaledViewport.width;
+    canvas.height = scaledViewport.height;
+    await page.render({ canvasContext: canvas.getContext('2d'), viewport: scaledViewport }).promise;
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+    _pendingThumbnail = dataUrl.split(',')[1] || null;
+    img.src = dataUrl;
+    img.style.display = 'block';
+    status.textContent = 'Preview ready';
+  } catch (e) {
+    _pendingThumbnail = null;
+    status.textContent = "Couldn't generate a preview — the file will still upload fine";
+  }
+}
+window.onDocFileChange = onDocFileChange;
 
 async function loadResources() {
   try {
@@ -145,9 +201,13 @@ function renderResources() {
       </div>`;
     }
     const icon = DOC_ICONS[r.mimeType] || '📄';
+    const badge = DOC_BADGES[r.mimeType] || 'FILE';
+    const thumbBlock = r.thumbId
+      ? `<div class="res-doc-thumb"><img src="/.netlify/functions/resources?action=thumbnail&id=${encodeURIComponent(r.thumbId)}" alt="${sanitize(r.title)}" loading="lazy"><span class="res-doc-badge">${badge}</span></div>`
+      : `<div class="res-doc-icon">${icon}</div>`;
     return `<div class="res-card" role="listitem">
       ${delBtn}
-      <div class="res-doc-icon">${icon}</div>
+      ${thumbBlock}
       <div class="res-body">
         <div class="res-meta">Document · ${fmtSize(r.sizeBytes)}</div>
         <div class="res-title">${sanitize(r.title)}</div>
@@ -227,12 +287,15 @@ async function uploadDocument() {
       body: JSON.stringify({
         action: 'uploadDocument', pin: getPin(), title, description,
         filename: file.name, mimeType: file.type, base64Data,
+        thumbnailData: _pendingThumbnail || undefined,
       }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Upload failed');
     ['rd-title', 'rd-desc'].forEach((id) => document.getElementById(id).value = '');
     fileInput.value = '';
+    _pendingThumbnail = null;
+    document.getElementById('rd-thumb-wrap').style.display = 'none';
     await loadResources(); renderResources();
     showToast('Document uploaded', 'ok');
   } catch (e) {

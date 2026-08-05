@@ -7,10 +7,17 @@
  *   Returns the resources metadata array (no binary file content).
  * GET  /.netlify/functions/resources?action=download&id=<id>     -> public
  *   Streams the actual file back with a forced-download Content-Disposition.
+ * GET  /.netlify/functions/resources?action=thumbnail&id=<thumbId> -> public
+ *   Streams a document's page-1 preview JPEG inline (no forced download) —
+ *   thumbId is a separate id from the document's own id, only ever handed
+ *   out via the list action, and only served if it matches a live entry.
  * POST /.netlify/functions/resources
- *   { action:'uploadDocument', pin, title, description, filename, mimeType, base64Data }
+ *   { action:'uploadDocument', pin, title, description, filename, mimeType, base64Data, thumbnailData? }
  *     -> admin only. Strict allowlist (PDF/Word/PowerPoint), magic-byte
- *        signature check, 4MB cap. See SECURITY NOTES below.
+ *        signature check, 4MB cap. See SECURITY NOTES below. thumbnailData
+ *        is an optional base64 JPEG (rendered client-side from a PDF's
+ *        first page — see resources.html) that fails soft: a rejected or
+ *        missing thumbnail never fails the document upload itself.
  *   { action:'addVideo', pin, title, description, url }
  *     -> admin only. URL must match a YouTube or Vimeo watch-page pattern;
  *        the provider + video ID are extracted server-side, never trusted
@@ -52,8 +59,10 @@ const crypto = require('node:crypto');
 
 const META_KEY = 'thrive_resources_v1';
 const FILES_STORE_NAME = 'thrive-resource-files';
+const THUMBS_STORE_NAME = 'thrive-resource-thumbs';
 const JSON_HEADERS = { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' };
 const MAX_FILE_BYTES = 4 * 1024 * 1024; // 4MB — see note on Netlify's ~6MB sync function payload limit
+const MAX_THUMB_BYTES = 300 * 1024; // a page-1 preview JPEG has no business being large
 
 const ALLOWED_MIME_TYPES = new Set([
   'application/pdf',
@@ -94,6 +103,13 @@ function getFilesStore() {
   const token = process.env.NETLIFY_BLOBS_TOKEN;
   if (siteID && token) return getStore({ name: FILES_STORE_NAME, siteID, token });
   return getStore(FILES_STORE_NAME);
+}
+
+function getThumbsStore() {
+  const siteID = process.env.SITE_ID || process.env.NETLIFY_SITE_ID;
+  const token = process.env.NETLIFY_BLOBS_TOKEN;
+  if (siteID && token) return getStore({ name: THUMBS_STORE_NAME, siteID, token });
+  return getStore(THUMBS_STORE_NAME);
 }
 
 function pinMatches(submitted, expected) {
@@ -140,6 +156,10 @@ function bytesStartWith(bytes, sig) {
   if (bytes.length < sig.length) return false;
   for (let i = 0; i < sig.length; i++) if (bytes[i] !== sig[i]) return false;
   return true;
+}
+
+function isJpeg(buffer) {
+  return buffer.length >= 3 && buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff;
 }
 
 function matchesSignature(buffer, mimeType) {
@@ -203,6 +223,31 @@ exports.handler = async (event) => {
     }
   }
 
+  if (event.httpMethod === 'GET' && qs.action === 'thumbnail') {
+    const id = String(qs.id || '').trim();
+    if (!id) return response(400, { error: 'id is required' });
+    try {
+      const metaStore = getMetaStore();
+      const list = await loadMeta(metaStore);
+      const entry = list.find((r) => r.thumbId === id);
+      if (!entry) return response(404, { error: 'Thumbnail not found' });
+      const thumbBuf = await getThumbsStore().get(id, { type: 'arrayBuffer' });
+      if (!thumbBuf) return response(404, { error: 'Thumbnail not found' });
+      return {
+        statusCode: 200,
+        headers: {
+          'Content-Type': 'image/jpeg',
+          'X-Content-Type-Options': 'nosniff',
+          'Cache-Control': 'public, max-age=31536000, immutable',
+        },
+        body: Buffer.from(thumbBuf).toString('base64'),
+        isBase64Encoded: true,
+      };
+    } catch (e) {
+      return blobsErrorResponse(e);
+    }
+  }
+
   if (event.httpMethod === 'GET') return response(400, { error: 'Unknown action' });
   if (event.httpMethod !== 'POST') return response(405, { error: 'Method not allowed' });
 
@@ -242,6 +287,23 @@ exports.handler = async (event) => {
       return response(400, { error: "This file's actual content doesn't match its claimed type — upload rejected" });
     }
 
+    // Optional page-1 preview thumbnail, rendered client-side (see
+    // resources.html) so this function never needs a PDF-rendering
+    // dependency of its own. Validated the same way as the document itself:
+    // real JPEG bytes required, size-capped, never trusted just because the
+    // client claims it's an image.
+    let thumbBuffer = null;
+    if (payload.thumbnailData) {
+      try {
+        thumbBuffer = Buffer.from(String(payload.thumbnailData), 'base64');
+      } catch {
+        return response(400, { error: 'Invalid thumbnail data' });
+      }
+      if (!thumbBuffer.length || thumbBuffer.length > MAX_THUMB_BYTES || !isJpeg(thumbBuffer)) {
+        thumbBuffer = null; // don't fail the whole upload over a bad thumbnail — just skip it
+      }
+    }
+
     try {
       const metaStore = getMetaStore();
       const filesStore = getFilesStore();
@@ -249,9 +311,14 @@ exports.handler = async (event) => {
       const id = crypto.randomUUID();
       const fileId = crypto.randomUUID();
       await filesStore.set(fileId, buffer);
+      let thumbId = null;
+      if (thumbBuffer) {
+        thumbId = crypto.randomUUID();
+        await getThumbsStore().set(thumbId, thumbBuffer);
+      }
       list.push({
         id, type: 'document', title, description,
-        fileId, originalName: filename, mimeType, sizeBytes: buffer.length,
+        fileId, originalName: filename, mimeType, sizeBytes: buffer.length, thumbId,
         addedAt: new Date().toISOString(),
       });
       await metaStore.set(META_KEY, JSON.stringify(list));
@@ -303,6 +370,9 @@ exports.handler = async (event) => {
       await metaStore.set(META_KEY, JSON.stringify(list));
       if (removed.type === 'document' && removed.fileId) {
         try { await getFilesStore().delete(removed.fileId); } catch { /* best effort */ }
+      }
+      if (removed.thumbId) {
+        try { await getThumbsStore().delete(removed.thumbId); } catch { /* best effort */ }
       }
       return response(200, { ok: true });
     } catch (e) {
