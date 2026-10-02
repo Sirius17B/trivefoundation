@@ -1,34 +1,29 @@
 /* ═══════════════════════════════════════════
-   THRIVE — components.js
+   Trivefoundation — components.js
    Shared nav, footer, logo SVG
    ═══════════════════════════════════════════ */
 'use strict';
 
-/* ── LOGO LOCKUP ── image + wordmark side by side ── */
+/* ── LOGO ──
+   The logo is artwork (assets/logo*.svg), not live text: the name is drawn
+   into the file. To rename the organisation, change ORG_NAME in config.js
+   AND replace the logo files (see BRAND.md → "Logo files").
+   dark=true  → white version for navy backgrounds (footer)
+   dark=false → full-colour version for white / off-white backgrounds (nav) */
 window.LOGO_SVG=function(dark){
-  /* dark=true → use on dark nav/footer; false → use on light bg */
-  const nameCol = dark ? '#FFFFFF' : '#1C2B1C';
-  const tagCol  = dark ? '#3DB870' : '#1B7B78';
-  const name    = (window.SITE_CONFIG&&window.SITE_CONFIG.ORG_NAME)||'TriveFoundation';
-  const tagline = (window.SITE_CONFIG&&window.SITE_CONFIG.ORG_TAGLINE)||'Raising Champions';
-  return `<span class="logo-lockup" aria-label="${name} — ${tagline}" role="img" style="display:inline-flex;align-items:center;gap:10px;text-decoration:none">
-    <img src="assets/tree-logo.png" alt="" aria-hidden="true"
-         style="height:52px;width:auto;object-fit:contain;flex-shrink:0">
-    <span style="display:flex;flex-direction:column;line-height:1">
-      <span data-org-name style="font-family:Georgia,'Times New Roman',serif;font-size:1.35rem;font-weight:700;letter-spacing:.08em;color:${nameCol}">${name}</span>
-      <span style="font-family:'DM Sans',system-ui,sans-serif;font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:${tagCol};margin-top:2px">${tagline}</span>
-    </span>
-  </span>`;
+  const name=(window.SITE_CONFIG&&window.SITE_CONFIG.ORG_NAME)||'Trivefoundation';
+  const src=dark?'assets/logo-white.svg':'assets/logo.svg';
+  return `<span class="logo-lockup"><img src="${src}" alt="${name}" width="130" height="54"></span>`;
 };
 
 /* ── NAV ── */
 window.injectNav=function(){
   const el=document.querySelector('.nav');if(!el)return;
   const cfg=window.SITE_CONFIG||{};
-  const name=cfg.ORG_NAME||'TriveFoundation';
+  const name=cfg.ORG_NAME||'Trivefoundation';
   el.innerHTML=`<a class="skip-link" href="#main">Skip to main content</a><div class="nav-inner">
-    <a href="index.html" class="nav-logo" aria-label="${name} — Home">${window.LOGO_SVG(true)}</a>
-    <nav class="nav-links" role="navigation" aria-label="Main navigation">
+    <a href="index.html" class="nav-logo" aria-label="${name} — Home">${window.LOGO_SVG(false)}</a>
+    <nav class="nav-links" id="nav-menu" aria-label="Main navigation">
       <a href="index.html" class="nav-link">Home</a>
       <a href="about.html" class="nav-link">About</a>
       <a href="activities.html" class="nav-link">Activities</a>
@@ -60,7 +55,7 @@ window.injectAdminUI=function(){
   <div class="modal-box" style="max-width:400px">
     <h2 id="login-modal-title" style="margin-bottom:.4rem;font-size:1.1rem">Admin Access</h2>
     <p style="font-size:.86rem;color:var(--c-muted);margin-bottom:1rem">Enter the admin PIN to manage content and results.</p>
-    <div id="login-err" role="alert" style="display:none;background:#FEF2F2;border:1px solid #FECACA;border-radius:var(--r-sm);padding:8px 12px;font-size:.82rem;color:#DC2626;margin-bottom:10px"></div>
+    <div id="login-err" role="alert" style="display:none;background:var(--danger-tint);border:1px solid #F5C2BE;border-radius:var(--r-sm);padding:8px 12px;font-size:.82rem;color:var(--danger);margin-bottom:10px"></div>
     <div class="fg" style="margin-bottom:14px">
       <label for="admin-pin-inp" style="font-size:.84rem;font-weight:600;color:var(--c-dark);display:block;margin-bottom:5px">PIN</label>
       <input type="password" id="admin-pin-inp" autocomplete="current-password" maxlength="20" placeholder="Enter admin PIN"
@@ -68,28 +63,23 @@ window.injectAdminUI=function(){
     </div>
     <div style="display:flex;gap:10px">
       <button class="btn btn-green" onclick="window._doAdminLogin()">Sign In</button>
-      <button class="btn" style="background:var(--c-sand);color:var(--c-muted)" onclick="window._closeLoginModal()">Cancel</button>
+      <button class="btn btn-ghost" onclick="window._closeLoginModal()">Cancel</button>
     </div>
     <p style="font-size:.74rem;color:var(--c-muted);margin-top:12px">PIN available to authorised administrators only</p>
   </div>
 </div>
 
 <!-- ── CMS editing toolbar (shown when logged in) ── -->
-<div id="cms-toolbar" role="toolbar" aria-label="Content editor"
-  style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:1200;
-         background:rgba(19,45,31,.96);backdrop-filter:blur(16px);
-         border-top:2px solid var(--c-green);
-         padding:10px clamp(14px,4vw,40px);
-         display:none;align-items:center;gap:10px;flex-wrap:wrap">
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--c-green-lt)" stroke-width="2" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-  <span style="color:rgba(255,255,255,.65);font-size:.82rem">Edit mode — click any highlighted text or image to edit</span>
+<div id="cms-toolbar" class="cms-toolbar" role="toolbar" aria-label="Content editor" style="display:none">
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--leaf-lt)" stroke-width="2" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+  <span>Edit mode — click any highlighted text or image to edit</span>
   <button onclick="window._cmsSaveAll()" class="btn btn-green btn-sm">Save All Changes</button>
-  <button onclick="window._openCMSPanel()" class="btn btn-sm" style="background:rgba(255,255,255,.1);color:#fff">Site Settings</button>
-  <button onclick="window._adminLogout()" class="btn btn-sm" style="background:transparent;color:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.15)">Log Out</button>
+  <button onclick="window._openCMSPanel()" class="btn btn-secondary btn-sm">Site Settings</button>
+  <button onclick="window._adminLogout()" class="btn btn-secondary btn-sm">Log Out</button>
 </div>
 
 <!-- ── CMS Settings panel (slide-up) ── -->
-<div id="cms-panel-bg" style="display:none;position:fixed;inset:0;z-index:1300;background:rgba(0,0,0,.45)" onclick="if(event.target===this)window._closeCMSPanel()">
+<div id="cms-panel-bg" style="display:none;position:fixed;inset:0;z-index:1300;background:rgba(6,40,69,.55)" onclick="if(event.target===this)window._closeCMSPanel()">
   <div id="cms-panel" role="dialog" aria-modal="true" aria-labelledby="cms-panel-title"
     style="position:absolute;bottom:0;left:0;right:0;background:var(--c-white);
            border-radius:var(--r-xl) var(--r-xl) 0 0;
@@ -113,9 +103,9 @@ window.injectAdminUI=function(){
     <div id="cms-panels-wrap">
       <!-- Identity -->
       <div class="cms-panel active" style="display:block">
-        <p style="font-size:.82rem;background:rgba(27,123,120,.08);border-radius:var(--r-sm);padding:10px 13px;color:var(--c-teal);margin-bottom:16px">Changing the name here updates it everywhere — nav, footer, all pages. Refresh other tabs to see it.</p>
+        <p style="font-size:.82rem;background:var(--mint);border-radius:var(--r-sm);padding:10px 13px;color:var(--green-deep);margin-bottom:16px">Changing the name here updates it everywhere — nav, footer, all pages. Refresh other tabs to see it.</p>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px" class="cms-field-row">
-          <div><label style="font-size:.82rem;font-weight:600;color:var(--c-dark);display:block;margin-bottom:4px">Organisation Name</label><input id="cms-org-name" type="text" class="fi" placeholder="TriveFoundation"></div>
+          <div><label style="font-size:.82rem;font-weight:600;color:var(--c-dark);display:block;margin-bottom:4px">Organisation Name</label><input id="cms-org-name" type="text" class="fi" placeholder="Trivefoundation"></div>
           <div><label style="font-size:.82rem;font-weight:600;color:var(--c-dark);display:block;margin-bottom:4px">Tagline</label><input id="cms-org-tagline" type="text" class="fi" placeholder="Raising Champions"></div>
         </div>
         <div style="margin-bottom:12px"><label style="font-size:.82rem;font-weight:600;color:var(--c-dark);display:block;margin-bottom:4px">Mission Statement</label><input id="cms-org-mission" type="text" class="fi"></div>
@@ -127,7 +117,7 @@ window.injectAdminUI=function(){
       <div class="cms-panel" style="display:none">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px" class="cms-field-row">
           <div><label style="font-size:.82rem;font-weight:600;color:var(--c-dark);display:block;margin-bottom:4px">Hero Line 1</label><input id="cms-hero1" type="text" class="fi" placeholder="A Time"></div>
-          <div><label style="font-size:.82rem;font-weight:600;color:var(--c-dark);display:block;margin-bottom:4px">Hero Line 2 (italic)</label><input id="cms-hero2" type="text" class="fi" placeholder="To Build"></div>
+          <div><label style="font-size:.82rem;font-weight:600;color:var(--c-dark);display:block;margin-bottom:4px">Hero Line 2 (green)</label><input id="cms-hero2" type="text" class="fi" placeholder="To Build"></div>
         </div>
         <div style="margin-bottom:12px"><label style="font-size:.82rem;font-weight:600;color:var(--c-dark);display:block;margin-bottom:4px">Hero Body Text</label><textarea id="cms-hero-body" rows="2" class="fi" style="resize:vertical"></textarea></div>
         <div style="margin-bottom:12px"><label style="font-size:.82rem;font-weight:600;color:var(--c-dark);display:block;margin-bottom:4px">Parallax Quote</label><textarea id="cms-hero-quote" rows="2" class="fi" style="resize:vertical"></textarea></div>
@@ -310,9 +300,7 @@ window.saveCMS=function(section){
     window.CMS.set('org_mission',    g('cms-org-mission'));
     window.CMS.set('org_email',      g('cms-org-email'));
     /* Live-update org name on page */
-    const name=g('cms-org-name')||window.SITE_CONFIG?.ORG_NAME||'TriveFoundation';
-    document.querySelectorAll('[data-org-name]').forEach(el=>el.textContent=name);
-    document.title=document.title.replace(/TriveFoundation/g,name);
+    /* CMS.apply() (called below) pushes the new name into the page and the tab title */
   }
   if(section==='homepage'){
     window.CMS.set('hero_line1',      g('cms-hero1'));
@@ -376,7 +364,7 @@ window._enableInlineEdit=function(){
   document.querySelectorAll('[data-cms]').forEach(el=>{
     if(el.tagName==='IMG'){
       /* Images: click to replace */
-      el.style.outline='2px dashed var(--c-orange)';
+      el.style.outline='2px dashed var(--sun)';
       el.style.cursor='pointer';
       el.title='Click to replace image';
       el.onclick=function(){
@@ -390,7 +378,7 @@ window._enableInlineEdit=function(){
       };
     } else {
       el.contentEditable='true';
-      el.style.outline='2px dashed rgba(46,125,79,.45)';
+      el.style.outline='2px dashed rgba(28,133,75,.55)';
       el.style.outlineOffset='3px';
       el.style.borderRadius='3px';
       el.style.minHeight='1em';
@@ -418,12 +406,12 @@ function _onEditBlur(e){
 window.injectFooter=function(){
   const el=document.querySelector('.site-footer');if(!el)return;
   const cfg=window.SITE_CONFIG||{};
-  const name=cfg.ORG_NAME||'TriveFoundation';
+  const name=cfg.ORG_NAME||'Trivefoundation';
   el.innerHTML=`<footer class="footer" role="contentinfo">
     <div class="footer-grid">
       <div>
-        <a href="index.html" aria-label="${name} — Home">${window.LOGO_SVG(true)}</a>
-        <p class="footer-brand" data-cms="footer_tagline">Raising the next generation of champions through technology, sport, and community.</p>
+        <a href="index.html" class="footer-logo" aria-label="${name} — Home">${window.LOGO_SVG(true)}</a>
+        <p class="footer-brand" data-cms="footer_tagline">Equipping young Nigerians through technology, sport and inspiration.</p>
         <div class="sec-badge">
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           Privacy-first · Minimal data
@@ -444,7 +432,7 @@ window.injectFooter=function(){
       <div>
         <div class="footer-hdr">Programme</div>
         <ul class="footer-links">
-          <li><a href="activities.html#tech" class="footer-lnk">Tech Innovation</a></li>
+          <li><a href="activities.html#tech" class="footer-lnk">Tech &amp; Innovation</a></li>
           <li><a href="activities.html#league-hub" class="footer-lnk">Football League</a></li>
           <li><a href="activities.html#tedtalk" class="footer-lnk">Inspiration Talks</a></li>
           <li><a href="activities.html#quiz-hub" class="footer-lnk">Quiz Arena</a></li>
@@ -464,7 +452,7 @@ window.injectFooter=function(){
     </div>
     <div class="footer-btm">
       <span class="footer-copy">© 2026 <span data-org-name>${name}</span> · Independent Youth Development Initiative · Nigeria</span>
-      <span style="color:rgba(255,255,255,.28);font-size:.76rem;font-style:italic" data-cms="footer_quote">"Every living being is designed to grow and thrive."</span>
+      <span class="footer-quote" data-cms="footer_quote">"Every living being is designed to grow and thrive."</span>
     </div>
   </footer>`;
 };

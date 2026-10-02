@@ -2,26 +2,27 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="description" content="Support TriveFoundation youth development programmes with transparent donation tiers, bank transfer details, and donor privacy guidance.">
+  <meta name="description" content="Support Trivefoundation youth development programmes with transparent donation tiers, bank transfer details, and donor privacy guidance.">
   <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
-  <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
   <link rel="canonical" href="https://trivefoundation.netlify.app/donate.html">
-  <title>Donate &amp; Support — TriveFoundation</title>
+  <title>Donate &amp; Support — Trivefoundation</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <meta name="theme-color" content="#08365B">
 </head>
 <body>
 <header class="nav" role="banner"></header>
 <main id="main">
 
 <section class="page-hdr" style="text-align:center">
-  <span class="eyebrow" style="color:var(--c-green-lt);display:block;margin-bottom:.5rem">Support the Mission</span>
+  <span class="eyebrow" style="display:block;margin-bottom:.5rem">Support the Mission</span>
   <h1 data-cms="donate_title">Donate &amp; Partner</h1>
   <p class="lead" style="margin-top:.6rem;max-width:520px;margin-left:auto;margin-right:auto" data-cms="donate_sub">Every contribution directly funds youth development. Choose a tier and make an impact today.</p>
 </section>
 
-<section class="section" style="background:var(--c-cream)">
+<section class="section band-paper">
   <div class="container">
     <div class="fade-up" style="margin-bottom:clamp(22px,4vw,40px)">
       <span class="eyebrow">Choose Your Level</span>
@@ -31,14 +32,14 @@
     <div class="tier-grid fade-up" id="tier-grid"></div>
     <div class="text-center fade-up" style="margin-top:clamp(14px,3vw,28px)">
       <label for="custom-amount" style="font-size:.82rem;color:var(--c-muted);display:block;margin-bottom:8px">Enter another amount (₦)</label>
-      <input id="custom-amount" type="number" min="1" placeholder="e.g. 22000" style="max-width:260px;margin:0 auto;padding:10px 12px;border:1px solid var(--c-border);border-radius:var(--r-sm);display:block">
+      <input id="custom-amount" type="number" min="1" placeholder="e.g. 22000" class="fi" style="max-width:260px;margin:0 auto;display:block">
       <p style="font-size:.88rem;color:var(--c-muted);margin-top:10px" data-cms="donate_custom_note">Want to arrange in-kind support? <a href="contact.html" style="color:var(--c-teal)">Get in touch →</a></p>
     </div>
   </div>
 </section>
 
 <!-- ACCOUNT DETAILS -->
-<section class="section-sm" style="background:var(--c-white)" id="account">
+<section class="section band-white" id="account">
   <div class="container">
     <div class="text-center fade-up" style="margin-bottom:clamp(22px,4vw,36px)">
       <span class="eyebrow">Bank Transfer</span>
@@ -55,7 +56,7 @@
     <div class="text-center fade-up" style="margin-top:clamp(18px,3vw,28px)">
       <p style="font-size:.86rem;color:var(--c-muted)" data-cms="bank_confirm_note">After transferring, please <a href="contact.html" style="color:var(--c-teal)">send us a private message</a> with your preferred acknowledgement name and amount so we can reconcile and thank you safely.</p>
     </div>
-    <div class="res-panel fade-up" style="max-width:760px;margin:clamp(18px,3vw,28px) auto 0;background:var(--c-cream);border-left:4px solid var(--c-teal)">
+    <div class="res-panel fade-up" style="max-width:760px;margin:clamp(18px,3vw,28px) auto 0;background:var(--mint);border-left:4px solid var(--green)">
       <h3 style="font-size:1rem;margin-bottom:.5rem">Donor privacy promise</h3>
       <p style="font-size:.9rem;color:var(--c-muted);line-height:1.7">We do not publish donor names, transfer references, phone numbers, or email addresses without explicit consent. If you want acknowledgement, choose what may be displayed: anonymous, first name, organisation name, or a custom display name. For production, donor confirmations should be submitted through a secure backend form rather than browser storage or public comments.</p>
       <p style="font-size:.86rem;margin-top:.6rem"><a href="privacy.html" style="color:var(--c-teal);font-weight:600">Read donor privacy details →</a></p>
@@ -78,7 +79,7 @@
 </section>
 
 <!-- ADMIN: edit bank details -->
-<section class="section-sm admin-only" id="admin-bank-edit" style="background:var(--c-sand)">
+<section class="section-sm admin-only band-sky" id="admin-bank-edit">
   <div class="container">
     <div class="res-panel">
       <h3 style="margin-bottom:14px">Edit Bank Details</h3>
@@ -122,7 +123,7 @@ function renderBank(bank){
     <div class="acct-row"><div><div class="acct-key">Account Number</div><div class="acct-val" style="font-family:var(--font-head,inherit);font-size:1.4rem;letter-spacing:.04em;font-weight:800">${sanitize(b.account_no||b.account||'—')}</div></div><button class="copy-btn" onclick="copyText('${sanitize(b.account_no||b.account||'')}',this)">Copy</button></div>
     <div class="acct-row"><div><div class="acct-key">Account Name</div><div class="acct-val">${sanitize(b.account_name||b.name||'—')}</div></div><button class="copy-btn" onclick="copyText('${sanitize(b.account_name||b.name||'')}',this)">Copy</button></div>
     <div class="acct-row"><div><div class="acct-key">Bank</div><div class="acct-val">${sanitize(b.bank||'—')}</div></div></div>
-    <div class="acct-row"><div><div class="acct-key">Payment Reference</div><div class="acct-val" style="color:#3DD68C">${sanitize(b.note||'Your full name')}</div></div></div>
+    <div class="acct-row"><div><div class="acct-key">Payment Reference</div><div class="acct-val hl">${sanitize(b.note||'Your full name')}</div></div></div>
   `;
   // Prefill admin fields
   ['name','bank','acct','note'].forEach(k=>{
@@ -160,7 +161,7 @@ async function submitDonorConfirmation(){
     document.getElementById('donor-ok').classList.add('show');
     return showToast('Donation confirmation sent','ok');
   }
-  const subject=encodeURIComponent('TriveFoundation private donation confirmation');
+  const subject=encodeURIComponent('Trivefoundation private donation confirmation');
   const body=encodeURIComponent(`Name: ${name}
 Email: ${email}
 Amount: ₦${amount}

@@ -1,9 +1,13 @@
-# TriveFoundation Website — Developer Documentation
+# Trivefoundation Website — Developer Documentation
 
-**Version:** 4.0  
-**Last updated:** March 2026  
+**Version:** 5.0 (brand refresh)  
+**Last updated:** October 2026  
 **Maintainer:** Chisom Okoye  
 **Stack:** Pure HTML · CSS · Vanilla JavaScript (no build tools, no frameworks)
+
+> **Brand refresh, October 2026.** The site now uses the Trivefoundation logo, a navy + green palette on white / off-white backgrounds, and self-hosted fonts.
+> Read **[BRAND.md](BRAND.md)** for the brand rules and **[HANDOVER.md](HANDOVER.md)** for a file-by-file record of what changed, the assumptions made and the open questions.
+> Naming rule: the organisation is **Trivefoundation**; the yearly programme is **THRIVE 2.0, 3.0 …**
 
 ---
 
@@ -37,7 +41,7 @@
 
 ## 1. Project Overview
 
-TriveFoundation is an independent youth development initiative that runs technology training, football leagues, and inspirational talks for young Nigerians. This website is its public face and operational hub.
+Trivefoundation is an independent youth development initiative that runs technology training, football leagues, and inspirational talks for young Nigerians. This website is its public face and operational hub.
 
 ### What the website does
 
@@ -70,9 +74,19 @@ thrive-website/
 ├── contact.html          Contact form + volunteer/sponsor info
 │
 ├── assets/
-│   ├── tree-logo.png     The organisation logo image (replace to rebrand)
-│   ├── logo.svg          Fallback SVG logo (used as favicon)
-│   └── uploads/          Placeholder folder for any local assets
+│   ├── logo.svg              Full-colour logo (nav, light backgrounds)
+│   ├── logo-white.svg        White logo for navy backgrounds (footer)
+│   ├── logo-mono-navy.svg    One-colour versions (stamps, print)
+│   ├── logo-mono-white.svg
+│   ├── logo-wordmark*.svg    TRIVE without the word "foundation" (very small sizes)
+│   ├── logo-mark*.svg        The figure alone (watermark, avatar)
+│   ├── favicon.svg, apple-touch-icon.png, icon-512.png
+│   ├── logo-1600.png, logo-white-1600.png   PNG exports for Word / social
+│   └── fonts/                Self-hosted Fredoka + Lexend (woff2) and their licence
+│
+├── scripts/brand/            build_logo.py regenerates every logo file (see BRAND.md)
+├── BRAND.md                  Brand guide — colours, type, logo use, naming
+├── HANDOVER.md               What changed in the October 2026 refresh, and why
 │
 ├── css/
 │   └── style.css         All styles — design tokens, layout, components
@@ -134,7 +148,7 @@ python3 -m http.server 8080
 window.SITE_CONFIG = {
 
   // ── IDENTITY ────────────────────────────────────────────
-  ORG_NAME:      'TriveFoundation',           // Used everywhere — nav, footer, titles
+  ORG_NAME:      'Trivefoundation',          // Used everywhere — nav, footer, titles
   ORG_TAGLINE:   'Raising Champions',
   ORG_YEAR:      '2026',
   ORG_SEASON:    'A Time To Build',  // Hero sub-heading
@@ -247,18 +261,19 @@ window.SITE_CONFIG = {
 
 ## 5. Renaming the Organisation
 
-To rename from "TriveFoundation" to anything else:
+To rename from "Trivefoundation" to anything else:
 
 **Step 1** — Open `js/config.js` and change:
 ```js
-ORG_NAME: 'TriveFoundation',  →  ORG_NAME: 'YOUR NEW NAME',
+ORG_NAME: 'Trivefoundation',  →  ORG_NAME: 'YOUR NEW NAME',
 ```
+Every `[data-org-name]` element (footer copyright etc.), the logo's alt text and the browser tab title pick this up at runtime. An admin can also override it in Admin → Site Settings → Identity; a saved override wins over `config.js`.
 
-**Step 2** — That's it. Every `[data-org-name]` element across the site reads from this value at runtime. The nav logo wordmark, footer copyright, page titles, and all references update automatically.
+**Step 2** — Replace the logo artwork. The name is drawn into the logo files, so it does not change by itself. Either supply new `assets/logo*.svg` files with the same filenames, or edit and re-run `scripts/brand/build_logo.py` (see BRAND.md → "Logo files").
 
-**Step 3 (optional)** — If you want to update the `<title>` tags in the HTML files too, do a find-and-replace for `TriveFoundation` across all `.html` files. This only affects the browser tab label before JavaScript runs.
+**Step 3 (optional)** — Find-and-replace `Trivefoundation` across the `.html` files so `<title>` and meta descriptions are right before JavaScript runs (this is what search engines read).
 
-> **Logo image:** The logo image itself (`assets/tree-logo.png`) is separate. Replace that file with a new one if you need a different icon. Keep the filename the same, or update the reference in `js/components.js` in the `LOGO_SVG()` function.
+> The yearly programme name (**THRIVE 2.0**, 3.0 …) is separate from the organisation name and is written directly in page copy and in `config.js` (hero eyebrow, stories). Search for `THRIVE` when a new edition starts.
 
 ---
 
@@ -579,47 +594,42 @@ All styles are in `css/style.css`. The system uses CSS custom properties (variab
 
 ### Colour palette
 
+The palette comes from the logo. Full rules, contrast ratios and do/don't are in **BRAND.md** — this is the short version.
+
 ```css
-/* Brand greens — from the tree logo leaves */
---c-forest:   #1A3D2B   /* Dark backgrounds, nav, footer */
---c-green:    #2E7D4F   /* Primary brand green */
---c-green-lt: #3DB870   /* Hover states, accents */
---c-green-xl: #C6EDD6   /* Tinted panels */
+/* Brand */
+--navy:       #08365B   /* Trive Navy — wordmark, headings, navy cards */
+--navy-deep:  #062845   /* footer, hover on navy */
+--green:      #1C854B   /* Trive Green — primary buttons */
+--green-deep: #17713F   /* green for text and links on light backgrounds */
+--leaf:       #45A24A   /* Leaf Green — decoration only, never small text on white */
+--leaf-lt:    #7DD181   /* leaf for text/accents on navy */
 
-/* Teal — secondary action colour */
---c-teal:     #1B7B78
---c-teal-lt:  #25A89F
+/* Surfaces and text */
+--white: #FFFFFF   --paper: #F7FAF7 (off-white page background)
+--mint:  #E8F4EA   --sky:   #EAF1F6   --line: #D5DEE6
+--ink:   #10283C   --muted: #4A6072
 
-/* Orange — call-to-action energy */
---c-orange:   #E8621A
---c-orange-lt:#F5874A
-
-/* Amber — warmth, stats highlights */
---c-amber:    #D4940A
---c-amber-lt: #F5C842
-
-/* Neutrals — warm to echo the logo */
---c-cream:    #F8F4EE   /* Page background */
---c-sand:     #EDE7DC   /* Card/panel backgrounds */
---c-white:    #FFFFFF
---c-text:     #1C2B1C   /* Body text */
---c-muted:    #5C6E5C   /* Placeholder / secondary text */
---c-border:   #D8E5D8
-
-/* Dark backgrounds */
---c-dark:     #132D1F
---c-mid:      #1E4434
---c-brown:    #6B3D1E   /* Trunk accent — used sparingly */
+/* Accent and status — sparingly */
+--sun: #F2A91E (navy text on it)   --danger: #B42318
 ```
+
+The old `--c-*`, `--ink-*`, `--green-*`, `--teal-*` names still exist as **aliases** that point at the tokens above (see the "Legacy aliases" block in `style.css`), so older markup keeps working. New code should use the brand tokens. Do not hard-code hex colours in HTML — use a token or one of the band classes (`.band-white`, `.band-paper`, `.band-mint`, `.band-sky`, `.band-navy`).
+
+Pillar colour coding: Tech = green (`.ico-tech`, `.bar-tech`), Football = navy (`.ico-football`, `.bar-football`), Talks = sun (`.ico-talks`, `.bar-talks`).
 
 ### Typography
 
 ```css
---fd: 'Playfair Display', Georgia, serif    /* Display / headings */
---fb: 'DM Sans', system-ui, sans-serif      /* Body text */
+--fd: 'Fredoka', 'Trebuchet MS', system-ui, sans-serif   /* headings — same family as the logo lettering */
+--fb: 'Lexend', system-ui, sans-serif                    /* body text and UI */
 ```
 
-Both fonts are loaded from Google Fonts. If offline, they fall back to Georgia and system-ui respectively.
+Both fonts are **self-hosted** in `assets/fonts/` (variable woff2, about 70 KB together) and declared with `@font-face` at the top of `style.css`. Nothing is loaded from Google Fonts, and the Content-Security-Policy in `_headers` is `font-src 'self'`. If you add a font from another host you must also update that header.
+
+### Buttons
+
+`.btn-primary` / `.btn-green` green main action · `.btn-teal` navy solid · `.btn-outline` and `.btn-ghost` quiet actions on light backgrounds · `.btn-secondary` quiet action on navy · `.btn-danger` destructive.
 
 ### Spacing
 
@@ -627,15 +637,15 @@ Both fonts are loaded from Google Fonts. If offline, they fall back to Georgia a
 --pad: clamp(16px, 5vw, 60px)   /* Universal horizontal padding */
 ```
 
-Used as `padding: 0 var(--pad)` on all full-width sections. Scales from 16px on small phones to 60px on wide screens.
+Used as `padding: 0 var(--pad)` on all full-width sections. Scales from 16px on small phones to 60px on wide screens. Content inside `.container` is capped at `--maxw` (1200px) so lines stay readable on very wide screens.
 
 ### Border radii
 
 ```css
---r-sm: 6px
+--r-sm: 8px
 --r-md: 12px
---r-lg: 20px
---r-xl: 28px
+--r-lg: 18px
+--r-xl: 24px
 ```
 
 ### Breakpoints
@@ -998,7 +1008,7 @@ docs: update README contributing section
 
 ---
 
-*This documentation was written for TriveFoundation v4.0. If you make significant structural changes, please update the relevant sections.*
+*This documentation was written for the Trivefoundation site v4.0 and updated for the v5.0 brand refresh (October 2026). If you make significant structural changes, please update the relevant sections.*
 
 
 ## QA and Production Readiness

@@ -2,22 +2,24 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="description" content="THRIVE Quiz Arena — timed knowledge tests in Technology and Football, aligned to international curriculum standards.">
+  <meta name="description" content="THRIVE Quiz Arena by Trivefoundation — timed knowledge tests in Technology and Football, aligned to international curriculum standards.">
   <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
-  <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
   <link rel="canonical" href="https://trivefoundation.netlify.app/quiz.html">
-  <title>Quiz Arena — THRIVE</title>
+  <title>Quiz Arena — Trivefoundation</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <meta name="theme-color" content="#08365B">
   <style>
-    .quiz-hero{background:linear-gradient(135deg,var(--green-900) 0%,#0A2A40 100%);padding:clamp(96px,14vw,136px) var(--pad) clamp(44px,6vw,64px)}
+    /* keep quiz content to the site reading width on wide screens */
+    #main>section:not(.page-hdr),#quiz-admin-notice{padding-inline:max(0px,calc((100% - var(--maxw) - 2 * var(--pad)) / 2))!important}
     .quiz-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:20px;padding:clamp(28px,4vw,44px) var(--pad)}
     .quiz-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);padding:28px 24px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--sh-sm);transition:transform var(--t-base),box-shadow var(--t-base)}
     .quiz-card:hover{transform:translateY(-3px);box-shadow:var(--sh-md)}
     .quiz-cat{display:inline-flex;align-items:center;gap:5px;font-size:.67rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 11px;border-radius:100px}
     .qcat-tech{background:var(--teal-100);color:var(--teal-700)}
-    .qcat-football{background:var(--orange-100);color:var(--orange-600)}
+    .qcat-football{background:var(--sky);color:var(--navy)}
     .quiz-card-title{font-family:var(--font-head);font-size:1.2rem;font-weight:700;color:var(--ink-900)}
     .quiz-card-desc{font-size:.88rem;color:var(--ink-500);line-height:1.65;flex:1}
     .quiz-meta-row{display:flex;gap:14px;flex-wrap:wrap;font-size:.78rem;color:var(--ink-300)}
@@ -44,11 +46,11 @@
 <header class="nav" role="banner"></header>
 
 <main id="main">
-  <section class="quiz-hero" aria-labelledby="quiz-page-title">
-    <div style="padding:0 var(--pad)">
-      <span class="eyebrow" style="color:rgba(110,231,160,.8)">Knowledge Arena</span>
-      <h1 id="quiz-page-title" style="color:#fff;margin-top:.4rem">Quiz Arena</h1>
-      <p class="lead" style="color:rgba(255,255,255,.65);margin-top:.6rem;max-width:540px">
+  <section class="page-hdr" aria-labelledby="quiz-page-title">
+    <div>
+      <span class="eyebrow" style="display:block;margin-bottom:.4rem">Knowledge Arena</span>
+      <h1 id="quiz-page-title">Quiz Arena</h1>
+      <p class="lead" style="margin-top:.5rem;max-width:540px">
         Timed, curriculum-aligned quizzes in Technology and Football. 50 tech or 25 football questions per session, full explanations, printable results.
       </p>
     </div>
@@ -113,7 +115,7 @@
         <summary style="cursor:pointer;font-size:.82rem;color:var(--ink-300);font-weight:600">Start a new season/year — clear old codes</summary>
         <div style="margin-top:10px;padding:14px;background:var(--red-100);border-radius:var(--r-lg);display:flex;gap:10px;align-items:center;flex-wrap:wrap">
           <p style="font-size:.82rem;color:var(--red-600);flex:1;min-width:220px">Permanently deletes every code (used and unused) for the quiz selected above — used when starting a new season so you're not stuck bumping the count every year. This cannot be undone.</p>
-          <button class="btn btn-sm" style="background:var(--red-600);color:#fff" onclick="resetCodes()">Clear codes for this quiz</button>
+          <button class="btn btn-danger btn-sm" onclick="resetCodes()">Clear codes for this quiz</button>
         </div>
       </details>
     </div>
@@ -152,7 +154,7 @@
 </main>
 
 <!-- Add/Edit Question Modal -->
-<div id="question-modal" style="position:fixed;inset:0;z-index:2000;background:rgba(15,25,35,.5);display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto" role="dialog" aria-modal="true" aria-labelledby="qm-heading">
+<div id="question-modal" style="position:fixed;inset:0;z-index:2000;background:rgba(6,40,69,.6);display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto" role="dialog" aria-modal="true" aria-labelledby="qm-heading">
   <div style="background:var(--white);border-radius:var(--r-2xl);padding:28px;width:100%;max-width:580px;margin:auto;box-shadow:var(--sh-lg)">
     <h3 id="qm-heading" style="margin-bottom:18px;font-size:1rem">Add Question</h3>
     <div class="fg"><label>Quiz</label><select id="qm-quiz" class="fi" style="padding:9px 12px"></select></div>
@@ -181,7 +183,7 @@
 </div>
 
 <!-- Pre-quiz: name + access code -->
-<div id="start-modal" style="position:fixed;inset:0;z-index:2000;background:rgba(10,15,20,.75);display:none;align-items:center;justify-content:center;padding:20px" role="dialog" aria-modal="true" aria-labelledby="start-modal-heading">
+<div id="start-modal" style="position:fixed;inset:0;z-index:2000;background:rgba(6,40,69,.7);display:none;align-items:center;justify-content:center;padding:20px" role="dialog" aria-modal="true" aria-labelledby="start-modal-heading">
   <div style="background:var(--white);border-radius:var(--r-2xl);padding:32px;width:100%;max-width:460px;box-shadow:var(--sh-lg)">
     <h3 id="start-modal-heading" style="margin-bottom:4px;font-size:1.05rem">Starting: <span id="start-modal-quiz-title"></span></h3>
     <p style="font-size:.85rem;color:var(--ink-300);margin-bottom:16px">Enter your name and the one-time access code you were given.</p>

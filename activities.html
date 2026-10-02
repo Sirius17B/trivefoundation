@@ -2,43 +2,46 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
-  <meta http-equiv="X-Content-Type-Options" content="nosniff"><meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
-  <meta name="description" content="TriveFoundation Activities — Tech, Football, Inspiration and the latest news from the programme.">
+  <meta name="description" content="Trivefoundation activities — Tech &amp; Innovation, Football, Inspiration talks and the latest news from the THRIVE programme.">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <link rel="canonical" href="https://trivefoundation.netlify.app/activities.html">
-  <title>Activities — TriveFoundation</title>
+  <title>Activities — Trivefoundation</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <meta name="theme-color" content="#08365B">
   <style>
     /* ── News / Stories feed ── */
     .stories-section{background:var(--c-cream);padding:clamp(48px,7vw,80px) 0}
-    .stories-layout{display:grid;grid-template-columns:1fr 340px;gap:clamp(24px,4vw,48px);align-items:start}
+    .stories-layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:clamp(24px,4vw,48px);align-items:start}
+    .stories-layout>*{min-width:0}
 
     /* Featured story */
     .story-featured{background:var(--c-white);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--sh-md);border:1px solid var(--c-border)}
     .story-featured-img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
     .story-featured-body{padding:clamp(20px,3vw,32px)}
     .story-cat{display:inline-flex;align-items:center;gap:5px;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 11px;border-radius:100px;margin-bottom:12px}
-    .cat-tech{background:rgba(27,123,120,.12);color:var(--c-teal)}
-    .cat-football{background:rgba(232,98,26,.12);color:var(--c-orange)}
-    .cat-event{background:rgba(46,125,79,.12);color:var(--c-green)}
-    .cat-announcement{background:rgba(124,58,237,.12);color:#7C3AED}
+    .cat-tech{background:var(--mint);color:var(--green-deep)}
+    .cat-football{background:var(--sky);color:var(--navy)}
+    .cat-event{background:var(--sun-tint);color:var(--sun-ink)}
+    .cat-announcement{background:var(--navy);color:#fff}
     .story-date{font-size:.78rem;color:var(--c-muted);margin-bottom:8px}
-    .story-headline{font-family:var(--fd);font-size:clamp(1.15rem,2.5vw,1.55rem);font-weight:700;color:var(--c-dark);line-height:1.25;margin-bottom:12px}
+    .story-headline{font-family:var(--fd);font-size:clamp(1.15rem,2.5vw,1.55rem);font-weight:600;color:var(--navy);line-height:1.25;margin-bottom:12px}
     .story-body{font-size:.9rem;color:var(--c-muted);line-height:1.72}
 
     /* Story list sidebar */
     .story-list{display:flex;flex-direction:column;gap:14px}
     .story-card{background:var(--c-white);border-radius:var(--r-md);overflow:hidden;box-shadow:var(--sh-sm);border:1px solid var(--c-border);cursor:pointer;transition:transform var(--t),box-shadow var(--t);display:flex;gap:0;flex-direction:column}
     .story-card:hover{transform:translateY(-2px);box-shadow:var(--sh-md)}
-    .story-card.active{border-color:var(--c-green);box-shadow:0 0 0 2px rgba(46,125,79,.2)}
+    .story-card.active{border-color:var(--green);box-shadow:0 0 0 2px rgba(28,133,75,.2)}
     .story-card-img{width:100%;aspect-ratio:16/7;object-fit:cover;display:block}
     .story-card-body{padding:12px 14px}
     .story-card-date{font-size:.72rem;color:var(--c-muted);margin-bottom:4px}
     .story-card-headline{font-size:.86rem;font-weight:600;color:var(--c-dark);line-height:1.35}
 
     /* Admin story editor */
-    .hub-menu{position:sticky;top:68px;z-index:30;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);border-bottom:1px solid var(--c-border)}
-    .hub-menu-inner{display:flex;gap:8px;overflow:auto;padding:10px var(--pad)}
+    .hub-menu{position:sticky;top:var(--nav-h);z-index:30;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+    .hub-menu-inner{display:flex;gap:8px;overflow:auto;padding:10px var(--pad);max-width:calc(var(--maxw) + 2 * var(--pad));margin-inline:auto}
     .hub-pill{white-space:nowrap;padding:8px 12px;border:1px solid var(--c-border);border-radius:999px;color:var(--c-dark);font-size:.82rem;text-decoration:none;background:var(--c-white)}
     .hub-pill:hover{border-color:var(--c-teal);color:var(--c-teal)}
     .story-editor{background:var(--c-white);border:1px solid var(--c-border);border-radius:var(--r-lg);padding:clamp(18px,3vw,28px);margin-top:24px}
@@ -47,8 +50,8 @@
     @media(max-width:560px){.story-form-grid{grid-template-columns:1fr}}
     .story-form-full{margin-bottom:12px}
     .story-form-full label,.story-form-grid label{display:block;font-size:.8rem;font-weight:600;color:var(--c-dark);margin-bottom:4px}
-    .story-form-full input,.story-form-grid input,.story-form-grid select{width:100%;padding:9px 12px;border:1.5px solid var(--c-border);border-radius:var(--r-sm);font-size:.88rem;background:var(--c-cream);font-family:inherit;transition:border-color var(--t)}
-    .story-form-full textarea{width:100%;padding:9px 12px;border:1.5px solid var(--c-border);border-radius:var(--r-sm);font-size:.88rem;background:var(--c-cream);font-family:inherit;resize:vertical;min-height:90px;transition:border-color var(--t)}
+    .story-form-full input,.story-form-grid input,.story-form-grid select{width:100%;padding:9px 12px;border:1.5px solid var(--c-border);border-radius:var(--r-sm);font-size:.88rem;background:var(--white);font-family:inherit;transition:border-color var(--t)}
+    .story-form-full textarea{width:100%;padding:9px 12px;border:1.5px solid var(--c-border);border-radius:var(--r-sm);font-size:.88rem;background:var(--white);font-family:inherit;resize:vertical;min-height:90px;transition:border-color var(--t)}
     .story-form-full input:focus,.story-form-grid input:focus,.story-form-grid select:focus,.story-form-full textarea:focus{outline:none;border-color:var(--c-teal);background:var(--c-white)}
     .story-list-edit{display:flex;flex-direction:column;gap:6px;margin-top:16px;max-height:260px;overflow-y:auto}
     .story-edit-row{display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--c-cream);border-radius:var(--r-sm);font-size:.84rem}
@@ -61,7 +64,7 @@
     .pillar-desc{font-size:.76rem;color:var(--c-muted);margin-top:1px}
 
     @media(max-width:860px){
-      .stories-layout{grid-template-columns:1fr}
+      .stories-layout{grid-template-columns:minmax(0,1fr)}
       .story-list{flex-direction:row;flex-wrap:nowrap;overflow-x:auto;padding-bottom:6px;gap:10px}
       .story-list::-webkit-scrollbar{height:4px}.story-list::-webkit-scrollbar-thumb{background:var(--c-border);border-radius:2px}
       .story-card{min-width:220px;flex-shrink:0}
@@ -73,9 +76,9 @@
 <main id="main">
 
 <section class="page-hdr">
-  <span class="eyebrow" style="color:var(--c-green-lt);display:block;margin-bottom:.4rem">Programme</span>
+  <span class="eyebrow" style="display:block;margin-bottom:.4rem">Programme</span>
   <h1>Activities &amp; News</h1>
-  <p class="lead" style="margin-top:.5rem;max-width:540px">Three pillars. One mission. Plus the latest stories from the TriveFoundation programme.</p>
+  <p class="lead" style="margin-top:.5rem;max-width:540px">Three pillars. One mission. Plus the latest stories from the THRIVE programme.</p>
 </section>
 
 <nav class="hub-menu" aria-label="Activities hubs">
@@ -160,9 +163,9 @@
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
         <button class="btn btn-green btn-sm" onclick="saveStory()">Save Story</button>
-        <button class="btn btn-sm" style="background:var(--c-sand);color:var(--c-muted)" onclick="cancelStoryForm()">Cancel</button>
+        <button class="btn btn-ghost btn-sm" onclick="cancelStoryForm()">Cancel</button>
         <span id="sf-delete-btn" style="display:none;margin-left:auto">
-          <button class="btn btn-sm" style="background:#FEF2F2;color:#DC2626" onclick="deleteStory()">Delete this story</button>
+          <button class="btn btn-sm" style="background:var(--danger-tint);color:var(--danger)" onclick="deleteStory()">Delete this story</button>
         </span>
       </div>
       <div style="margin-top:20px;border-top:1px solid var(--c-border);padding-top:16px">
@@ -176,19 +179,19 @@
 <!-- ══════════════════════════════════
      TECH PILLAR
 ══════════════════════════════════ -->
-<section class="section" style="background:var(--c-white)" id="tech">
+<section class="section band-white" id="tech">
   <div class="container">
     <div class="about-grid">
       <div class="fade-up">
-        <span class="eyebrow" style="color:var(--c-teal)">Pillar 1</span>
-        <h2 style="margin-top:.4rem" data-cms="tech_title">Tech &amp; Digital Innovation</h2>
-        <p style="margin-top:.85rem" data-cms="tech_p1">Students receive structured training in programming, web development, and digital creation. The programme is hands-on from day one — no passive learning, only building.</p>
-        <p style="margin-top:.75rem" data-cms="tech_p2">Each participant works toward a capstone project: a real digital product they design, build, and present. Facilitators guide but the creativity belongs entirely to the student.</p>
+        <span class="eyebrow">Pillar 1</span>
+        <h2 style="margin-top:.4rem" data-cms="tech_title">Tech &amp; Innovation</h2>
+        <p style="margin-top:.85rem" data-cms="tech_p1">Students receive structured, hands-on training in artificial intelligence, robotics, machine learning, and software programming and applications. No passive learning — every session ends with something built.</p>
+        <p style="margin-top:.75rem" data-cms="tech_p2">Each participant works toward a capstone project, sits a written tech quiz and presents to a panel. Facilitators guide, but the creativity belongs to the student.</p>
         <div class="grid-2" style="margin-top:1.4rem">
-          <div class="pillar-sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--c-teal)" stroke-width="2" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><div class="pillar-name">Web Development</div><div class="pillar-desc">HTML, CSS, JavaScript</div></div>
-          <div class="pillar-sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--c-teal)" stroke-width="2" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg><div class="pillar-name">Programming</div><div class="pillar-desc">Python, logic, algorithms</div></div>
-          <div class="pillar-sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--c-teal)" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg><div class="pillar-name">AI &amp; Robotics Intro</div><div class="pillar-desc">Concepts, tools, demos</div></div>
-          <div class="pillar-sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--c-teal)" stroke-width="2" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg><div class="pillar-name">App Building</div><div class="pillar-desc">Simple apps, real products</div></div>
+          <div class="pillar-sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green-deep)" stroke-width="2" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><div class="pillar-name">Artificial Intelligence</div><div class="pillar-desc">Concepts, tools, responsible use</div></div>
+          <div class="pillar-sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green-deep)" stroke-width="2" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg><div class="pillar-name">Introduction to Robotics</div><div class="pillar-desc">Sensors, control, simple builds</div></div>
+          <div class="pillar-sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green-deep)" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg><div class="pillar-name">Machine Learning</div><div class="pillar-desc">How machines learn from data</div></div>
+          <div class="pillar-sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green-deep)" stroke-width="2" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg><div class="pillar-name">Software Programming &amp; Applications</div><div class="pillar-desc">Logic, code, working products</div></div>
         </div>
         <a href="league.html#tech" class="btn btn-teal" style="margin-top:1.4rem">View Tech Rankings →</a>
       </div>
@@ -200,49 +203,49 @@
 </section>
 
 
-<section class="section" style="background:var(--c-white)" id="leaderboard-hub">
+<section class="section band-paper" id="leaderboard-hub">
   <div class="container">
     <div class="fade-up">
-      <span class="eyebrow" style="color:var(--c-teal)">Hub</span>
+      <span class="eyebrow">Hub</span>
       <h2 style="margin-top:.4rem">Leaderboard Hub</h2>
       <p style="margin-top:.75rem">This hub combines quiz ranking leaderboards and football league rankings in one place.</p>
     </div>
     <div class="grid-2" style="margin-top:1.2rem;align-items:start">
-      <div class="res-panel fade-up" style="background:var(--c-cream)">
+      <div class="res-panel fade-up">
         <h3 style="margin-bottom:10px">Tech Quiz Rankings (Top 10)</h3>
         <div id="hub-quiz-tech" style="font-size:.88rem;color:var(--c-muted)">Loading…</div>
       </div>
-      <div class="res-panel fade-up" style="background:var(--c-cream)">
+      <div class="res-panel fade-up">
         <h3 style="margin-bottom:10px">Football Quiz Rankings (Top 10)</h3>
         <div id="hub-quiz-football" style="font-size:.88rem;color:var(--c-muted)">Loading…</div>
       </div>
-      <div class="res-panel fade-up" style="background:var(--c-cream)">
+      <div class="res-panel fade-up">
         <h3 style="margin-bottom:10px">Boys League Rankings</h3>
         <div id="hub-football-boys" style="font-size:.88rem;color:var(--c-muted)">Loading…</div>
       </div>
-      <div class="res-panel fade-up" style="background:var(--c-cream)">
+      <div class="res-panel fade-up">
         <h3 style="margin-bottom:10px">Girls League Rankings</h3>
         <div id="hub-football-girls" style="font-size:.88rem;color:var(--c-muted)">Loading…</div>
       </div>
     </div>
-    <p class="fade-up" style="margin-top:1.1rem;font-size:.85rem;color:var(--c-muted)">Looking for capstone tech project rankings? <a href="league.html#tech" style="color:var(--c-teal);font-weight:600">See Capstone Project Rankings →</a></p>
+    <p class="fade-up" style="margin-top:1.1rem;font-size:.85rem;color:var(--c-muted)">Looking for capstone tech project rankings? <a href="league.html#tech" class="link" style="font-weight:600">See Capstone Project Rankings →</a></p>
   </div>
 </section>
 
 <!-- FOOTBALL PILLAR -->
-<section class="section" style="background:var(--c-cream)" id="league-hub">
+<section class="section band-white" id="league-hub">
   <div class="container">
     <div class="about-grid">
       <div class="fade-up" style="order:2">
-        <span class="eyebrow" style="color:var(--c-orange)">Pillar 2</span>
-        <h2 style="margin-top:.4rem" data-cms="football_title">Football League</h2>
+        <span class="eyebrow">Pillar 2</span>
+        <h2 style="margin-top:.4rem" data-cms="football_title">Football</h2>
         <p style="margin-top:.85rem" data-cms="football_p1">A fully structured competitive football programme running parallel boys and girls leagues. Not just a kickabout — a proper league with fixtures, standings, and a finals week.</p>
         <p style="margin-top:.75rem" data-cms="football_p2">Football teaches what sport uniquely can: how to handle defeat, lead from the back, and win with grace.</p>
         <div class="grid-2" style="margin-top:1.4rem">
-          <div style="background:linear-gradient(135deg,#7C2D12,var(--c-orange));border-radius:var(--r-md);padding:14px;color:#fff;text-align:center"><div style="font-size:.68rem;opacity:.75;margin-bottom:3px;text-transform:uppercase;letter-spacing:.07em">Boys Final 2025</div><div style="font-size:1.1rem;font-weight:700">SS3 <span style="color:#FBBF24">4–3</span> JSS3</div></div>
-          <div style="background:linear-gradient(135deg,#7C2D12,var(--c-orange));border-radius:var(--r-md);padding:14px;color:#fff;text-align:center"><div style="font-size:.68rem;opacity:.75;margin-bottom:3px;text-transform:uppercase;letter-spacing:.07em">Girls Final 2025</div><div style="font-size:1.1rem;font-weight:700">SS2 <span style="color:#FBBF24">3–1</span> SS1</div></div>
+          <div style="background:var(--navy);border-radius:var(--r-md);padding:14px;color:#fff;text-align:center"><div style="font-size:.7rem;color:rgba(255,255,255,.75);margin-bottom:3px;text-transform:uppercase;letter-spacing:.07em">Boys Final 2025</div><div style="font-size:1.1rem;font-weight:600">SS3 <span style="color:var(--sun)">4–3</span> JSS3</div></div>
+          <div style="background:var(--navy);border-radius:var(--r-md);padding:14px;color:#fff;text-align:center"><div style="font-size:.7rem;color:rgba(255,255,255,.75);margin-bottom:3px;text-transform:uppercase;letter-spacing:.07em">Girls Final 2025</div><div style="font-size:1.1rem;font-weight:600">SS2 <span style="color:var(--sun)">3–1</span> SS1</div></div>
         </div>
-        <a href="league.html" class="btn btn-primary" style="margin-top:1.4rem">Open League Subpage →</a>
+        <a href="league.html" class="btn btn-teal" style="margin-top:1.4rem">Open the League page →</a>
       </div>
       <div class="fade-up" style="order:1;transition-delay:.1s">
         <img src="https://images.unsplash.com/photo-1529686342540-1b43aec0df75?w=800&q=75&auto=format&fit=crop" alt="African children playing football outdoors" class="mission-img" loading="lazy" data-img-editable data-cms="football_img">
@@ -252,15 +255,15 @@
 </section>
 
 
-<section class="section" style="background:var(--c-cream)" id="quiz-hub">
+<section class="section band-paper" id="quiz-hub">
   <div class="container">
     <div class="about-grid">
       <div class="fade-up">
-        <span class="eyebrow" style="color:var(--c-teal)">Subpage</span>
+        <span class="eyebrow">Quiz</span>
         <h2 style="margin-top:.4rem">Quiz Arena</h2>
-        <p style="margin-top:.85rem">Take the TriveFoundation skills assessment covering AI, ML, neural networks, robotics, frontend, backend, design, product development, UI/UX, and debugging.</p>
+        <p style="margin-top:.85rem">Take the THRIVE skills assessment covering AI, ML, neural networks, robotics, frontend, backend, design, product development, UI/UX, and debugging.</p>
         <p style="margin-top:.75rem">Each student attempt draws 50 questions only, with balanced difficulty and randomized answer positions.</p>
-        <a href="quiz.html" class="btn btn-teal" style="margin-top:1.4rem">Open Quiz Subpage →</a>
+        <a href="quiz.html" class="btn btn-teal" style="margin-top:1.4rem">Open the Quiz Arena →</a>
       </div>
       <div class="fade-up" style="transition-delay:.12s">
         <img src="https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=800&q=75&auto=format&fit=crop" alt="Students taking digital assessments" class="mission-img" loading="lazy">
@@ -270,16 +273,16 @@
 </section>
 
 <!-- TALKS PILLAR -->
-<section class="section" style="background:var(--c-white)" id="tedtalk">
+<section class="section band-white" id="tedtalk">
   <div class="container">
     <div class="about-grid">
       <div class="fade-up">
-        <span class="eyebrow" style="color:#7C3AED">Pillar 3</span>
+        <span class="eyebrow">Pillar 3</span>
         <h2 style="margin-top:.4rem" data-cms="talks_title">Inspiration &amp; Talks</h2>
         <p style="margin-top:.85rem" data-cms="talks_p1">The closing session of every edition is an inspirational summit. Leaders deliver TED-style talks designed not to inform, but to ignite.</p>
         <p style="margin-top:.75rem" data-cms="talks_p2">Every student leaves believing more is possible for them than when they walked in.</p>
-        <blockquote style="margin-top:1.4rem;padding:15px 18px;background:var(--c-cream);border-left:4px solid #7C3AED;border-radius:0 var(--r-md) var(--r-md) 0">
-          <p style="font-family:var(--fd);font-style:italic;color:var(--c-dark)" data-cms="talks_quote">"If your actions inspire others to dream more, learn more, do more, and become more, you are a leader."</p>
+        <blockquote style="margin-top:1.4rem;padding:15px 18px;background:var(--paper);border-left:4px solid var(--sun);border-radius:0 var(--r-md) var(--r-md) 0">
+          <p style="font-family:var(--fd);font-weight:500;color:var(--navy)" data-cms="talks_quote">"If your actions inspire others to dream more, learn more, do more, and become more, you are a leader."</p>
           <cite style="font-size:.78rem;color:var(--c-muted);margin-top:5px;display:block;font-style:normal">— John Quincy Adams</cite>
         </blockquote>
         <div class="act-meta" style="margin-top:1.3rem"><span class="dot dot-done"></span><span>2025: Chisom Okoye · Odinaka Okoye · Josemaria Nriagu</span></div>
@@ -291,13 +294,13 @@
   </div>
 </section>
 
-<section style="background:linear-gradient(160deg,var(--c-forest),#0D3D3D);padding:clamp(48px,8vw,80px) 0">
+<section class="section band-mint">
   <div class="container text-center fade-up">
-    <span class="eyebrow" style="color:var(--c-green-lt)">Coming in 2026</span>
-    <h2 style="color:#fff;margin-top:.4rem;max-width:500px;margin-left:auto;margin-right:auto">More pillars. More schools. More champions.</h2>
+    <span class="eyebrow">THRIVE 2.0 · 2026</span>
+    <h2 style="margin-top:.4rem;max-width:520px;margin-left:auto;margin-right:auto">More schools. More builders. More champions.</h2>
     <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:1.5rem">
-      <a href="donate.html" class="btn btn-primary">Support 2026</a>
-      <a href="about.html" class="btn btn-secondary">Our full vision →</a>
+      <a href="donate.html" class="btn btn-primary">Support THRIVE 2.0</a>
+      <a href="about.html" class="btn btn-outline">Our full vision →</a>
     </div>
   </div>
 </section>
@@ -369,7 +372,7 @@ function renderFeatured() {
       <p class="story-body">${sanitize(s.body)}</p>
       ${window.AdminAuth?.isLoggedIn() ? `
         <div style="margin-top:16px;display:flex;gap:8px">
-          <button class="btn btn-sm" style="background:var(--c-sand);color:var(--c-muted)" onclick="openStoryForm('${sanitize(s.id)}')">Edit this story</button>
+          <button class="btn btn-ghost btn-sm" onclick="openStoryForm('${sanitize(s.id)}')">Edit this story</button>
         </div>` : ''}
     </div>`;
 }
@@ -399,9 +402,9 @@ function renderEditList() {
     <div class="story-edit-row">
       <span class="story-edit-row-date">${sanitize(s.date)}</span>
       <span class="story-edit-row-title">${sanitize(s.headline)}</span>
-      <button class="btn btn-sm" style="background:var(--c-sand);color:var(--c-muted);flex-shrink:0;padding:4px 10px;font-size:.75rem" onclick="openStoryForm('${sanitize(s.id)}')">Edit</button>
-      ${i > 0 ? `<button onclick="moveStory('${sanitize(s.id)}',-1)" class="btn btn-sm" style="padding:4px 8px;background:var(--c-sand);color:var(--c-muted)" aria-label="Move up">↑</button>` : ''}
-      ${i < stories.length-1 ? `<button onclick="moveStory('${sanitize(s.id)}',1)" class="btn btn-sm" style="padding:4px 8px;background:var(--c-sand);color:var(--c-muted)" aria-label="Move down">↓</button>` : ''}
+      <button class="btn btn-ghost btn-sm" style="flex-shrink:0;padding:4px 10px;font-size:.75rem" onclick="openStoryForm('${sanitize(s.id)}')">Edit</button>
+      ${i > 0 ? `<button onclick="moveStory('${sanitize(s.id)}',-1)" class="btn btn-ghost btn-sm" style="padding:4px 8px" aria-label="Move up">↑</button>` : ''}
+      ${i < stories.length-1 ? `<button onclick="moveStory('${sanitize(s.id)}',1)" class="btn btn-ghost btn-sm" style="padding:4px 8px" aria-label="Move down">↓</button>` : ''}
     </div>`).join('');
 }
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Static QA checks for the TriveFoundation website."""
+"""Static QA checks for the Trivefoundation website."""
 from html.parser import HTMLParser
 from pathlib import Path
 
@@ -51,6 +51,19 @@ def main():
     for required in ("robots.txt", "sitemap.xml", "privacy.html", "terms.html", "_headers", ".well-known/security.txt"):
         if not (ROOT / required).exists():
             errors.append(f"missing required standards file: {required}")
+    # Brand guardrails (see BRAND.md)
+    for required in ("assets/logo.svg", "assets/logo-white.svg", "assets/favicon.svg",
+                     "assets/fonts/fredoka-latin-wght.woff2", "assets/fonts/lexend-latin-wght.woff2"):
+        if not (ROOT / required).exists():
+            errors.append(f"missing brand asset: {required}")
+    for path in sorted(ROOT.glob("*.html")) + [ROOT / "js/config.js", ROOT / "js/components.js", ROOT / "css/style.css"]:
+        text = path.read_text(encoding="utf-8", errors="ignore")
+        rel = path.relative_to(ROOT)
+        for wrong in ("THRIVE Foundation", "TriveFoundation", "Trive " + "Foundation"):
+            if wrong in text:
+                errors.append(f"{rel}: write the organisation as 'Trivefoundation', one word (found '{wrong}')")
+        if "fonts.googleapis.com" in text or "fonts.gstatic.com" in text:
+            errors.append(f"{rel}: fonts are self-hosted; remove the Google Fonts reference (CSP blocks it)")
     if errors:
         print("Static checks failed:")
         for error in errors:

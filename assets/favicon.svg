@@ -1,7 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="TriveFoundation">
-  <rect width="64" height="64" rx="14" fill="#1A3D2B"/>
-  <path d="M32 47 L32 30" stroke="#8A5A32" stroke-width="4.5" stroke-linecap="round"/>
-  <circle cx="32" cy="21" r="13" fill="#3DB870"/>
-  <circle cx="20" cy="27" r="9.5" fill="#2E7D4F"/>
-  <circle cx="44" cy="27" r="9.5" fill="#2E7D4F"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="700 149 452 452" role="img" aria-label="Trivefoundation"><title>Trivefoundation</title><rect x="700" y="149" width="452" height="452" rx="99" fill="#08365B"/><path fill="#7DD181" d="M786.0,234.0C815.0,243.0 850.0,262.0 880.0,271.0C905.0,278.0 945.0,279.0 969.0,271.0C1006.0,259.0 1040.0,225.0 1064.0,196.0C1046.0,240.0 1006.0,282.0 966.0,320.0C926.0,358.0 891.0,418.0 879.0,468.0C875.0,484.0 873.0,497.0 872.0,508.0C865.0,482.0 860.0,442.0 862.0,402.0C864.0,362.0 871.0,332.0 863.0,306.0C853.0,280.0 816.0,255.0 786.0,234.0Z"/><circle fill="#3FAE5A" cx="926.0" cy="216" r="43"/><path fill="#3FAE5A" d="M989.0,322.0C953.0,346.0 905.0,396.0 889.0,446.0C877.0,484.0 886.0,524.0 932.0,577.0C914.0,540.0 917.0,500.0 934.0,456.0C949.0,416.0 975.0,361.0 989.0,322.0Z"/></svg>

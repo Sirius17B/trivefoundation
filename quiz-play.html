@@ -2,15 +2,16 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="description" content="THRIVE Quiz Arena — active quiz session.">
+  <meta name="description" content="THRIVE Quiz Arena by Trivefoundation — active quiz session.">
   <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
-  <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
   <meta name="robots" content="noindex">
   <link rel="canonical" href="https://trivefoundation.netlify.app/quiz-play.html">
-  <title>Quiz in Progress — THRIVE</title>
+  <title>Quiz in Progress — Trivefoundation</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <meta name="theme-color" content="#08365B">
   <style>
     body{background:var(--off-white)}
     .q-page-header{position:sticky;top:0;background:var(--white);border-bottom:1px solid var(--border);padding:14px var(--pad);display:flex;align-items:center;justify-content:space-between;gap:10px;z-index:10;flex-wrap:wrap;box-shadow:var(--sh-xs)}
@@ -27,12 +28,12 @@
     .q-option{display:flex;align-items:flex-start;gap:13px;padding:15px 18px;border:2px solid var(--border);border-radius:var(--r-xl);background:var(--white);cursor:pointer;transition:all var(--t-fast);text-align:left;font-size:.95rem;color:var(--ink-700);line-height:1.5;width:100%}
     .q-option:hover:not(:disabled){border-color:var(--green-500);background:var(--green-50)}
     .q-option.selected{border-color:var(--green-600);background:var(--green-50)}
-    .q-option.correct{border-color:#16A34A;background:#F0FDF4;color:#166534}
-    .q-option.wrong{border-color:var(--red-600);background:var(--red-100);color:#991B1B}
+    .q-option.correct{border-color:var(--green);background:var(--mint);color:var(--green-deep)}
+    .q-option.wrong{border-color:var(--danger);background:var(--danger-tint);color:#8A1C13}
     .q-option:disabled{cursor:default}
     .q-opt-letter{min-width:28px;height:28px;border-radius:50%;background:var(--surface-2);color:var(--ink-300);font-size:.76rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:all var(--t-fast)}
     .q-option.selected .q-opt-letter{background:var(--green-600);color:#fff}
-    .q-option.correct .q-opt-letter{background:#16A34A;color:#fff}
+    .q-option.correct .q-opt-letter{background:var(--green);color:#fff}
     .q-option.wrong .q-opt-letter{background:var(--red-600);color:#fff}
     .q-explanation{margin-top:14px;padding:13px 16px;border-radius:var(--r-lg);background:var(--teal-100);border-left:3px solid var(--teal-600);font-size:.87rem;color:var(--ink-700);line-height:1.65;display:none}
     .q-explanation.show{display:block}
@@ -40,21 +41,21 @@
 
     .results-screen{max-width:620px;margin:0 auto;padding:clamp(32px,5vw,60px) var(--pad)}
     .results-circle{width:110px;height:110px;border-radius:50%;border:5px solid var(--green-600);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 22px}
-    .results-circle.fail{border-color:var(--orange-600)}
-    .results-pct{font-family:var(--font-head);font-size:2rem;font-weight:800;color:var(--ink-900);line-height:1}
+    .results-circle.fail{border-color:var(--sun)}
+    .results-pct{font-family:var(--font-head);font-size:2rem;font-weight:600;color:var(--ink-900);line-height:1}
     .results-lbl{font-size:.68rem;color:var(--ink-300);text-transform:uppercase;letter-spacing:.08em}
     .results-breakdown{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:24px 0}
     .r-stat{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:15px 10px;text-align:center}
-    .r-stat-n{font-family:var(--font-head);font-size:1.55rem;font-weight:800;color:var(--ink-900)}
+    .r-stat-n{font-family:var(--font-head);font-size:1.55rem;font-weight:600;color:var(--ink-900)}
     .r-stat-l{font-size:.7rem;color:var(--ink-300);margin-top:3px}
     .rank-banner{background:var(--ink-900);color:#fff;border-radius:var(--r-xl);padding:18px 22px;margin:16px 0;text-align:center}
-    .rank-number{font-family:var(--font-head);font-size:2.2rem;font-weight:800;color:#FBBF24}
-    .rank-label{font-size:.82rem;color:rgba(255,255,255,.6);margin-top:3px}
+    .rank-number{font-family:var(--font-head);font-size:2.2rem;font-weight:600;color:var(--sun)}
+    .rank-label{font-size:.82rem;color:rgba(255,255,255,.78);margin-top:3px}
 
     .q-loading{max-width:480px;margin:80px auto;text-align:center;padding:0 var(--pad);color:var(--ink-300)}
 
     /* Submit-confirmation modal */
-    .submit-modal-backdrop{position:fixed;inset:0;background:rgba(15,23,20,.55);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px}
+    .submit-modal-backdrop{position:fixed;inset:0;background:rgba(6,40,69,.6);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px}
     .submit-modal{background:var(--white);border-radius:var(--r-2xl);padding:28px 26px;max-width:380px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25)}
     .submit-modal h3{font-family:var(--font-head);font-size:1.15rem;margin-bottom:10px;color:var(--ink-900)}
     .submit-modal p{font-size:.9rem;color:var(--ink-500);line-height:1.5;margin-bottom:6px}
@@ -69,18 +70,18 @@
     .topic-row-top{display:flex;justify-content:space-between;font-size:.82rem;color:var(--ink-700);margin-bottom:5px;gap:8px}
     .topic-row-top strong{color:var(--ink-900)}
     .topic-bar-track{height:8px;border-radius:99px;background:var(--surface-2);overflow:hidden}
-    .topic-bar-fill{height:100%;border-radius:99px;background:#16A34A;transition:width .5s ease}
+    .topic-bar-fill{height:100%;border-radius:99px;background:var(--green);transition:width .5s ease}
     .topic-bar-fill.weak{background:var(--red-600)}
-    .topic-bar-fill.mid{background:var(--orange-600)}
+    .topic-bar-fill.mid{background:var(--sun)}
 
     /* One-by-one corrections view */
     .corr-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:8px}
     .corr-counter{font-size:.8rem;color:var(--ink-300)}
     .corr-topic-badge{display:inline-block;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--teal-700);background:var(--teal-100);padding:4px 10px;border-radius:99px;margin-bottom:10px}
     .corr-status{font-size:.76rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:4px 10px;border-radius:99px}
-    .corr-status.correct{color:#166534;background:#F0FDF4}
-    .corr-status.wrong{color:#991B1B;background:var(--red-100)}
-    .corr-status.skipped{color:#92400E;background:#FEF3C7}
+    .corr-status.correct{color:var(--green-deep);background:var(--mint)}
+    .corr-status.wrong{color:#8A1C13;background:var(--danger-tint)}
+    .corr-status.skipped{color:var(--sun-ink);background:var(--sun-tint)}
     .corr-your-answer{font-size:.78rem;color:var(--ink-300);margin-top:12px}
 
     @media print{
@@ -347,8 +348,8 @@ async function finishQuiz(timeout = false) {
   document.getElementById('quiz-runner-content').innerHTML = `
     <div class="results-screen">
       <div style="text-align:center;margin-bottom:20px">
-        <img src="assets/tree-logo.png" alt="THRIVE" style="height:44px;margin:0 auto 8px" onerror="this.style.display='none'">
-        <div style="font-weight:700;color:var(--ink-900)">${sanitize((window.SITE_CONFIG?.ORG_NAME)||'THRIVE')}</div>
+        <img src="assets/logo.svg" alt="" style="height:56px;margin:0 auto 8px" onerror="this.style.display='none'">
+        <div style="font-weight:700;color:var(--ink-900)">${sanitize((window.SITE_CONFIG?.ORG_NAME)||'Trivefoundation')}</div>
         <div style="font-size:.78rem;color:var(--ink-300)">${sanitize(quiz.title)} · ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}</div>
       </div>
       <div class="results-circle ${passed ? '' : 'fail'}">

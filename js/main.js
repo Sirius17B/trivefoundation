@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════
-   THRIVE — main.js
+   Trivefoundation — main.js
    Security · Nav · Carousel · Leaderboards
    League Engine · Tech Engine · Admin Auth
    CMS · Video · Stats Counter
@@ -340,9 +340,13 @@ window.CMS={
     // Apply config overrides
     const cfg=window.SITE_CONFIG;
     if(cfg){
-      const name=this.get('org_name',cfg.ORG_NAME);
+      const name=this.get('org_name',cfg.ORG_NAME)||cfg.ORG_NAME;
       document.querySelectorAll('[data-org-name]').forEach(el=>el.textContent=name);
-      document.title=document.title.replace(/THRIVE/g,name);
+      document.querySelectorAll('.logo-lockup img').forEach(el=>el.alt=name);
+      /* Page <title>s are written with the default name from config.js;
+         swap in the current name (once per change, so it never doubles up). */
+      const shown=this._shownName||cfg.ORG_NAME;
+      if(shown!==name){document.title=document.title.split(shown).join(name);this._shownName=name;}
 
       const email=this.get('org_email',cfg.ORG_EMAIL);
       document.querySelectorAll('[data-org-email]').forEach(el=>{

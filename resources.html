@@ -2,14 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="description" content="Study books, guides, and videos to help TriveFoundation candidates prepare — free to read or download.">
+  <meta name="description" content="Study books, guides, and videos to help THRIVE candidates prepare — free to read or download.">
   <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
-  <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
   <link rel="canonical" href="https://trivefoundation.netlify.app/resources.html">
-  <title>Resources — TriveFoundation</title>
+  <title>Resources — Trivefoundation</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <meta name="theme-color" content="#08365B">
   <style>
     .res-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:clamp(13px,2.5vw,20px)}
     .res-card{background:var(--c-white);border:1px solid var(--c-border);border-radius:var(--r-lg);overflow:hidden;display:flex;flex-direction:column;position:relative;transition:box-shadow var(--t),transform var(--t)}
@@ -17,11 +18,11 @@
     .res-thumb{position:relative;width:100%;aspect-ratio:16/9;background:var(--c-sand);cursor:pointer;overflow:hidden}
     .res-thumb img{width:100%;height:100%;object-fit:cover;display:block}
     .res-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
-    .res-play span{width:52px;height:52px;border-radius:50%;background:rgba(10,37,64,.72);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
-    .res-doc-icon{width:100%;aspect-ratio:16/9;background:var(--c-sand);display:flex;align-items:center;justify-content:center;font-size:2.4rem}
+    .res-play span{width:52px;height:52px;border-radius:50%;background:rgba(8,54,91,.78);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+    .res-doc-icon{position:relative;width:100%;aspect-ratio:16/9;background:var(--sky);color:var(--navy);display:flex;align-items:center;justify-content:center}
     .res-doc-thumb{position:relative;width:100%;aspect-ratio:16/9;background:var(--c-sand);overflow:hidden}
     .res-doc-thumb img{width:100%;height:100%;object-fit:cover;display:block}
-    .res-doc-badge{position:absolute;bottom:6px;left:6px;background:rgba(10,37,64,.78);color:#fff;font-size:.62rem;font-weight:700;letter-spacing:.04em;padding:2px 7px;border-radius:4px;text-transform:uppercase}
+    .res-doc-badge{position:absolute;bottom:6px;left:6px;background:rgba(8,54,91,.85);color:#fff;font-size:.62rem;font-weight:700;letter-spacing:.04em;padding:2px 7px;border-radius:4px;text-transform:uppercase}
     #rd-thumb-wrap{display:none;align-items:center;gap:10px;margin-top:8px}
     #rd-thumb-wrap img{width:64px;height:44px;object-fit:cover;border-radius:6px;border:1px solid var(--c-border)}
     #rd-thumb-wrap span{font-size:.76rem;color:var(--c-muted)}
@@ -29,7 +30,7 @@
     .res-title{font-weight:700;font-size:.98rem;color:var(--c-ink);line-height:1.35}
     .res-desc{font-size:.83rem;color:var(--c-muted);line-height:1.5;flex:1}
     .res-meta{font-size:.72rem;color:var(--c-muted);text-transform:uppercase;letter-spacing:.05em}
-    .res-del{position:absolute;top:8px;right:8px;background:rgba(220,38,38,.85);color:#fff;border:none;border-radius:50%;width:26px;height:26px;font-size:.85rem;cursor:pointer;line-height:26px;text-align:center;z-index:2}
+    .res-del{position:absolute;top:8px;right:8px;background:var(--danger);color:#fff;border:none;border-radius:50%;width:26px;height:26px;font-size:.85rem;cursor:pointer;line-height:26px;text-align:center;z-index:2}
     #video-modal .modal-box{max-width:800px;padding:0;background:#000}
     #video-modal iframe{display:block;width:100%;aspect-ratio:16/9;border:0}
     #video-modal-close{position:absolute;top:-40px;right:0;background:none;border:none;color:#fff;font-size:1.6rem;cursor:pointer;line-height:1}
@@ -41,7 +42,7 @@
 <main id="main">
 
 <section class="page-hdr">
-  <span class="eyebrow" style="color:var(--c-green-lt);display:block;margin-bottom:.4rem">Get Ready</span>
+  <span class="eyebrow" style="display:block;margin-bottom:.4rem">Get Ready</span>
   <h1 data-cms="resources_title">Resources</h1>
   <p class="lead" style="margin-top:.5rem;max-width:560px" data-cms="resources_sub">Study books, guides, and videos to help you prepare — free to read, watch, or download.</p>
 </section>
@@ -98,13 +99,8 @@
 injectNav();
 injectAdminUI();injectFooter();
 
-const DOC_ICONS = {
-  'application/pdf': '📄',
-  'application/msword': '📝',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '📝',
-  'application/vnd.ms-powerpoint': '📊',
-  'application/vnd.openxmlformats-officedocument.presentationml.presentation': '📊',
-};
+/* Simple line icon for documents that have no page preview (no emoji) */
+const DOC_ICON_SVG = '<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>';
 const DOC_BADGES = {
   'application/pdf': 'PDF',
   'application/msword': 'DOC',
@@ -200,11 +196,10 @@ function renderResources() {
         </div>
       </div>`;
     }
-    const icon = DOC_ICONS[r.mimeType] || '📄';
     const badge = DOC_BADGES[r.mimeType] || 'FILE';
     const thumbBlock = r.thumbId
       ? `<div class="res-doc-thumb"><img src="/.netlify/functions/resources?action=thumbnail&id=${encodeURIComponent(r.thumbId)}" alt="${sanitize(r.title)}" loading="lazy"><span class="res-doc-badge">${badge}</span></div>`
-      : `<div class="res-doc-icon">${icon}</div>`;
+      : `<div class="res-doc-icon">${DOC_ICON_SVG}<span class="res-doc-badge">${badge}</span></div>`;
     return `<div class="res-card" role="listitem">
       ${delBtn}
       ${thumbBlock}

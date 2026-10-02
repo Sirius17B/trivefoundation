@@ -1,9 +1,16 @@
 /**
- * TriveFoundation SITE CONFIG  ·  config.js
+ * Trivefoundation SITE CONFIG  ·  config.js
  * ════════════════════════════════
- * RENAME the organisation → change ORG_NAME (and optionally ORG_TAGLINE).
+ * NAMING RULE (see BRAND.md):
+ *   · The ORGANISATION is "Trivefoundation" (one word, capital T only).
+ *   · The YEARLY PROGRAMME is "THRIVE" + edition number — THRIVE 2.0 (2026), THRIVE 3.0 …
+ *   Never join the two (the programme name + "Foundation"), and never use the organisation name for an edition.
+ *
+ * RENAME the organisation → change ORG_NAME here, then replace the logo files
+ * in assets/ (the name is part of the logo artwork — see BRAND.md).
  * Every page reads from window.SITE_CONFIG so one edit changes everything.
- * Admins can override most values live via the CMS panel (stored in window.storage).
+ * Admins can override most values live via the CMS panel (stored in window.storage);
+ * a saved override wins over the defaults in this file.
  */
 'use strict';
 
@@ -12,20 +19,21 @@ window.SITE_CONFIG = {
   /* ── IDENTITY ─────────────────────────────────────────
      Change ORG_NAME here to rename across the whole site.
   ──────────────────────────────────────────────────────*/
-  ORG_NAME:      'TriveFoundation',
-  ORG_TAGLINE:   'Raising Champions',
+  ORG_NAME:      'Trivefoundation',
+  ORG_TAGLINE:   'Tech · Innovation · Football',
   ORG_YEAR:      '2026',
   ORG_SEASON:    'A Time To Build',
   ORG_MISSION:   'Empowering youth through technology, sport, and inspiration.',
   ORG_EMAIL:     'camplucens@gmail.com', /* working default — update from Admin → Site Settings → Identity once a standard org email exists */
   ORG_PHONE:     '+234 800 000 0000',
-  /* NOTE: THRIVE is an independent organisation. Events held at partner venues. */
-  ORG_VENUE_2025:'FGC NISE, Anambra State, Nigeria',
+  /* NOTE: Trivefoundation is independent. Each THRIVE edition is hosted at a partner venue. */
+  ORG_VENUE_2025:'FGC Nise, Anambra State, Nigeria',
+  ORG_VENUE_2026:'Union Secondary School, Amichi, Anambra State, Nigeria', /* host venue for THRIVE 2.0 only — NOT the organisation's address. Tech & Innovation in the ICT Laboratory; football at the same school. */
 
   /* ── HERO HEADLINE ─────────────────────────────────── */
   HERO_LINE1:    'A Time',
   HERO_LINE2:    'To Build',
-  HERO_EYEBROW:  'Now Active · 2026 Season',
+  HERO_EYEBROW:  'THRIVE 2.0 · 2026 Edition',
   HERO_BODY:     'Technology. Sport. Inspiration. Three pillars. One mission — equipping young Nigerians with the skills and character to change their world.',
 
   /* ── STATS ─────────────────────────────────────────── */
@@ -92,10 +100,10 @@ window.SITE_CONFIG = {
   STORIES: [
     {
       id: 'story-2026-03',
-      date: 'March 2026',
-      headline: 'TriveFoundation 2026 Officially Announced — Expanding to Three Schools',
+      date: 'October 2026',
+      headline: 'THRIVE 2.0 Announced — A Time To Build',
       category: 'Announcement',
-      body: 'We are thrilled to announce that TriveFoundation 2026 will be expanding its reach to three schools across the FCT. Building on the success of our maiden edition, we are set to bring technology training, competitive football, and inspirational talks to even more young Nigerians this year. Registration for partner schools opens in April.',
+      body: 'Trivefoundation has announced THRIVE 2.0, the second edition of its yearly youth programme, themed "A Time To Build". Building on the maiden edition, THRIVE 2.0 is open to secondary schools in Anambra State in two categories: Tech & Innovation and Football. Both categories will be hosted at Union Secondary School, Amichi, with Tech & Innovation sessions in the school\'s ICT Laboratory. Invitations are going out to schools now.',
       image: 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&q=75&auto=format&fit=crop',
       imageAlt: 'Group of young African students excited and celebrating',
       featured: true,
@@ -105,7 +113,7 @@ window.SITE_CONFIG = {
       date: 'February 2026',
       headline: 'New Quiz Arena Launched — Tech and Football Challenges Available Now',
       category: 'Tech',
-      body: 'TriveFoundation participants can now test their knowledge through our brand-new online Quiz Arena. Two categories are live: Tech Challenge (50 questions on programming, computers and digital skills) and Football Arena (50 questions on football rules, history and tactics). Top scores appear on the leaderboard. More quiz categories coming soon.',
+      body: 'THRIVE participants can now test their knowledge through our online Quiz Arena. Two categories are live: the Tech Challenge (artificial intelligence, robotics, machine learning and software) and the Football Arena (rules, history and tactics). Top scores appear on the leaderboard.',
       image: 'https://images.unsplash.com/photo-1573496358961-3c82861ab8f4?w=800&q=75&auto=format&fit=crop',
       imageAlt: 'African student focused on a laptop completing an online quiz',
       featured: false,
@@ -113,9 +121,9 @@ window.SITE_CONFIG = {
     {
       id: 'story-2025-11',
       date: 'November 2025',
-      headline: 'TriveFoundation 2025 Closes with Record Participation at FGC NISE',
+      headline: 'Maiden Edition of THRIVE Closes at FGC Nise',
       category: 'Event',
-      body: 'The maiden edition of TriveFoundation concluded at FGC NISE, Anambra State, with every programmatic objective met. Students competed in the football league, presented tech capstone projects, and attended TED-style inspiration talks at the closing ceremony. SS3 Boys clinched the football final 4–3 against JSS3, while SS2 Girls won the girls competition 3–1.',
+      body: 'The maiden edition of THRIVE concluded at FGC Nise, Anambra State, with every programme objective met. Students competed in the football league, presented tech capstone projects, and attended TED-style inspiration talks at the closing ceremony. SS3 Boys won the football final 4–3 against JSS3, while SS2 Girls won the girls competition 3–1.',
       image: 'https://images.unsplash.com/photo-1544717297-fa95b6ee9643?w=800&q=75&auto=format&fit=crop',
       imageAlt: 'Young African students celebrating at an award ceremony',
       featured: false,
@@ -125,7 +133,7 @@ window.SITE_CONFIG = {
       date: 'October 2025',
       headline: 'Tech Capstone Week: Students Build Real Apps and Websites',
       category: 'Tech',
-      body: 'Over five days of intensive learning, TriveFoundation participants at FGC NISE designed, built, and presented their own digital products. Projects ranged from weather apps and school portals to recipe finders and budget trackers. Facilitator Yahnazo Basil described the energy as "electric — these students exceeded every expectation."',
+      body: 'Over five days of intensive learning, THRIVE participants at FGC Nise designed, built, and presented their own digital products. Projects ranged from weather apps and school portals to recipe finders and budget trackers. Facilitator Yahnazo Basil described the energy as "electric — these students exceeded every expectation."',
       image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800&q=75&auto=format&fit=crop',
       imageAlt: 'African students working on computers during a tech training session',
       featured: false,
@@ -135,7 +143,7 @@ window.SITE_CONFIG = {
       date: 'September 2025',
       headline: 'Football League Kicks Off — 14 Teams Compete Across Boys and Girls Divisions',
       category: 'Football',
-      body: 'The TriveFoundation 2025 football season opened with 14 teams — 8 in the boys division and 6 in the girls division. Every match was fiercely contested. Football Coordinator Odinaka Okoye noted the remarkable level of organisation and sportsmanship from all participants. The league ran for four weeks, with results tracked live on this website.',
+      body: 'The 2025 THRIVE football season opened with 14 teams — 8 in the boys division and 6 in the girls division. Every match was fiercely contested. Football Coordinator Odinaka Okoye noted the remarkable level of organisation and sportsmanship from all participants. The league ran for four weeks, with results tracked live on this website.',
       image: 'https://images.unsplash.com/photo-1547347298-4074fc3086f0?w=800&q=75&auto=format&fit=crop&crop=center',
       imageAlt: 'Young African children competing in a football league match',
       featured: false,
@@ -161,13 +169,14 @@ window.SITE_CONFIG = {
      bank (373 tech + 159 football). quiz-bank.js must load AFTER this
      file and BEFORE any page script reads SITE_CONFIG.QUIZZES. */
 
+  /* color = background of the initials badge when no photo is set (brand navy / green only) */
   TEAM: [
-    { name:'Chisom Okoye',       role:'Founder & Programme Director', color:'#0A3D2E', photo:'https://images.unsplash.com/photo-1531384441138-2736e62e0919?w=200&q=80&auto=format&fit=crop&crop=faces' },
-    { name:'Odinaka Okoye',      role:'Football Coordinator',         color:'#F97316', photo:'' },
-    { name:'Yahnazo Basil',      role:'ICT & Tech Facilitator',       color:'#2D9E6B', photo:'' },
-    { name:'Chisom Mmaduabuchi', role:'Logistics',                    color:'#0D7B7B', photo:'' },
-    { name:'Josemaria Nriagu',   role:'Tech Support · TED Talk Speaker', color:'#7C3AED', photo:'' },
-    { name:'Thankgod Nnajieneh', role:'Financial Partner',            color:'#1E3A5F', photo:'' },
+    { name:'Chisom Okoye',       role:'Founder & Programme Director', color:'#08365B', photo:'' },
+    { name:'Odinaka Okoye',      role:'Football Coordinator',         color:'#1C854B', photo:'' },
+    { name:'Yahnazo Basil',      role:'ICT & Tech Facilitator',       color:'#17713F', photo:'' },
+    { name:'Chisom Mmaduabuchi', role:'Logistics',                    color:'#062845', photo:'' },
+    { name:'Josemaria Nriagu',   role:'Tech Support · TED Talk Speaker', color:'#1C854B', photo:'' },
+    { name:'Thankgod Nnajieneh', role:'Financial Partner',            color:'#08365B', photo:'' },
   ],
 
 };

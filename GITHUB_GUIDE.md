@@ -263,7 +263,7 @@ Every time you merge a Pull Request into `main`, GitHub Pages automatically rebu
 | Change text on any page | Admin (browser) | Ctrl+Shift+A → click text → type → Save |
 | Add a new page | Developer | Copy a page, add nav link in `components.js` |
 | Change colours | Developer | Edit `:root` variables in `css/style.css` |
-| Replace the logo | Developer | Replace `assets/tree-logo.png` |
+| Replace the logo | Developer | Replace the `assets/logo*.svg` files (see BRAND.md) |
 | Add gallery photos | Admin (browser) | Ctrl+Shift+A → `gallery.html` → Add Image |
 
 ---

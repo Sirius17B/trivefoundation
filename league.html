@@ -2,18 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="description" content="View TriveFoundation football league tables and capstone project rankings for boys, girls, and digital innovation participants.">
+  <meta name="description" content="View THRIVE football league tables and capstone project rankings for boys, girls, and digital innovation participants.">
   <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
-  <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
   <link rel="canonical" href="https://trivefoundation.netlify.app/league.html">
-  <title>Leaderboards — TriveFoundation</title>
+  <title>Leaderboards — Trivefoundation</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <meta name="theme-color" content="#08365B">
   <style>
     .sub-tabs{display:flex;gap:7px;flex-wrap:wrap}
     .sub-tab{padding:7px 16px;border-radius:var(--r-md);font-size:.82rem;font-weight:600;background:var(--c-cream);color:var(--c-muted);border:1.5px solid transparent;transition:all var(--t);cursor:pointer}
-    .sub-tab.active{background:var(--c-forest);color:#fff}
+    .sub-tab.active{background:var(--navy);color:#fff}
     .panel{display:none}.panel.active{display:block}
     .score-num{font-weight:700;color:var(--c-teal);font-size:.92rem}
   </style>
@@ -26,7 +27,7 @@
   <div class="modal-box">
     <h2 id="modal-title" style="margin-bottom:.4rem">Admin Access</h2>
     <p style="font-size:.88rem;color:var(--c-muted);margin-bottom:1.1rem">Enter the admin PIN to manage results and content.</p>
-    <div id="login-err" style="display:none;background:#FEF2F2;border:1px solid #FECACA;border-radius:var(--r-sm);padding:8px 12px;font-size:.82rem;color:#DC2626;margin-bottom:10px" role="alert"></div>
+    <div id="login-err" style="display:none;background:var(--danger-tint);border:1px solid #F5C2BE;border-radius:var(--r-sm);padding:8px 12px;font-size:.82rem;color:var(--danger);margin-bottom:10px" role="alert"></div>
     <div class="fg"><label for="pin-input">Admin PIN</label><input type="password" id="pin-input" maxlength="20" placeholder="Enter PIN" autocomplete="current-password"></div>
     <div style="display:flex;gap:9px;margin-top:4px">
       <button class="btn btn-green" onclick="doLogin()">Sign In</button>
@@ -60,7 +61,7 @@
       <div class="cms-panel active">
         <div class="cms-note">Changing the organisation name here will update it everywhere on the site. Refresh any other open pages to see changes.</div>
         <div class="cms-field-row">
-          <div class="cms-field-group"><label>Organisation Name</label><input id="cms-org-name" type="text" placeholder="TriveFoundation"></div>
+          <div class="cms-field-group"><label>Organisation Name</label><input id="cms-org-name" type="text" placeholder="Trivefoundation"></div>
           <div class="cms-field-group"><label>Tagline</label><input id="cms-org-tagline" type="text" placeholder="Raising Champions"></div>
         </div>
         <div class="cms-field-group"><label>Mission Statement</label><input id="cms-org-mission" type="text"></div>
@@ -133,7 +134,7 @@
 
 <main id="main">
 <section class="page-hdr">
-  <span class="eyebrow" style="color:var(--c-green-lt);display:block;margin-bottom:.4rem">Live Standings</span>
+  <span class="eyebrow" style="display:block;margin-bottom:.4rem">Live Standings</span>
   <h1>Leaderboards</h1>
   <p class="lead" style="margin-top:.5rem">Football leagues and Tech rankings — updated in real time</p>
 </section>
@@ -143,7 +144,7 @@
 
     <div class="league-controls">
       <div class="league-tabs">
-        <button class="l-tab active" id="tab-football" onclick="mainTab('football',this)">⚽ Football</button>
+        <button class="l-tab active" id="tab-football" onclick="mainTab('football',this)">Football</button>
         <button class="l-tab" id="tab-tech" onclick="mainTab('tech',this)">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:3px"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>Capstone Projects
         </button>
