@@ -420,7 +420,8 @@ p{font-size:clamp(.93rem,1.5vw,1rem);color:var(--muted);line-height:1.75}
 .cms-field-group input:focus,.cms-field-group select:focus,.cms-field-group textarea:focus{outline:none;border-color:var(--green)}
 .btn-del-item{padding:4px 9px;border-radius:var(--r-sm);background:transparent;color:var(--danger);border:1px solid #F5C2BE;font-size:.78rem;cursor:pointer;transition:all var(--t)}
 .btn-del-item:hover{background:var(--danger-tint)}
-.admin-only{display:none}
+/* html prefix: must out-rank component rules like .btn{display:inline-flex}; login code reveals via inline style, which still wins */
+html .admin-only{display:none}
 .cms-toolbar{position:fixed;bottom:0;left:0;right:0;z-index:1200;background:rgba(6,40,69,.97);border-top:3px solid var(--green);padding:10px clamp(14px,4vw,40px);align-items:center;gap:10px;flex-wrap:wrap;color:rgba(255,255,255,.82);font-size:.84rem}
 
 /* ── BUTTONS ──
