@@ -1023,4 +1023,14 @@ plain local static server because the pages call the Netlify functions that
 only exist when deployed (those calls 404 locally). That is expected locally;
 the other browser tests mock those calls and do not have this problem.
 
+Study-guide PDFs (`TECH_STUDY_BOOK.md`, `FOOTBALL_STUDY_BOOK.md`) are built, not committed:
+
+```bash
+pip install reportlab fonttools brotli pymupdf pillow
+python3 scripts/build_study_pdfs.py     # writes dist/*.pdf in the Trivefoundation brand
+python3 scripts/check_study_pdfs.py     # fonts, every heading and example present, nothing off the page
+```
+
+Upload the results through the Resources page. Re-run both after editing either markdown file.
+
 Donor confirmations and contact messages should use a secure backend before production. See `BACKEND_DONOR_PRIVACY.md` for the included Netlify function starters, required environment variables, and donor identity protection model.

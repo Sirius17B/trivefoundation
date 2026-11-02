@@ -98,7 +98,7 @@ Standing rules carried over from earlier work: the organisation is **Trivefounda
 
 ### Deliberately not changed
 - Netlify Functions, storage keys, admin PIN hash, quiz bank, league/quiz engines.
-- `scripts/build_study_pdfs.py` and the generated study books: still use the old tree mark and green/orange palette, and rely on Windows fonts, so the script could not be run here. Follow-up item.
+- `scripts/build_study_pdfs.py` and the generated study books: not touched by the brand refresh itself. **Done afterwards (2 November 2026):** the script now reads colours from `css/style.css`, uses the real logo files and the site's own Fredoka and Lexend fonts, and `scripts/check_study_pdfs.py` verifies the output. Run `python3 scripts/build_study_pdfs.py` then the check; see the script's header for dependencies. The PDFs already uploaded to the Resources page are the old design until re-uploaded.
 - The stock photographs themselves (URLs unchanged apart from the one removed above).
 
 ---
@@ -177,7 +177,7 @@ Kept out of the repo on purpose: Netlify publishes the repository root, so anyth
 - Check the hero on a real phone and a wide monitor with the real photo.
 - Read the invitation as a school principal would: is anything missing that they need in order to say yes (cost, dates, supervision, transport, consent, contact person)?
 - Accessibility pass with a screen reader on the nav, the quiz and the donate form; the palette was checked for contrast, the interaction was not.
-- Remaining clean-up candidates: page-level `<style>` blocks in `activities.html`, `quiz.html`, `quiz-play.html`, `resources.html` could move into `style.css`; `league.html` carries its own copy of the admin modal; inline `style=""` attributes remain for spacing; the study-book PDF script needs the new palette and logo.
+- Remaining clean-up candidates: page-level `<style>` blocks in `activities.html`, `quiz.html`, `quiz-play.html`, `resources.html` could move into `style.css`; `league.html` carries its own copy of the admin modal; inline `style=""` attributes remain for spacing. (The study-book PDF script was brought onto the new brand on 2 November 2026.)
 
 ---
 
