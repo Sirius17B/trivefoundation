@@ -24,6 +24,7 @@
  * practical risk — not worth the complexity of real distributed locking.
  */
 const { connect, openStore, describeStorageError } = require('./lib/blobs');
+const { checkPin } = require('./lib/auth');
 const crypto = require('node:crypto');
 
 const CODES_KEY = 'thrive_quiz_codes_v1';
@@ -38,16 +39,6 @@ function response(statusCode, body) {
 
 function getCodesStore() {
   return openStore('thrive-admin');
-}
-
-function pinMatches(submitted, expected) {
-  const a = Buffer.from(String(submitted ?? ''));
-  const b = Buffer.from(String(expected ?? ''));
-  if (a.length !== b.length) {
-    crypto.timingSafeEqual(a, a);
-    return false;
-  }
-  return crypto.timingSafeEqual(a, b);
 }
 
 function randomCode() {
@@ -88,9 +79,8 @@ exports.handler = async (event) => {
   }
 
   if (action === 'generate') {
-    const expectedPin = process.env.ADMIN_PIN;
-    if (!expectedPin) return response(503, { error: 'Admin backend is not configured — set ADMIN_PIN in Netlify environment variables' });
-    if (!pinMatches(payload.pin, expectedPin)) return response(401, { error: 'Invalid PIN' });
+    const auth = await checkPin(event, payload.pin);
+    if (!auth.ok) return response(auth.status, auth.body);
 
     const quizId = String(payload.quizId || '').trim();
     const count = Math.floor(Number(payload.count));
@@ -143,9 +133,8 @@ exports.handler = async (event) => {
   }
 
   if (action === 'list') {
-    const expectedPin = process.env.ADMIN_PIN;
-    if (!expectedPin) return response(503, { error: 'Admin backend is not configured — set ADMIN_PIN in Netlify environment variables' });
-    if (!pinMatches(payload.pin, expectedPin)) return response(401, { error: 'Invalid PIN' });
+    const auth = await checkPin(event, payload.pin);
+    if (!auth.ok) return response(auth.status, auth.body);
 
     try {
       const codes = await loadCodes(store);
@@ -158,9 +147,8 @@ exports.handler = async (event) => {
   }
 
   if (action === 'reset') {
-    const expectedPin = process.env.ADMIN_PIN;
-    if (!expectedPin) return response(503, { error: 'Admin backend is not configured — set ADMIN_PIN in Netlify environment variables' });
-    if (!pinMatches(payload.pin, expectedPin)) return response(401, { error: 'Invalid PIN' });
+    const auth = await checkPin(event, payload.pin);
+    if (!auth.ok) return response(auth.status, auth.body);
 
     const quizId = String(payload.quizId || '').trim();
     if (!quizId) return response(400, { error: 'quizId is required' });

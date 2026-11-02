@@ -17,8 +17,8 @@
  *
  * Storage credentials come from Netlify per request — see lib/blobs.js.
  */
-const crypto = require('node:crypto');
 const { connect, openStore, describeStorageError } = require('./lib/blobs');
+const { checkPin } = require('./lib/auth');
 
 const JSON_HEADERS = {
   'Content-Type': 'application/json',
@@ -51,19 +51,6 @@ function response(statusCode, body) {
   return { statusCode, headers: JSON_HEADERS, body: JSON.stringify(body) };
 }
 
-function pinMatches(submitted, expected) {
-  const a = Buffer.from(String(submitted ?? ''));
-  const b = Buffer.from(String(expected ?? ''));
-  // timingSafeEqual requires equal-length buffers — pad rather than
-  // short-circuit on length, so a wrong-length guess still takes the same
-  // code path as a same-length wrong guess.
-  if (a.length !== b.length) {
-    crypto.timingSafeEqual(a, a); // constant-time no-op to keep timing flat
-    return false;
-  }
-  return crypto.timingSafeEqual(a, b);
-}
-
 exports.handler = async (event) => {
   connect(event);
   let store;
@@ -92,6 +79,12 @@ exports.handler = async (event) => {
       return response(400, { error: 'Invalid JSON' });
     }
 
+    // Login: the PIN is checked here, on the server, never in the browser.
+    if (payload.action === 'verify') {
+      const auth = await checkPin(event, payload.pin);
+      return auth.ok ? response(200, { ok: true }) : response(auth.status, auth.body);
+    }
+
     const key = String(payload.key || '');
     const value = payload.value;
     const pin = payload.pin;
@@ -101,9 +94,8 @@ exports.handler = async (event) => {
     if (Buffer.byteLength(value, 'utf8') > MAX_VALUE_BYTES) return response(413, { error: 'Value too large' });
 
     if (ADMIN_WRITE_KEYS.has(key)) {
-      const expectedPin = process.env.ADMIN_PIN;
-      if (!expectedPin) return response(503, { error: 'Admin backend is not configured — set ADMIN_PIN in Netlify environment variables' });
-      if (!pinMatches(pin, expectedPin)) return response(401, { error: 'Invalid PIN' });
+      const auth = await checkPin(event, pin);
+      if (!auth.ok) return response(auth.status, auth.body);
     }
 
     try {

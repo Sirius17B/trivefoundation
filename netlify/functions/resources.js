@@ -55,6 +55,7 @@
  *    could be added as an extra check before accepting an upload.
  */
 const { connect, openStore, describeStorageError } = require('./lib/blobs');
+const { checkPin } = require('./lib/auth');
 const crypto = require('node:crypto');
 
 const META_KEY = 'thrive_resources_v1';
@@ -101,23 +102,6 @@ function getFilesStore() {
 
 function getThumbsStore() {
   return openStore(THUMBS_STORE_NAME);
-}
-
-function pinMatches(submitted, expected) {
-  const a = Buffer.from(String(submitted ?? ''));
-  const b = Buffer.from(String(expected ?? ''));
-  if (a.length !== b.length) {
-    crypto.timingSafeEqual(a, a);
-    return false;
-  }
-  return crypto.timingSafeEqual(a, b);
-}
-
-function requirePin(payload) {
-  const expectedPin = process.env.ADMIN_PIN;
-  if (!expectedPin) return { ok: false, res: response(503, { error: 'Admin backend is not configured — set ADMIN_PIN in Netlify environment variables' }) };
-  if (!pinMatches(payload.pin, expectedPin)) return { ok: false, res: response(401, { error: 'Invalid PIN' }) };
-  return { ok: true };
 }
 
 async function loadMeta(store) {
@@ -249,8 +233,8 @@ exports.handler = async (event) => {
 
   // ── Admin writes (POST, PIN required) ──
   if (action === 'uploadDocument') {
-    const auth = requirePin(payload);
-    if (!auth.ok) return auth.res;
+    const auth = await checkPin(event, payload.pin);
+    if (!auth.ok) return response(auth.status, auth.body);
 
     const title = String(payload.title || '').trim().slice(0, 150);
     const description = String(payload.description || '').trim().slice(0, 500);
@@ -317,8 +301,8 @@ exports.handler = async (event) => {
   }
 
   if (action === 'addVideo') {
-    const auth = requirePin(payload);
-    if (!auth.ok) return auth.res;
+    const auth = await checkPin(event, payload.pin);
+    if (!auth.ok) return response(auth.status, auth.body);
 
     const title = String(payload.title || '').trim().slice(0, 150);
     const description = String(payload.description || '').trim().slice(0, 500);
@@ -343,8 +327,8 @@ exports.handler = async (event) => {
   }
 
   if (action === 'delete') {
-    const auth = requirePin(payload);
-    if (!auth.ok) return auth.res;
+    const auth = await checkPin(event, payload.pin);
+    if (!auth.ok) return response(auth.status, auth.body);
 
     const id = String(payload.id || '').trim();
     if (!id) return response(400, { error: 'id is required' });
