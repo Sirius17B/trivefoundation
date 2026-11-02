@@ -54,7 +54,7 @@
  *    that matters for your threat model, a service like VirusTotal's API
  *    could be added as an extra check before accepting an upload.
  */
-const { getStore } = require('@netlify/blobs');
+const { connect, openStore, describeStorageError } = require('./lib/blobs');
 const crypto = require('node:crypto');
 
 const META_KEY = 'thrive_resources_v1';
@@ -92,24 +92,15 @@ function response(statusCode, body, extraHeaders) {
 }
 
 function getMetaStore() {
-  const siteID = process.env.SITE_ID || process.env.NETLIFY_SITE_ID;
-  const token = process.env.NETLIFY_BLOBS_TOKEN;
-  if (siteID && token) return getStore({ name: 'thrive-admin', siteID, token });
-  return getStore('thrive-admin');
+  return openStore('thrive-admin');
 }
 
 function getFilesStore() {
-  const siteID = process.env.SITE_ID || process.env.NETLIFY_SITE_ID;
-  const token = process.env.NETLIFY_BLOBS_TOKEN;
-  if (siteID && token) return getStore({ name: FILES_STORE_NAME, siteID, token });
-  return getStore(FILES_STORE_NAME);
+  return openStore(FILES_STORE_NAME);
 }
 
 function getThumbsStore() {
-  const siteID = process.env.SITE_ID || process.env.NETLIFY_SITE_ID;
-  const token = process.env.NETLIFY_BLOBS_TOKEN;
-  if (siteID && token) return getStore({ name: THUMBS_STORE_NAME, siteID, token });
-  return getStore(THUMBS_STORE_NAME);
+  return openStore(THUMBS_STORE_NAME);
 }
 
 function pinMatches(submitted, expected) {
@@ -136,12 +127,8 @@ async function loadMeta(store) {
 }
 
 function blobsErrorResponse(e) {
-  if (e?.name === 'MissingBlobsEnvironmentError') {
-    return response(503, {
-      error: 'Storage is not configured. Set the NETLIFY_BLOBS_TOKEN environment variable — see README.md Section 16.',
-    });
-  }
-  return response(500, { error: e?.message || 'Unexpected storage error' });
+  const { status, error } = describeStorageError(e);
+  return response(status, { error });
 }
 
 // Strip anything except a conservative safe character set, so the stored
@@ -182,6 +169,7 @@ function parseVideoUrl(url) {
 }
 
 exports.handler = async (event) => {
+  connect(event);
   const qs = event.queryStringParameters || {};
 
   // ── Public reads (GET) ──

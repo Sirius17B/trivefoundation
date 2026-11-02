@@ -15,25 +15,10 @@
  * authoritative PIN check for admin writes — the client-side check in
  * js/main.js is only a UX convenience and is never trusted for persistence.
  *
- * Blobs config: zero-config getStore(name) relies on Netlify auto-injecting
- * site/token context into the function at deploy time. On some accounts/
- * deploys that automatic injection doesn't happen (surfaces as
- * MissingBlobsEnvironmentError even though the function runs fine
- * otherwise) — so this also supports explicit manual config via
- * NETLIFY_BLOBS_TOKEN, which is used whenever it's set. See README.md
- * Section 16 for how to create that token if you hit that error.
+ * Storage credentials come from Netlify per request — see lib/blobs.js.
  */
-const { getStore } = require('@netlify/blobs');
 const crypto = require('node:crypto');
-
-function getAdminStore() {
-  const siteID = process.env.SITE_ID || process.env.NETLIFY_SITE_ID;
-  const token = process.env.NETLIFY_BLOBS_TOKEN;
-  if (siteID && token) {
-    return getStore({ name: 'thrive-admin', siteID, token });
-  }
-  return getStore('thrive-admin');
-}
+const { connect, openStore, describeStorageError } = require('./lib/blobs');
 
 const JSON_HEADERS = {
   'Content-Type': 'application/json',
@@ -80,9 +65,10 @@ function pinMatches(submitted, expected) {
 }
 
 exports.handler = async (event) => {
+  connect(event);
   let store;
   try {
-    store = getAdminStore();
+    store = openStore('thrive-admin');
   } catch (e) {
     return blobsErrorResponse(e);
   }
@@ -132,10 +118,6 @@ exports.handler = async (event) => {
 };
 
 function blobsErrorResponse(e) {
-  if (e?.name === 'MissingBlobsEnvironmentError') {
-    return response(503, {
-      error: 'Storage is not configured. Create a Netlify personal access token and set it as the NETLIFY_BLOBS_TOKEN environment variable — see README.md Section 16.',
-    });
-  }
-  return response(500, { error: e?.message || 'Unexpected storage error' });
+  const { status, error } = describeStorageError(e);
+  return response(status, { error });
 }

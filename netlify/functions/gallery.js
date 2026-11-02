@@ -33,7 +33,7 @@
  * upload mechanism (e.g. a signed direct-to-storage upload), which is a
  * larger change than this fix.
  */
-const { getStore } = require('@netlify/blobs');
+const { connect, openStore, describeStorageError } = require('./lib/blobs');
 const crypto = require('node:crypto');
 
 const FILES_STORE_NAME = 'thrive-gallery-files';
@@ -69,10 +69,7 @@ function response(statusCode, body, extraHeaders) {
 }
 
 function getFilesStore() {
-  const siteID = process.env.SITE_ID || process.env.NETLIFY_SITE_ID;
-  const token = process.env.NETLIFY_BLOBS_TOKEN;
-  if (siteID && token) return getStore({ name: FILES_STORE_NAME, siteID, token });
-  return getStore(FILES_STORE_NAME);
+  return openStore(FILES_STORE_NAME);
 }
 
 function pinMatches(submitted, expected) {
@@ -93,12 +90,8 @@ function requirePin(payload) {
 }
 
 function blobsErrorResponse(e) {
-  if (e?.name === 'MissingBlobsEnvironmentError') {
-    return response(503, {
-      error: 'Storage is not configured. Set the NETLIFY_BLOBS_TOKEN environment variable — see README.md Section 16.',
-    });
-  }
-  return response(500, { error: e?.message || 'Unexpected storage error' });
+  const { status, error } = describeStorageError(e);
+  return response(status, { error });
 }
 
 function bytesAt(buffer, offset, bytes) {
@@ -114,6 +107,7 @@ function matchesSignature(buffer, mimeType) {
 }
 
 exports.handler = async (event) => {
+  connect(event);
   const qs = event.queryStringParameters || {};
 
   // ── Public read (GET) ──

@@ -23,7 +23,7 @@
  * time on paper), that's an accepted, documented tradeoff rather than a
  * practical risk — not worth the complexity of real distributed locking.
  */
-const { getStore } = require('@netlify/blobs');
+const { connect, openStore, describeStorageError } = require('./lib/blobs');
 const crypto = require('node:crypto');
 
 const CODES_KEY = 'thrive_quiz_codes_v1';
@@ -37,10 +37,7 @@ function response(statusCode, body) {
 }
 
 function getCodesStore() {
-  const siteID = process.env.SITE_ID || process.env.NETLIFY_SITE_ID;
-  const token = process.env.NETLIFY_BLOBS_TOKEN;
-  if (siteID && token) return getStore({ name: 'thrive-admin', siteID, token });
-  return getStore('thrive-admin');
+  return openStore('thrive-admin');
 }
 
 function pinMatches(submitted, expected) {
@@ -67,15 +64,12 @@ async function loadCodes(store) {
 }
 
 function blobsErrorResponse(e) {
-  if (e?.name === 'MissingBlobsEnvironmentError') {
-    return response(503, {
-      error: 'Storage is not configured. Set the NETLIFY_BLOBS_TOKEN environment variable — see README.md Section 16.',
-    });
-  }
-  return response(500, { error: e?.message || 'Unexpected storage error' });
+  const { status, error } = describeStorageError(e);
+  return response(status, { error });
 }
 
 exports.handler = async (event) => {
+  connect(event);
   if (event.httpMethod !== 'POST') return response(405, { error: 'Method not allowed' });
 
   let payload;

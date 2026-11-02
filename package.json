@@ -5,8 +5,9 @@
   "description": "Static Trivefoundation website with QA, accessibility, and production-readiness checks.",
   "scripts": {
     "check:static": "python3 scripts/static_checks.py",
+    "test:functions": "node --test \"tests/functions/*.check.js\"",
     "test:e2e": "playwright test",
-    "test": "npm run check:static && npm run test:e2e"
+    "test": "npm run check:static && npm run test:functions && npm run test:e2e"
   },
   "dependencies": {
     "@netlify/blobs": "^8.1.0"
