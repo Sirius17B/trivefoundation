@@ -1023,7 +1023,7 @@ plain local static server because the pages call the Netlify functions that
 only exist when deployed (those calls 404 locally). That is expected locally;
 the other browser tests mock those calls and do not have this problem.
 
-Study-guide PDFs (`TECH_STUDY_BOOK.md`, `FOOTBALL_STUDY_BOOK.md`) are built, not committed:
+Study-guide PDFs (`TECH_STUDY_BOOK.md`, `FOOTBALL_STUDY_BOOK.md`, and the beginners' `INTRO_TO_TECH_BOOK.md`) are built, not committed:
 
 ```bash
 pip install reportlab fonttools brotli pymupdf pillow

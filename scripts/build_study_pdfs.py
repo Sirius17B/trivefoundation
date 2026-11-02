@@ -45,9 +45,23 @@ ORG_LINE = "Equipping young Nigerians through technology, sport and inspiration.
 SITE = "trivefoundation.netlify.app"
 
 # Pillar colours: Tech = green, Football = navy (BRAND.md section 3).
+# Everything that differs between books is here, so adding a book is one entry.
 BOOKS = {
-    "TECH_STUDY_BOOK": {"name": "Tech", "pillar": "green", "challenge": "Tech Challenge"},
-    "FOOTBALL_STUDY_BOOK": {"name": "Football", "pillar": "navy", "challenge": "Football Challenge"},
+    "TECH_STUDY_BOOK": {
+        "title": "Tech Study Book", "title_lines": ("Tech", "Study Book"), "pillar": "green",
+        "eyebrow": "TECH CHALLENGE", "subtitle": "A deep-dive guide for the Tech Challenge",
+        "tagline": "Concepts explained properly, then practised on worked examples.",
+    },
+    "FOOTBALL_STUDY_BOOK": {
+        "title": "Football Study Book", "title_lines": ("Football", "Study Book"), "pillar": "navy",
+        "eyebrow": "FOOTBALL CHALLENGE", "subtitle": "A deep-dive guide for the Football Challenge",
+        "tagline": "Concepts explained properly, then practised on worked examples.",
+    },
+    "INTRO_TO_TECH_BOOK": {
+        "title": "Introduction to Tech", "title_lines": ("Introduction", "to Tech"), "pillar": "green",
+        "eyebrow": "START HERE", "subtitle": "A first guide to technology for young people",
+        "tagline": "Simple ideas and everyday examples. No experience needed.",
+    },
 }
 
 
@@ -157,8 +171,10 @@ def plain(s):
 
 def inline(s):
     """Markdown emphasis -> brand emphasis. Lexend and Fredoka have no italics,
-    so *emphasis* is carried by weight and colour instead."""
+    so *emphasis* is carried by weight and colour instead. `code` is set in
+    semibold deep green, with the backticks dropped."""
     s = esc(s)
+    s = re.sub(r"`([^`]+)`", lambda m: f'<font name="Lexend-SemiBold" color="{tok("green-deep")}">{m.group(1)}</font>', s)
     s = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", s)
     s = re.sub(r"(?<!\w)\*(.+?)\*(?!\w)", rf'<font name="Lexend-Medium" color="{tok("navy")}">\1</font>', s)
     return shape(s)
@@ -382,7 +398,7 @@ def tracked(c, text, x, y, font, size, colour, space=1.4, align="left"):
     c.restoreState()
 
 
-def cover_drawer(cfg, title, chapters, n_examples):
+def cover_drawer(cfg, chapters, n_examples):
     pillar = col(cfg["pillar"])
     on_navy = cfg["pillar"] == "navy"
 
@@ -410,18 +426,18 @@ def cover_drawer(cfg, title, chapters, n_examples):
                     mask="auto", preserveAspectRatio=True)
         c.restoreState()
 
-        tracked(c, cfg["challenge"].upper(), MARGIN_X, top - 20 * mm, "Lexend-SemiBold", 9.5, colors.white, 2)
+        tracked(c, cfg["eyebrow"], MARGIN_X, top - 20 * mm, "Lexend-SemiBold", 9.5, colors.white, 2)
         c.setFillColor(col("sun"))
         c.rect(MARGIN_X, top - 26 * mm, 22 * mm, 1.8 * mm, fill=1, stroke=0)
         c.setFillColor(colors.white)
         c.setFont("Fredoka-Bold", 46)
-        c.drawString(MARGIN_X, top - 52 * mm, cfg["name"])
-        c.drawString(MARGIN_X, top - 70 * mm, "Study Book")
+        c.drawString(MARGIN_X, top - 52 * mm, cfg["title_lines"][0])
+        c.drawString(MARGIN_X, top - 70 * mm, cfg["title_lines"][1])
         c.setFont("Lexend-Regular", 12.5)
-        c.drawString(MARGIN_X, top - 88 * mm, f"A deep-dive guide for the {cfg['challenge']}")
+        c.drawString(MARGIN_X, top - 88 * mm, cfg["subtitle"])
         c.setFont("Lexend-Regular", 10)
         c.setFillColor(col("leaf-lt") if on_navy else colors.white)
-        c.drawString(MARGIN_X, top - 97 * mm, "Concepts explained properly, then practised on worked examples.")
+        c.drawString(MARGIN_X, top - 97 * mm, cfg["tagline"])
 
         tracked(c, "INSIDE", MARGIN_X, 104 * mm, "Lexend-SemiBold", 8, col("green-deep"), 1.8)
         c.setFont("Lexend-Regular", 8.5)
@@ -429,6 +445,7 @@ def cover_drawer(cfg, title, chapters, n_examples):
         c.drawRightString(PAGE_W - MARGIN_X, 104 * mm,
                           f"{len(chapters)} chapters \u00b7 {n_examples} worked examples")
         y = 95 * mm
+        step = 7 * mm if len(chapters) <= 7 else 6.2 * mm
         for number, chapter in enumerate(chapters, start=1):
             name = re.sub(r"^Chapter \d+:\s*", "", chapter["title"])
             c.setFont("Fredoka-SemiBold", 12)
@@ -436,7 +453,7 @@ def cover_drawer(cfg, title, chapters, n_examples):
             c.drawString(MARGIN_X, y, f"{number:02d}")
             c.setFillColor(col("navy"))
             c.drawString(MARGIN_X + 11 * mm, y, shape_plain(name))
-            y -= 7 * mm
+            y -= step
 
         c.setStrokeColor(col("line"))
         c.setLineWidth(0.8)
@@ -505,17 +522,20 @@ def chrome_drawer(title):
 
 def build(stem):
     cfg = BOOKS[stem]
-    title = f"{cfg['name']} Study Book"
+    title = cfg["title"]
     S = styles()
     intro, chapters = split_book(parse((ROOT / f"{stem}.md").read_text(encoding="utf-8")))
     n_examples = sum(1 for ch in chapters for b in ch["blocks"] if b["type"] == "example")
 
     story = [NextPageTemplate("Body"), PageBreak()]
     # Front matter: the book's own "How to use this book" page.
+    past_first_rule = False
     for b in intro:
+        if b["type"] == "hr":
+            past_first_rule = True
         if b["type"] == "h2":
-            if b["text"].startswith("A Deep-Dive Guide"):
-                continue  # already on the cover
+            if not past_first_rule:
+                continue  # the subtitle under the book title; it is already on the cover
             story.append(Paragraph(plain(b["text"]), S["h1"] if b["text"].startswith("How to use") else S["h2"]))
         else:
             render_blocks([b], S, cfg["pillar"], story)
@@ -534,11 +554,11 @@ def build(stem):
     DIST.mkdir(exist_ok=True)
     out = DIST / f"{stem}.pdf"
     doc = BaseDocTemplate(str(out), pagesize=A4, title=f"{ORG} {title}", author=ORG,
-                          subject=f"Study guide for the {cfg['challenge']}", creator=f"{ORG} study guide builder")
+                          subject=cfg["subtitle"], creator=f"{ORG} study guide builder")
     doc.addPageTemplates([
         PageTemplate(id="Cover", frames=[Frame(0, 0, PAGE_W, PAGE_H, id="cover", leftPadding=0, rightPadding=0,
                                                topPadding=0, bottomPadding=0)],
-                     onPage=cover_drawer(cfg, title, chapters, n_examples)),
+                     onPage=cover_drawer(cfg, chapters, n_examples)),
         PageTemplate(id="Body", frames=[Frame(MARGIN_X, 22 * mm, TEXT_W, PAGE_H - 32 * mm - 22 * mm, id="body",
                                               leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0)]),
     ])

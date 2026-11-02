@@ -22,6 +22,7 @@ ROOT = Path(__file__).resolve().parent.parent
 BOOKS = [
     ("TECH_STUDY_BOOK", "Tech Study Book"),
     ("FOOTBALL_STUDY_BOOK", "Football Study Book"),
+    ("INTRO_TO_TECH_BOOK", "Introduction to Tech"),
 ]
 WRONG_NAMES = ("TriveFoundation", "Trive Foundation", "THRIVE Foundation")
 # Text the Foundation has retired; it must not come back.
@@ -78,8 +79,9 @@ def check_book(stem, title, folder):
         if retired in flat_case(full):
             problems.append(f"contains retired text '{retired}'")
 
-    headings = [strip_md(m.group(2)).strip() for m in re.finditer(r"^(#{1,2}) (.+)$", md, re.M)]
-    headings = [h for h in headings if not h.startswith("THE THRIVE") and not h.startswith("A Deep-Dive")]
+    # The headings above the first rule are the book title and subtitle, shown on the cover instead.
+    body_md = md.split("\n---\n", 1)[1]
+    headings = [strip_md(m.group(2)).strip() for m in re.finditer(r"^(#{1,2}) (.+)$", body_md, re.M)]
     def present(heading):
         m = re.match(r"^Chapter (\d+):\s*(.*)$", heading)
         if m:  # the design shows "CHAPTER n" above the name rather than one line
