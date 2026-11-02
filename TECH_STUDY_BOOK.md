@@ -1,8 +1,6 @@
 # THE THRIVE TECH STUDY BOOK
 ## A Deep-Dive Guide for the Tech Challenge
 
-*THRIVE — Technology, Hard work, Resilience, Innovation, Vision, and Excellence*
-
 ---
 
 ## How to use this book

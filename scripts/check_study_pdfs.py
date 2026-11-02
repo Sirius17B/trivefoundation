@@ -24,12 +24,18 @@ BOOKS = [
     ("FOOTBALL_STUDY_BOOK", "Football Study Book"),
 ]
 WRONG_NAMES = ("TriveFoundation", "Trive Foundation", "THRIVE Foundation")
+# Text the Foundation has retired; it must not come back.
+RETIRED_TEXT = ("Technology, Hard work, Resilience",)  # the old THRIVE acronym tagline
 FALLBACK_ONLY = {"₦"}  # the only character the brand fonts lack
 SIDE_MARGIN_PT = 28  # nothing on a body page may sit closer than this to the edge
 
 
 def norm(text):
     return re.sub(r"\s+", " ", text.replace(" ", " ")).strip().lower()
+
+
+def flat_case(text):
+    return re.sub(r"\s+", " ", text)
 
 
 def strip_md(text):
@@ -68,6 +74,9 @@ def check_book(stem, title, folder):
     for wrong in WRONG_NAMES:
         if wrong in full:
             problems.append(f"contains the wrong spelling '{wrong}'")
+    for retired in RETIRED_TEXT:
+        if retired in flat_case(full):
+            problems.append(f"contains retired text '{retired}'")
 
     headings = [strip_md(m.group(2)).strip() for m in re.finditer(r"^(#{1,2}) (.+)$", md, re.M)]
     headings = [h for h in headings if not h.startswith("THE THRIVE") and not h.startswith("A Deep-Dive")]

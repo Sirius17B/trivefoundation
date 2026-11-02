@@ -1,8 +1,6 @@
 # THE THRIVE FOOTBALL STUDY BOOK
 ## A Deep-Dive Guide for the Football Challenge
 
-*THRIVE — Technology, Hard work, Resilience, Innovation, Vision, and Excellence*
-
 ---
 
 ## How to use this book
