@@ -12,10 +12,20 @@
  * Fails closed: if the attempt counter can't be read or saved, the answer is
  * "unavailable", never "OK".
  *
- * Known limits (accepted): the counter is read-then-written, so a burst of
- * parallel requests can land a few guesses past the limit; and the limit is
- * per client address, so an attacker with many addresses gets five guesses
- * per address.
+ * Known limits, stated plainly: this limit is BEST-EFFORT, not exact.
+ *  - Netlify Blobs reads are eventually consistent (they can be stale for up
+ *    to about a minute) and connectLambda() offers no strongly-consistent
+ *    reads, so a fast burst of parallel guesses can read an old counter and
+ *    be under-counted. It reliably slows slow, sequential guessing; it does
+ *    not stop a determined burst.
+ *  - The limit is per client address, so an attacker with many addresses
+ *    gets five guesses per address.
+ *  Making it exact needs atomic conditional writes (`onlyIfNew`), which
+ *  @netlify/blobs 8.x lacks (11.x has them): claim one of five attempt slots
+ *  per client per window before comparing, so parallel requests can't share
+ *  a slot. Until then the real defence is a long, random ADMIN_PIN.
+ *  tests/functions/auth.check.js proves the logic against a fake that IS
+ *  strongly consistent; it does not prove Netlify's behaviour.
  */
 const crypto = require('node:crypto');
 const { openStore } = require('./blobs');

@@ -454,9 +454,13 @@ Change the **`ADMIN_PIN`** environment variable in the Netlify dashboard
 PIN is checked only on the server, so there is nothing to edit or redeploy in
 this repo, and the PIN must never be written into it.
 
-After **5 wrong PINs** from one device the server locks that device out for
-**15 minutes** (even the right PIN is refused during the lock). If you lock
-yourself out, wait it out or try from another network.
+The server slows repeated guessing: after **5 wrong PINs** from one device it
+locks that device out for **15 minutes** (even the right PIN is refused during
+the lock). If you lock yourself out, wait it out or try from another network.
+This limit is best-effort, not exact (the storage service is eventually
+consistent, so a fast burst of parallel guesses can slip past it), so **choose
+a long random PIN**: a passphrase of 16 or more characters, not a word or a
+date. Rotate it whenever someone who knew it leaves.
 
 ---
 
