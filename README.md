@@ -449,21 +449,14 @@ Click the **Log Out** button in the bottom toolbar. The session clears and edit 
 
 ### Changing the admin PIN
 
-Open `js/main.js` and find the `_AH` constant near the `AdminAuth` block:
+Change the **`ADMIN_PIN`** environment variable in the Netlify dashboard
+(Site settings → Environment variables) and save. That is the whole job: the
+PIN is checked only on the server, so there is nothing to edit or redeploy in
+this repo, and the PIN must never be written into it.
 
-```js
-const _AH = btoa('thrive-CURRENT_PIN-admin');
-```
-
-In any browser console, compute a new hash for your new PIN:
-
-```js
-btoa('thrive-' + 'YOUR_NEW_PIN' + '-admin')
-```
-
-Paste the result in as the new value of `_AH`. The format must stay as
-`'thrive-' + PIN + '-admin'`. Save the file and redeploy. Never commit the
-plaintext PIN itself to this repo — only the hashed `_AH` value.
+After **5 wrong PINs** from one device the server locks that device out for
+**15 minutes** (even the right PIN is refused during the lock). If you lock
+yourself out, wait it out or try from another network.
 
 ---
 
@@ -763,19 +756,17 @@ above work, connect it to Netlify (free tier is enough):
 2. Site settings → **Environment variables** → add `ADMIN_PIN` set to the
    current admin PIN (ask whoever last rotated it — it's intentionally never
    written down in this repo).
-3. **If a save fails with a storage/Blobs error** (check by hitting
-   `/.netlify/functions/admin-data?key=thrive_cms_v1_data` directly in a
-   browser tab — a healthy response looks like `{"value":null}` or
-   `{"value":"..."}`; an error will mention `MissingBlobsEnvironmentError`
-   or similar): some accounts don't get Netlify's automatic Blobs
-   credentials injected into functions. Fix by supplying them manually:
-   - User menu (top right) → **User settings → Applications → Personal
-     access tokens → New access token** → name it, generate, copy it
-     (shown once)
-   - Site settings → Environment variables → add `NETLIFY_BLOBS_TOKEN` =
-     that token
-   - Redeploy — `netlify/functions/admin-data.js` automatically switches to
-     using this token once it's set (see `getAdminStore()` in that file)
+3. **Storage needs no setup.** Netlify gives each request its own
+   short-lived storage credentials and `netlify/functions/lib/blobs.js` uses
+   them. **Do not create a personal access token or set
+   `NETLIFY_BLOBS_TOKEN`**: personal tokens expire, and an expired one broke
+   every storage-backed feature at once in November 2026 (symptom: the
+   Resources page showing "No resources yet", content and league data not
+   loading, `Netlify Blobs ... (401 status code)` in the function's response).
+   If you see that, delete `NETLIFY_BLOBS_TOKEN` from Environment variables if
+   it exists. To check health, open `/.netlify/functions/admin-data?key=thrive_cms_v1_data`
+   in a browser: `{"value":null}` or `{"value":"..."}` is healthy; an error
+   message names what to fix.
 4. Trigger a redeploy if you added env vars after the first deploy (env
    vars are picked up at deploy time).
 5. Test it: log in with Ctrl+Shift+A, edit something, refresh the page — it
@@ -789,22 +780,15 @@ platform (Vercel, Cloudflare Workers, etc.) and swap the storage backend
 `window.storage` client contract in `js/main.js` (`get(key)` → `{value}`,
 `set(key, value, pin)`) can stay the same either way.
 
-### Changing the admin PIN (now two steps)
+### Changing the admin PIN
 
-The PIN exists in two places that must be updated together:
-
-1. **`js/main.js`** — the `_AH` constant, a SHA-256 hash used only for
-   instant client-side feedback in the login modal. See the comment above
-   it in that file for the exact command to compute a new hash.
-2. **Netlify dashboard → Environment variables → `ADMIN_PIN`** — the
-   plaintext value the Function actually checks for every write. This is
-   the real authority; update it and redeploy (or just save it — Netlify
-   Functions read env vars fresh on each invocation, but a redeploy
-   guarantees it).
-
-If these two ever get out of sync, the login modal and the actual save
-function will disagree about whether a PIN is valid — always change both
-at the same time.
+Set the `ADMIN_PIN` environment variable in the Netlify dashboard, as described
+in Section 8. It is the only place the PIN exists. Login works by sending the
+typed PIN to `netlify/functions/admin-data.js` (action `verify`), and every
+protected write is checked again by the same code in
+`netlify/functions/lib/auth.js`, which also does the 5-wrong-guesses lockout.
+Nothing about the PIN is shipped to the browser, and `scripts/static_checks.py`
+fails the build if a PIN hash or in-browser hashing reappears.
 
 ---
 
@@ -1021,11 +1005,18 @@ npm run check:static
 python3 scripts/static_checks.py
 ```
 
-Optional browser smoke tests are scaffolded with Playwright:
+Tests (run `npm install` once first, then `npx playwright install chromium`):
 
 ```bash
-npm install
-npm run test:e2e
+npm test                 # static checks + function tests + browser tests
+npm run test:functions   # the Netlify functions: PIN check and lockout, storage credentials
+npm run test:e2e         # browser tests: no admin controls visible to visitors on any page,
+                         # login works on every form (server mocked)
 ```
+
+`tests/smoke.spec.js` asserts a page logs no console errors, which fails on a
+plain local static server because the pages call the Netlify functions that
+only exist when deployed (those calls 404 locally). That is expected locally;
+the other browser tests mock those calls and do not have this problem.
 
 Donor confirmations and contact messages should use a secure backend before production. See `BACKEND_DONOR_PRIVACY.md` for the included Netlify function starters, required environment variables, and donor identity protection model.
