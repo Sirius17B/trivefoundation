@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Static QA checks for the Trivefoundation website."""
+import re
 from html.parser import HTMLParser
 from pathlib import Path
 
@@ -64,6 +65,18 @@ def main():
                 errors.append(f"{rel}: write the organisation as 'Trivefoundation', one word (found '{wrong}')")
         if "fonts.googleapis.com" in text or "fonts.gstatic.com" in text:
             errors.append(f"{rel}: fonts are self-hosted; remove the Google Fonts reference (CSP blocks it)")
+    # A PIN digest in public code can be attacked offline with no limit. PINs are
+    # checked only on the server (netlify/functions/lib/auth.js).
+    for path in sorted(ROOT.glob("*.html")) + sorted((ROOT / "js").glob("*.js")):
+        text = path.read_text(encoding="utf-8", errors="ignore")
+        rel = path.relative_to(ROOT)
+        for pattern, why in (
+            (r"crypto\.subtle\.digest", "hashing in the browser"),
+            (r"""['"][0-9a-f]{64}['"]""", "a 64-character hex digest"),
+            (r"""thrive-['"]\s*\+""", "the old PIN-hash recipe"),
+        ):
+            if re.search(pattern, text):
+                errors.append(f"{rel}: contains {why}; admin PINs must be checked on the server only, never against a value shipped to the browser")
     if errors:
         print("Static checks failed:")
         for error in errors:

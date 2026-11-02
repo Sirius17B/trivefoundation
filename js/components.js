@@ -211,10 +211,9 @@ window._closeLoginModal=function(){
   document.getElementById('admin-pin-inp').value='';
 };
 window._doAdminLogin=async function(){
-  if(window._locked()){_showLoginErr('Too many attempts. Wait 60 seconds.');return;}
   const pin=document.getElementById('admin-pin-inp')?.value||'';
   const result=await window.AdminAuth?.login(pin);
-  if(result===true){
+  if(result?.ok){
     window._closeLoginModal();
     document.getElementById('cms-toolbar').style.display='flex';
     window._enableInlineEdit();
@@ -223,7 +222,7 @@ window._doAdminLogin=async function(){
     document.querySelectorAll('.admin-only').forEach(el=>el.style.display='block');
     document.dispatchEvent(new CustomEvent('thrive:admin-state',{detail:{loggedIn:true}}));
   } else {
-    _showLoginErr(window._locked()?'Locked — too many attempts. Wait 60s.':'Incorrect PIN.');
+    _showLoginErr(result?.message||'Sign-in failed. Please try again.');
     document.getElementById('admin-pin-inp').value='';
   }
 };

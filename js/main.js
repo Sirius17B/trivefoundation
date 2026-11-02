@@ -12,9 +12,6 @@
   window.sanitize=function(str){
     const d=document.createElement('div');d.textContent=String(str??'');return d.innerHTML;
   };
-  const _f={n:0,until:0};
-  window._loginFail=function(){_f.n++;if(_f.n>=5){_f.until=Date.now()+60000;_f.n=0;}};
-  window._locked=function(){return Date.now()<_f.until;};
 })();
 
 /* ── NAV SCROLL + HAMBURGER ── */
@@ -270,34 +267,39 @@ window.TechEngine={
 };
 
 /* ── ADMIN AUTH ──
-   This client-side check is a SHA-256 digest — real UX convenience (instant
-   "wrong PIN" feedback), but NOT the security boundary. The authority for
-   actual admin writes is the ADMIN_PIN environment variable checked
-   server-side in netlify/functions/admin-data.js. Rotating the PIN means
-   updating BOTH: this hash, and the Netlify dashboard env var — see README
-   "Changing the admin PIN".
-   To compute a new hash for a new PIN, run in any browser console:
-     crypto.subtle.digest('SHA-256', new TextEncoder().encode('thrive-' + NEW_PIN + '-admin'))
-       .then(b => console.log([...new Uint8Array(b)].map(x => x.toString(16).padStart(2,'0')).join('')))
-   and paste the printed hex string in as _AH below. */
-const _AH='c6bbf60576296bc4076a0113d9950be88ca7c296286d96b1bba00689509cdbd0';
-async function _sha256Hex(str){
-  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
-  return[...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
-}
+   The browser never decides whether a PIN is right. login() asks the server
+   (netlify/functions/admin-data.js, action "verify"), which compares against
+   the ADMIN_PIN environment variable and limits wrong guesses. To change the
+   PIN, change that environment variable in Netlify; nothing here changes.
+   Resolves to { ok, message } so every login form can show the same wording. */
+const _SIGNIN_UNAVAILABLE='Sign-in is unavailable right now. Please try again shortly.';
 window.AdminAuth={
   _k:'thrive_admin_v3',
   _pk:'thrive_admin_pin_v1', /* sessionStorage key for the plaintext PIN, needed to authenticate writes via window.storage.set — cleared on logout */
   isLoggedIn(){return sessionStorage.getItem(this._k)==='1';},
   async login(pin){
-    if(window._locked())return'locked';
-    const hash=await _sha256Hex('thrive-'+pin+'-admin');
-    if(hash===_AH){
+    let res;
+    try{
+      res=await fetch('/.netlify/functions/admin-data',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({action:'verify',pin}),
+      });
+    }catch{
+      return{ok:false,message:_SIGNIN_UNAVAILABLE};
+    }
+    const data=await res.json().catch(()=>({}));
+    if(res.ok){
       sessionStorage.setItem(this._k,'1');
       sessionStorage.setItem(this._pk,pin);
-      return true;
+      return{ok:true};
     }
-    window._loginFail();return false;
+    if(res.status===401){
+      const left=data.attemptsLeft;
+      return{ok:false,message:'Incorrect PIN.'+(left>0?' '+left+' attempt'+(left===1?'':'s')+' left.':'')};
+    }
+    if(res.status===429)return{ok:false,message:data.error||'Too many incorrect attempts. Try again later.'};
+    return{ok:false,message:_SIGNIN_UNAVAILABLE};
   },
   logout(){
     sessionStorage.removeItem(this._k);

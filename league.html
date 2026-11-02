@@ -362,12 +362,11 @@ function toggleAdmin(){
 }
 window.toggleAdmin=toggleAdmin;
 
-function doLogin(){
+async function doLogin(){
   const pin=document.getElementById('pin-input').value;
   const err=document.getElementById('login-err');
-  if(window._locked()){err.style.display='block';err.textContent='Too many attempts. Wait 60 seconds.';return;}
-  const res=AdminAuth.login(pin);
-  if(res===true){
+  const res=await AdminAuth.login(pin);
+  if(res.ok){
     document.getElementById('login-modal').classList.remove('open');
     err.style.display='none';document.getElementById('pin-input').value='';
     document.getElementById('admin-badge').style.display='inline-flex';
@@ -378,7 +377,7 @@ function doLogin(){
     showToast('Welcome, Admin','ok');
   } else {
     err.style.display='block';
-    err.textContent=window._locked()?'Locked — wait 60s.':'Incorrect PIN.';
+    err.textContent=res.message;
     document.getElementById('pin-input').value='';document.getElementById('pin-input').focus();
   }
 }
