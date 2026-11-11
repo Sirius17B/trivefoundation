@@ -1,7 +1,8 @@
 /**
- * Admin content persistence — reads are public, most writes require the
- * admin PIN. One key is the exception: the quiz leaderboard is written by
- * every visitor who finishes a quiz, not just admins, so it's public-write.
+ * Admin content persistence — reads are public, every write requires the
+ * admin PIN. Visitors cannot write anything here. The quiz leaderboard key
+ * is read-only here: it is assembled from per-code scores (lib/leaderboard.js),
+ * which visitors can only add through quiz-code's submitScore, one per code.
  *
  * GET  /.netlify/functions/admin-data?key=<key>       -> { value: string|null }
  * POST /.netlify/functions/admin-data  { key, value, pin } -> { ok: true }
@@ -19,6 +20,7 @@
  */
 const { connect, openStore, describeStorageError } = require('./lib/blobs');
 const { checkPin } = require('./lib/auth');
+const leaderboard = require('./lib/leaderboard');
 
 const JSON_HEADERS = {
   'Content-Type': 'application/json',
@@ -36,14 +38,12 @@ const ADMIN_WRITE_KEYS = new Set([
   'thrive_tech_v2_data',      // Tech rankings participants
 ]);
 
-// Keys any visitor can write without a PIN — currently just the quiz
-// leaderboard, since submitting your own score after finishing a quiz is a
-// normal visitor action, not an admin one.
-const PUBLIC_WRITE_KEYS = new Set([
-  'thrive_v5_quiz_lb',
+// Keys anyone can read but nobody writes through this endpoint.
+const READ_ONLY_KEYS = new Set([
+  leaderboard.LEGACY_KEY,     // quiz leaderboard, built from per-code scores
 ]);
 
-const ALLOWED_KEYS = new Set([...ADMIN_WRITE_KEYS, ...PUBLIC_WRITE_KEYS]);
+const ALLOWED_KEYS = new Set([...ADMIN_WRITE_KEYS, ...READ_ONLY_KEYS]);
 
 const MAX_VALUE_BYTES = 2_000_000; // 2MB — generous for text/JSON, blocks abuse
 
@@ -64,6 +64,9 @@ exports.handler = async (event) => {
     const key = event.queryStringParameters?.key;
     if (!key || !ALLOWED_KEYS.has(key)) return response(400, { error: 'Unknown key' });
     try {
+      if (key === leaderboard.LEGACY_KEY) {
+        return response(200, { value: JSON.stringify(await leaderboard.readBoard(store)) });
+      }
       const value = await store.get(key);
       return response(200, { value: value ?? null });
     } catch (e) {
@@ -90,13 +93,12 @@ exports.handler = async (event) => {
     const pin = payload.pin;
 
     if (!ALLOWED_KEYS.has(key)) return response(400, { error: 'Unknown key' });
+    if (READ_ONLY_KEYS.has(key)) return response(403, { error: 'This data cannot be written here' });
     if (typeof value !== 'string') return response(400, { error: 'value must be a string' });
     if (Buffer.byteLength(value, 'utf8') > MAX_VALUE_BYTES) return response(413, { error: 'Value too large' });
 
-    if (ADMIN_WRITE_KEYS.has(key)) {
-      const auth = await checkPin(event, pin);
-      if (!auth.ok) return response(auth.status, auth.body);
-    }
+    const auth = await checkPin(event, pin);
+    if (!auth.ok) return response(auth.status, auth.body);
 
     try {
       await store.set(key, value);

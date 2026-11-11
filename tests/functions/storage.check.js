@@ -31,13 +31,19 @@ describe('storage credentials', () => {
   });
 
   it('saves and reloads a quiz score end to end', async () => {
-    const post = await adminData.handler(fake.netlifyEvent({
-      httpMethod: 'POST',
-      body: JSON.stringify({ key: 'thrive_v5_quiz_lb', value: '{"tech":[{"name":"Ada","score":9}]}' }),
-    }));
+    // Scores go in through an access code (quiz-code submitScore), never by
+    // writing the leaderboard key; see leaderboard.check.js for the rules.
+    process.env.ADMIN_PIN = 'pin-for-storage-test';
+    const quizCode = require('../../netlify/functions/quiz-code');
+    const call = (body) => quizCode.handler(fake.netlifyEvent({ httpMethod: 'POST', body: JSON.stringify(body) }));
+    const gen = await call({ action: 'generate', quizId: 'tech-challenge', count: 1, pin: 'pin-for-storage-test' });
+    assert.equal(gen.statusCode, 200, gen.body);
+    const [code] = JSON.parse(gen.body).codes;
+    const post = await call({ action: 'submitScore', code, quizId: 'tech-challenge', name: 'Ada', correct: 9, total: 10, timeTaken: 60 });
     assert.equal(post.statusCode, 200, post.body);
     const get = await adminData.handler(fake.netlifyEvent({ httpMethod: 'GET', queryStringParameters: { key: 'thrive_v5_quiz_lb' } }));
-    assert.equal(JSON.parse(get.body).value, '{"tech":[{"name":"Ada","score":9}]}');
+    const board = JSON.parse(JSON.parse(get.body).value);
+    assert.deepEqual(board['tech-challenge'].map(e => [e.name, e.pct]), [['Ada', 90]]);
   });
 
   it('when Netlify sends no credentials and the manual token is rejected, says exactly what to fix', async () => {

@@ -124,7 +124,6 @@
 'use strict';
 
 const HANDOFF_KEY   = 'thrive_quiz_handoff_v1';
-const QUIZ_LB_KEY    = 'thrive_v5_quiz_lb';
 const QUIZ_STORE_KEY = 'thrive_v5_quizzes';
 
 let state = {};
@@ -219,6 +218,7 @@ async function init() {
     timeLeft: getTimerSeconds(quiz),
     finished: false,
     playerName: handoff.name,
+    playerCode: handoff.code || '',
   };
 
   document.getElementById('q-quiz-title').textContent = quiz.title;
@@ -352,7 +352,7 @@ async function finishQuiz(timeout = false) {
   const skipped   = answered.filter(a => !a).length;
   const wrong     = total - correct - skipped;
 
-  const rank = await saveScore(quiz.id, playerName, pct, correct, total, timeTaken);
+  const { rank, error: saveError } = await saveScore(quiz.id, state.playerCode, playerName, correct, total, timeTaken);
   try { sessionStorage.setItem('thrive_last_score_v1', JSON.stringify({ quizId: quiz.id, name: playerName, pct })); } catch {}
 
   document.getElementById('q-header').style.display = 'none';
@@ -382,6 +382,7 @@ async function finishQuiz(timeout = false) {
         <div class="r-stat-l">Time taken</div>
       </div>
       ${rank ? `<div class="rank-banner"><div class="rank-number">#${rank}</div><div class="rank-label">Your ranking on the ${sanitize(quiz.title)} leaderboard</div></div>` : ''}
+      ${saveError ? `<div class="rank-banner" role="alert" style="background:var(--red-600)"><div class="rank-label" style="color:#fff;font-size:.95rem">Your score was not saved: ${sanitize(saveError)}<br>Please show this screen to your teacher.</div></div>` : ''}
       ${buildTopicBreakdownHTML()}
       <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px" class="btn-no-print">
         <a href="quiz.html" class="btn btn-primary btn-sm">← Back to Quizzes</a>
@@ -493,27 +494,22 @@ window.addEventListener('beforeunload', (e) => {
   }
 });
 
-/* ── Leaderboard (write-only here — quiz.html shows the table) ── */
-async function loadScores() {
-  try { const r = await window.storage?.get(QUIZ_LB_KEY); return r ? JSON.parse(r.value) : {}; }
-  catch { return {}; }
-}
-async function saveScore(quizId, name, pct, correct, total, timeTaken) {
-  const scores = await loadScores();
-  if (!scores[quizId]) scores[quizId] = [];
-  const entry = {
-    name:      String(name || 'Anonymous').trim().slice(0, 60),
-    pct:       Math.max(0, Math.min(100, Number(pct) || 0)),
-    correct:   Math.max(0, Math.min(Number(total) || 0, Number(correct) || 0)),
-    total:     Math.max(1, Number(total) || 1),
-    timeTaken: Math.max(0, Number(timeTaken) || 0),
-    date:      new Date().toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }),
-  };
-  scores[quizId].push(entry);
-  scores[quizId].sort((a, b) => b.pct - a.pct || a.timeTaken - b.timeTaken);
-  scores[quizId] = scores[quizId].slice(0, 50);
-  try { await window.storage?.set(QUIZ_LB_KEY, JSON.stringify(scores)); } catch {}
-  return scores[quizId].findIndex(e => e.name === entry.name && e.pct === entry.pct) + 1;
+/* ── Leaderboard (write-only here — quiz.html shows the table) ──
+   The server adds one score per access code and works out the percentage
+   itself (netlify/functions/quiz-code.js submitScore). Retries once if the
+   network drops; a refusal (e.g. code already scored) is not retried. */
+async function saveScore(quizId, code, name, correct, total, timeTaken) {
+  const body = JSON.stringify({ action: 'submitScore', code, quizId, name, correct, total, timeTaken });
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    try {
+      const res  = await fetch('/.netlify/functions/quiz-code', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) return { rank: data.rank || 0 };
+      return { rank: 0, error: data.error || 'the server refused it.' };
+    } catch {
+      if (attempt === 2) return { rank: 0, error: 'the website could not be reached.' };
+    }
+  }
 }
 
 init();

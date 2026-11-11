@@ -59,6 +59,17 @@ function getStore(arg) {
       guard();
       data.delete(k(key));
     },
+    // Same shape as @netlify/blobs: { blobs: [{ key, etag }], directories: [] }.
+    async list(o = {}) {
+      guard();
+      const head = `${opts.name}/`;
+      const blobs = [...data.keys()]
+        .filter(full => full.startsWith(head))
+        .map(full => full.slice(head.length))
+        .filter(key => key.startsWith(o.prefix || ''))
+        .map(key => ({ key, etag: 'etag-' + key }));
+      return { blobs, directories: [] };
+    },
   };
 }
 

@@ -13,6 +13,13 @@
  *   { action:'reset', quizId, pin }                  -> admin only (PIN)
  *     Deletes every code (used and unused) for `quizId` — for starting a
  *     new season/year clean instead of accumulating codes indefinitely.
+ *   { action:'submitScore', code, quizId, name, correct, total, timeTaken }
+ *                                                    -> public, no PIN
+ *     The ONLY way a visitor can add to the leaderboard: one score per real
+ *     code for that quiz (409 on a second try). The server works out pct.
+ *     Stored per code by lib/leaderboard.js. Returns { ok, rank }.
+ *   { action:'clearScores', quizId, pin }            -> admin only (PIN)
+ *     Removes every leaderboard score for `quizId`.
  *
  * Stored as one flat map in Netlify Blobs under key thrive_quiz_codes_v1:
  *   { "THRV-7F3K": { quizId, used, usedBy, usedAt, batchLabel }, ... }
@@ -25,6 +32,7 @@
  */
 const { connect, openStore, describeStorageError } = require('./lib/blobs');
 const { checkPin } = require('./lib/auth');
+const leaderboard = require('./lib/leaderboard');
 const crypto = require('node:crypto');
 
 const CODES_KEY = 'thrive_quiz_codes_v1';
@@ -121,12 +129,50 @@ exports.handler = async (event) => {
       if (!entry) return response(404, { error: 'That code was not found. Check it and try again.' });
       if (entry.quizId !== quizId) return response(400, { error: 'That code is not valid for this quiz.' });
       if (entry.used) return response(409, { error: 'This code has already been used.' });
+      // A score already stored under this code also means it was used (this
+      // check survives the codes-map race described at the top of the file).
+      if (await leaderboard.hasScore(store, quizId, code)) return response(409, { error: 'This code has already been used.' });
 
       entry.used = true;
       entry.usedBy = usedBy || null;
       entry.usedAt = new Date().toISOString();
       await store.set(CODES_KEY, JSON.stringify(codes));
       return response(200, { ok: true });
+    } catch (e) {
+      return blobsErrorResponse(e);
+    }
+  }
+
+  if (action === 'submitScore') {
+    const code = String(payload.code || '').trim().toUpperCase();
+    const quizId = String(payload.quizId || '').trim();
+    if (!code) return response(400, { error: 'code is required' });
+    if (!quizId) return response(400, { error: 'quizId is required' });
+    const { entry: score, error } = leaderboard.cleanScore(payload);
+    if (error) return response(400, { error });
+
+    try {
+      // Only the code's existence and quiz are required, not its "used" flag:
+      // the codes map can lose that flag under simultaneous redeems.
+      const entry = (await loadCodes(store))[code];
+      if (!entry) return response(404, { error: 'That code was not found.' });
+      if (entry.quizId !== quizId) return response(400, { error: 'That code is not valid for this quiz.' });
+      if (await leaderboard.hasScore(store, quizId, code)) return response(409, { error: 'A score has already been saved for this code.' });
+      await leaderboard.saveScore(store, quizId, code, score);
+      const rank = leaderboard.rankOf(await leaderboard.readBoard(store), quizId, score);
+      return response(200, { ok: true, rank });
+    } catch (e) {
+      return blobsErrorResponse(e);
+    }
+  }
+
+  if (action === 'clearScores') {
+    const auth = await checkPin(event, payload.pin);
+    if (!auth.ok) return response(auth.status, auth.body);
+    const quizId = String(payload.quizId || '').trim();
+    if (!quizId) return response(400, { error: 'quizId is required' });
+    try {
+      return response(200, { ok: true, removed: await leaderboard.clearQuiz(store, quizId) });
     } catch (e) {
       return blobsErrorResponse(e);
     }
