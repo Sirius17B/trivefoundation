@@ -5,12 +5,14 @@ const assert = require('node:assert/strict');
 const path = require('node:path');
 
 function loadBank() {
-  const file = path.join(__dirname, '../../js/quiz-bank.js');
-  delete require.cache[require.resolve(file)];
+  // Same load order as the quiz pages: config.js, then quiz-bank.js.
+  const files = ['../../js/config.js', '../../js/quiz-bank.js'].map(f => path.join(__dirname, f));
   global.window = {};
   const log = console.log;
   console.log = () => {};
-  try { require(file); } finally { console.log = log; }
+  try {
+    for (const file of files) { delete require.cache[require.resolve(file)]; require(file); }
+  } finally { console.log = log; }
   return global.window.SITE_CONFIG;
 }
 
@@ -82,6 +84,27 @@ describe('Tech quiz follows the Introduction to Tech book', () => {
       for (const a of answers) assert.ok(Number.isInteger(a) && a >= 0 && a < 4, q.q);
       assert.ok(q.explanation && q.explanation.length > 20, `missing explanation: ${q.q}`);
     }
+  });
+
+  it('gives every candidate the same fixed 30-question test, mixed in level and chapter', () => {
+    const cfg = loadBank();
+    const pool = cfg.sessionPool(tech);
+    assert.equal(pool.length, 30);
+    assert.deepEqual(cfg.sessionPool(tech).map(q => q.q), pool.map(q => q.q), 'same set every time');
+    for (const level of LEVELS) {
+      assert.ok(pool.filter(q => q.level === level).length >= 7, `too few ${level}`);
+    }
+    for (const ch of CHAPTERS) {
+      assert.equal(pool.filter(q => q.topic === ch).length, 3, `chapter "${ch}"`);
+    }
+  });
+
+  it('allows 24 minutes for the Tech test and leaves Football timing alone', () => {
+    const cfg = loadBank();
+    assert.equal(cfg.quizTimeSeconds(tech), 24 * 60);
+    const football = cfg.QUIZZES.find(q => q.id === 'football-arena');
+    assert.equal(cfg.quizTimeSeconds(football), 15 * 14);
+    assert.equal(cfg.sessionPool(football).length, football.questions.length, 'football draws from its whole bank');
   });
 
   it('has enough questions for a 30-question session', () => {

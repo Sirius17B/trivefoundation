@@ -126,7 +126,6 @@
 const HANDOFF_KEY   = 'thrive_quiz_handoff_v1';
 const QUIZ_LB_KEY    = 'thrive_v5_quiz_lb';
 const QUIZ_STORE_KEY = 'thrive_v5_quizzes';
-const SESSION_Q      = 50;
 
 let state = {};
 let timerInterval = null;
@@ -180,10 +179,8 @@ function buildQuestionSet(allQuestions, target) {
   return shuffle(picked).map(shuffleQuestionOptions);
 }
 
-function getTimerSeconds(quiz) {
-  const tpq = (window.SITE_CONFIG?.QUIZ_SETTINGS?.timePerQuestion) || 30;
-  return Math.min(quiz.sessionSize || SESSION_Q, quiz.questions.length) * tpq;
-}
+/* Time limit and question pool live in js/quiz-bank.js (one place for both pages). */
+function getTimerSeconds(quiz) { return window.SITE_CONFIG.quizTimeSeconds(quiz); }
 
 async function loadQuizList() {
   try {
@@ -214,7 +211,7 @@ async function init() {
     return;
   }
 
-  const selected = buildQuestionSet(quiz.questions, quiz.sessionSize || SESSION_Q);
+  const selected = buildQuestionSet(window.SITE_CONFIG.sessionPool(quiz), window.SITE_CONFIG.sessionLength(quiz));
   state = {
     quiz, questions: selected, current: 0,
     answers:  new Array(selected.length).fill(null),

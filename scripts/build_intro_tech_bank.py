@@ -72,6 +72,22 @@ def place(chapter, items):
     return out
 
 
+def mark_test_set(built):
+    """Mark the fixed test set (inTest: true): every candidate sits these same
+    questions, each in their own shuffled order. Three per chapter (10 x 3 =
+    30, the session size); chapter n leaves out level n mod 4, so over the
+    ten chapters the set holds 7 Super easy, 7 Easy, 8 Medium and 8 Hard.
+    Within a chapter and level the pick is fixed by a hash of the question
+    text, so rebuilding gives the same set."""
+    for n, (ch, qs) in enumerate(built.items()):
+        skip = LEVELS[n % 4]
+        for level in LEVELS:
+            if level == skip:
+                continue
+            pool = [q for q in qs if q['level'] == level]
+            min(pool, key=lambda q: seed(q['q']))['inTest'] = True
+
+
 def validate(chapter, items):
     errors = []
     for it in items:
@@ -125,6 +141,8 @@ def to_js(q):
     parts = [f"{k}:{json.dumps(q[k], ensure_ascii=False)}" for k in ('topic', 'level', 'q', 'options', 'answer')]
     if q.get('multi'):
         parts.append('multi:true')
+    if q.get('inTest'):
+        parts.append('inTest:true')
     parts.append('explanation:' + json.dumps(q['explanation'], ensure_ascii=False))
     return '{' + ','.join(parts) + '},'
 
@@ -151,7 +169,14 @@ def main():
     if errors:
         print('\n'.join(errors)); sys.exit(1)
     built = {ch: place(ch, items) for ch, items in chapters.items()}
+    mark_test_set(built)
     audit(chapters, built)
+    test = [q for qs in built.values() for q in qs if q.get('inTest')]
+    lv = Counter(q['level'] for q in test)
+    le = Counter('ABCD'[q['answer']] for q in test if not q.get('multi'))
+    print(f"test set: {len(test)} questions; levels "
+          f"{'/'.join(str(lv[l]) for l in LEVELS)}; letters {'/'.join(str(le[c]) for c in 'ABCD')}; "
+          f"multi {sum(1 for q in test if q.get('multi'))}")
     if '--write' in sys.argv:
         write(built)
 

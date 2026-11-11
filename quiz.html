@@ -209,7 +209,6 @@ injectNav(); injectAdminUI(); injectFooter();
 
 const QUIZ_STORE_KEY = 'thrive_v5_quizzes';
 const QUIZ_LB_KEY   = 'thrive_v5_quiz_lb';
-const SESSION_Q     = 50; // fallback only — each quiz in js/quiz-bank.js sets its own sessionSize
 
 let quizzes         = [];
 let editingQIdx     = null;
@@ -237,10 +236,8 @@ async function saveQuizzes() {
   catch { showToast('Storage unavailable — changes will reset on reload', 'err'); }
 }
 
-function getTimerSeconds(quiz) {
-  const tpq = (window.SITE_CONFIG?.QUIZ_SETTINGS?.timePerQuestion) || 30;
-  return Math.min(quiz.sessionSize || SESSION_Q, quiz.questions.length) * tpq;
-}
+/* Time limit and question pool live in js/quiz-bank.js (one place for both pages). */
+function getTimerSeconds(quiz) { return window.SITE_CONFIG.quizTimeSeconds(quiz); }
 
 /* ── Render quiz cards ────────────────────────────────────────────────────── */
 function renderQuizCards() {
@@ -261,7 +258,7 @@ function renderQuizCards() {
         </span>
         <span class="quiz-meta-item">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-          ${Math.min(quiz.sessionSize || SESSION_Q, quiz.questions?.length || SESSION_Q)} questions
+          ${window.SITE_CONFIG.sessionLength(quiz)} questions
         </span>
         <span class="quiz-meta-item">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
@@ -569,12 +566,13 @@ window.saveQuestion = function () {
   const uniq = new Set(opts.map(o => o.toLowerCase().replace(/\s+/g,'')));
   if (uniq.size !== 4) return showToast('Options must be distinct', 'err');
   const answer = correct.length > 1 ? correct : correct[0];
-  /* The editor has no level field; keep the edited question's level
-     (Super easy / Easy / Medium / Hard) rather than dropping it. */
-  const level = editingQIdx ? quizzes[editingQIdx.quizIdx].questions[editingQIdx.qIdx].level : undefined;
+  /* The editor has no level or test-set field; keep the edited question's
+     level and whether it is in the fixed test set, rather than dropping them. */
+  const old = editingQIdx ? quizzes[editingQIdx.quizIdx].questions[editingQIdx.qIdx] : {};
   const newQ = {
     ...(topic ? { topic } : {}),
-    ...(level ? { level } : {}),
+    ...(old.level ? { level: old.level } : {}),
+    ...(old.inTest ? { inTest: true } : {}),
     q:qText, options:opts, answer,
     ...(correct.length > 1 ? { multi:true } : {}),
     ...(exp ? { explanation:exp } : {}),
