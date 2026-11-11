@@ -161,9 +161,23 @@ function isCorrectAnswer(q, given) {
 
 function shuffle(arr) { return [...arr].sort(() => Math.random() - .5); }
 
+/* Draw evenly from each difficulty level (q.level: Super easy / Easy /
+   Medium / Hard), so every session gets a fair mix instead of whatever a
+   plain random draw lands on. Questions with no level form one pool, so a
+   bank without levels behaves exactly as a plain random draw. */
 function buildQuestionSet(allQuestions, target) {
-  const shuffled = shuffle(Array.isArray(allQuestions) ? allQuestions : []);
-  return shuffled.slice(0, Math.min(target, shuffled.length)).map(shuffleQuestionOptions);
+  const pools = {};
+  for (const q of shuffle(Array.isArray(allQuestions) ? allQuestions : [])) {
+    (pools[q.level || ''] ||= []).push(q);
+  }
+  const queues = shuffle(Object.values(pools));
+  const picked = [];
+  while (picked.length < target && queues.some(p => p.length)) {
+    for (const pool of queues) {
+      if (picked.length < target && pool.length) picked.push(pool.pop());
+    }
+  }
+  return shuffle(picked).map(shuffleQuestionOptions);
 }
 
 function getTimerSeconds(quiz) {
@@ -174,9 +188,9 @@ function getTimerSeconds(quiz) {
 async function loadQuizList() {
   try {
     const r = await window.storage?.get(QUIZ_STORE_KEY);
-    return r ? JSON.parse(r.value) : JSON.parse(JSON.stringify(window.SITE_CONFIG.QUIZZES || []));
+    return window.SITE_CONFIG.resolveQuizzes(r ? JSON.parse(r.value) : null);
   } catch {
-    return JSON.parse(JSON.stringify(window.SITE_CONFIG.QUIZZES || []));
+    return window.SITE_CONFIG.resolveQuizzes(null);
   }
 }
 
