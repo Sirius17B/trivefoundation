@@ -80,7 +80,7 @@
   </section>
 
   <!-- Admin question editor -->
-  <section id="admin-editor" class="admin-only" style="display:none;background:var(--surface-2);padding:clamp(20px,3vw,36px) 0" aria-label="Question editor">
+  <section id="admin-editor" class="admin-only" data-admin-toggle style="display:none;background:var(--surface-2);padding:clamp(20px,3vw,36px) 0" aria-label="Question editor">
     <div style="padding:0 var(--pad);margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
       <h2 style="font-size:1.1rem">Question Editor</h2>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
@@ -99,7 +99,7 @@
   </section>
 
   <!-- Admin access codes -->
-  <section id="admin-codes" class="admin-only" style="display:none;background:var(--white);padding:clamp(20px,3vw,36px) 0" aria-label="Quiz access codes">
+  <section id="admin-codes" class="admin-only" data-admin-toggle style="display:none;background:var(--white);padding:clamp(20px,3vw,36px) 0" aria-label="Quiz access codes">
     <div style="padding:0 var(--pad);margin-bottom:14px">
       <h2 style="font-size:1.1rem">Access Codes</h2>
       <p style="font-size:.85rem;color:var(--ink-300);margin-top:.3rem">Generate one-time codes for an event, hand them out, and each one unlocks exactly one quiz attempt.</p>
@@ -228,7 +228,8 @@ async function loadQuizzes() {
     if (last) { lastScoreEntry = last; sessionStorage.removeItem('thrive_last_score_v1'); }
   } catch {}
   renderQuizCards(); buildSelectMenus(); renderEditorQuestions(); renderLeaderboard();
-  if (window.AdminAuth?.isLoggedIn()) document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
+  /* Panels marked data-admin-toggle are opened by their own Show/Hide buttons; revealing them here left them open under a "Show" label with empty pickers. */
+  if (window.AdminAuth?.isLoggedIn()) document.querySelectorAll('.admin-only:not([data-admin-toggle])').forEach(el => el.style.display = 'block');
 }
 
 async function saveQuizzes() {
@@ -335,19 +336,32 @@ window.submitStartModal = submitStartModal;
 document.getElementById('start-code-inp')?.addEventListener('keydown', e => { if (e.key === 'Enter') submitStartModal(); });
 
 /* ── Admin: access codes ──────────────────────────────────────────────────── */
-let codesOpen = false;
+/* Each panel's open/closed state is its own display style, nothing else, so
+   the button label can't disagree with what is on screen (login and logout
+   also show/hide admin sections). */
+const ADMIN_PANELS = {
+  'admin-codes':  { label: 'codes-toggle-lbl',  show: 'Show Access Codes',    hide: 'Hide Access Codes' },
+  'admin-editor': { label: 'editor-toggle-lbl', show: 'Show Question Editor', hide: 'Hide Editor' },
+};
+function isPanelOpen(id) { return document.getElementById(id)?.style.display === 'block'; }
+function syncPanelLabels() {
+  for (const [id, p] of Object.entries(ADMIN_PANELS)) {
+    const lbl = document.getElementById(p.label);
+    if (lbl) lbl.textContent = isPanelOpen(id) ? p.hide : p.show;
+  }
+}
+function togglePanel(id) {
+  const open = !isPanelOpen(id);
+  document.getElementById(id).style.display = open ? 'block' : 'none';
+  syncPanelLabels();
+  return open;
+}
+document.addEventListener('thrive:admin-state', syncPanelLabels);
+
 function toggleCodesPanel() {
-  codesOpen = !codesOpen;
-  document.getElementById('admin-codes').style.display = codesOpen ? 'block' : 'none';
-  document.getElementById('codes-toggle-lbl').textContent = codesOpen ? 'Hide Access Codes' : 'Show Access Codes';
-  if (codesOpen) { populateCodesQuizSelect(); loadCodesList(); }
+  if (togglePanel('admin-codes')) loadCodesList();
 }
 window.toggleCodesPanel = toggleCodesPanel;
-
-function populateCodesQuizSelect() {
-  const sel = document.getElementById('codes-quiz-select'); if (!sel) return;
-  sel.innerHTML = quizzes.map(q => `<option value="${sanitize(q.id)}">${sanitize(q.title)}</option>`).join('');
-}
 
 async function generateCodes() {
   const quizId = document.getElementById('codes-quiz-select').value;
@@ -492,12 +506,8 @@ async function renderLeaderboard() {
 window.switchLbTab = function (i) { activeLbTab = i; renderLeaderboard(); };
 
 /* ── Admin editor ─────────────────────────────────────────────────────────── */
-let editorOpen = false;
 window.toggleAdminEditor = function () {
-  editorOpen = !editorOpen;
-  document.getElementById('admin-editor').style.display = editorOpen ? 'block' : 'none';
-  document.getElementById('editor-toggle-lbl').textContent = editorOpen ? 'Hide Editor' : 'Show Question Editor';
-  if (editorOpen) renderEditorQuestions();
+  if (togglePanel('admin-editor')) renderEditorQuestions();
 };
 
 function buildSelectMenus() {
@@ -505,6 +515,9 @@ function buildSelectMenus() {
     const sel = document.getElementById(id); if (!sel) return;
     sel.innerHTML = quizzes.map((q, i) => `<option value="${i}">${sanitize(q.title)}</option>`).join('');
   });
+  /* The access-code picker sends the quiz id, not its position. */
+  const codesSel = document.getElementById('codes-quiz-select');
+  if (codesSel) codesSel.innerHTML = quizzes.map(q => `<option value="${sanitize(q.id)}">${sanitize(q.title)}</option>`).join('');
 }
 
 function renderEditorQuestions() {

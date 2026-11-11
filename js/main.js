@@ -315,7 +315,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   setTimeout(()=>{
     const bar=document.getElementById('cms-toolbar');
     if(bar)bar.style.display='flex';
-    document.querySelectorAll('.admin-only').forEach(el=>el.style.display='block');
+    /* Panels marked data-admin-toggle are opened by their own Show/Hide buttons; revealing them here left them open under a "Show" label with empty pickers. */
+    document.querySelectorAll('.admin-only:not([data-admin-toggle])').forEach(el=>el.style.display='block');
     window._enableInlineEdit?.();
   },120);
 });

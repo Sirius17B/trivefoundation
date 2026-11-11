@@ -218,8 +218,9 @@ window._doAdminLogin=async function(){
     document.getElementById('cms-toolbar').style.display='flex';
     window._enableInlineEdit();
     window.showToast?.('Admin mode active — click highlighted text or images to edit','ok');
-    /* Show .admin-only sections on this page */
-    document.querySelectorAll('.admin-only').forEach(el=>el.style.display='block');
+    /* Show .admin-only sections on this page. Panels marked data-admin-toggle stay
+       closed: they open from their own Show/Hide buttons. */
+    document.querySelectorAll('.admin-only:not([data-admin-toggle])').forEach(el=>el.style.display='block');
     document.dispatchEvent(new CustomEvent('thrive:admin-state',{detail:{loggedIn:true}}));
   } else {
     _showLoginErr(result?.message||'Sign-in failed. Please try again.');
