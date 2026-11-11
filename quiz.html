@@ -219,12 +219,9 @@ let lastScoreEntry  = null;
 async function loadQuizzes() {
   try {
     const r = await window.storage?.get(QUIZ_STORE_KEY);
-    quizzes = r ? JSON.parse(r.value) : JSON.parse(JSON.stringify(window.SITE_CONFIG.QUIZZES || []));
+    quizzes = window.SITE_CONFIG.resolveQuizzes(r ? JSON.parse(r.value) : null);
   } catch {
-    quizzes = JSON.parse(JSON.stringify(window.SITE_CONFIG.QUIZZES || []));
-  }
-  if (!Array.isArray(quizzes) || !quizzes.length) {
-    quizzes = JSON.parse(JSON.stringify(window.SITE_CONFIG.QUIZZES || []));
+    quizzes = window.SITE_CONFIG.resolveQuizzes(null);
   }
   /* Restore "(you)" leaderboard highlight after returning from quiz-play.html */
   try {
@@ -572,8 +569,12 @@ window.saveQuestion = function () {
   const uniq = new Set(opts.map(o => o.toLowerCase().replace(/\s+/g,'')));
   if (uniq.size !== 4) return showToast('Options must be distinct', 'err');
   const answer = correct.length > 1 ? correct : correct[0];
+  /* The editor has no level field; keep the edited question's level
+     (Super easy / Easy / Medium / Hard) rather than dropping it. */
+  const level = editingQIdx ? quizzes[editingQIdx.quizIdx].questions[editingQIdx.qIdx].level : undefined;
   const newQ = {
     ...(topic ? { topic } : {}),
+    ...(level ? { level } : {}),
     q:qText, options:opts, answer,
     ...(correct.length > 1 ? { multi:true } : {}),
     ...(exp ? { explanation:exp } : {}),

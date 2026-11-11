@@ -166,7 +166,7 @@ window.SITE_CONFIG = {
 
   /* QUIZZES is intentionally NOT defined here — js/quiz-bank.js sets
      window.SITE_CONFIG.QUIZZES directly with the real, curated question
-     bank (373 tech + 159 football). quiz-bank.js must load AFTER this
+     bank (Tech from INTRO_TO_TECH_BOOK.md, plus football). quiz-bank.js must load AFTER this
      file and BEFORE any page script reads SITE_CONFIG.QUIZZES. */
 
   /* color = background of the initials badge when no photo is set (brand navy / green only) */
